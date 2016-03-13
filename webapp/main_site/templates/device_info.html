@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Devices</h2>
+<table>
+  <tr>
+    <td>Name</td>
+    <td>Id</td>
+    <td>Latitude</td>
+    <td>Longitude</td>
+    <td>Time Created</td>
+  </tr>
+{% for device in devices %}
+  <tr>
+    <td>{{device.name}}</td>
+    <td>{{device.id}}</td>
+    <td>{{device.latitude}}</td>
+    <td>{{device.longitude}}</td>
+    <td>{{device.time_server}}</td>
+  </tr>
+{% endfor %}
+</table>
+
+<h2>Sensors</h2>
+<table>
+  <tr>
+    <td>Name</td>
+    <td>Id</td>
+    <td>Time Created</td>
+    <td>Device Id</td>
+  </tr>
+{% for sensor in sensors %}    
+  <tr>
+    <td>{{sensor.name}}</td>
+    <td>{{sensor.id}}</td>
+    <td>{{sensor.time_server}}</td>
+    <td>{{sensor.device.id}}</td>
+  </tr>   
+{% endfor %}   
+</table>
+
+<h2>Logs</h2>
+<table>
+  <tr>
+    <td>Id</td>
+    <td>Value</td>
+    <td>Time</td>
+    <td>Sensor Id</td>
+    <td>Time_App</td>
+    <td>Time_Server</td>
+  </tr>
+{% for log in logs %}    
+  <tr>
+    <td>{{log.id}}</td>
+    <td>{{log.value}}</td>
+    <td>{{log.time}}</td>
+    <td>{{log.sensor.id}}</td>
+    <td>{{log.time_app}}</td>
+    <td>{{log.time_Server}}</td>
+  </tr>   
+{% endfor %}   
+</table>      
+{% endblock %}
