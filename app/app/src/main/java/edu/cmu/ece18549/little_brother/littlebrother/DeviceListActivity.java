@@ -1,8 +1,11 @@
 package edu.cmu.ece18549.little_brother.littlebrother;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,10 +17,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import edu.cmu.ece18549.little_brother.littlebrother.dummy.DummyContent;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,6 +41,11 @@ public class DeviceListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
 
+    private DeviceFinderService mDeviceService;
+    private boolean mBound;
+    private List<Device> mDevices;
+    private SimpleItemRecyclerViewAdapter mAdapter;
+    private RecyclerView mRecyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,18 +55,18 @@ public class DeviceListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         View recyclerView = findViewById(R.id.device_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        mRecyclerView = (RecyclerView) recyclerView;
 
         if (findViewById(R.id.device_detail_container) != null) {
             // The detail container view will be present only in the
@@ -67,16 +77,52 @@ public class DeviceListActivity extends AppCompatActivity {
         }
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Bind to LocalService
+        Intent intent = new Intent(this, FakeDataService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            FakeDataService.LocalBinder binder = (FakeDataService.LocalBinder) service;
+            mDeviceService = binder.getService();
+            mBound = true;
+            mDevices = mDeviceService.getDevices();
+            mAdapter = new SimpleItemRecyclerViewAdapter(mDevices);
+            mRecyclerView.setAdapter(mAdapter);
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<Device> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
+        public SimpleItemRecyclerViewAdapter(List<Device> items) {
             mValues = items;
         }
 
@@ -90,15 +136,15 @@ public class DeviceListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(mValues.get(position).getId());
+            holder.mContentView.setText(mValues.get(position).getName());
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(DeviceDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        arguments.putString(DeviceDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
                         DeviceDetailFragment fragment = new DeviceDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -107,7 +153,7 @@ public class DeviceListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, DeviceDetailActivity.class);
-                        intent.putExtra(DeviceDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        intent.putExtra(DeviceDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
 
                         context.startActivity(intent);
                     }
@@ -124,7 +170,7 @@ public class DeviceListActivity extends AppCompatActivity {
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public Device mItem;
 
             public ViewHolder(View view) {
                 super(view);
