@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>Create Device:</p>
+<form action="{% url 'add_device' %}" method="post">
+  {% for field in device_form.visible_fields %}
+    {{field.label_tag}}
+    {{field}}
+    {% for error in field.errors %}
+      <span style="color:red"> {{ error }} </span>
+    {% endfor %}
+    <br>
+  {% endfor %}
+  <input type="submit" value="Submit">
+  {% for field in device_form.hidden_fields %}
+    {{field}}
+  {% endfor %}
+  {% csrf_token %}
+</form>
+
+<p>Create Sensor:</p>
+<form action="{% url 'add_sensor' %}" method="post">
+  {% for field in sensor_form.visible_fields %}
+    {{field.label_tag}}
+    {{field}}
+    {% for error in field.errors %}
+      <span style="color:red"> {{ error }} </span>
+    {% endfor %}
+    <br>
+  {% endfor %}
+  <input type="submit" value="Submit">
+  {% for field in sensor_form.hidden_fields %}
+    {{field}}
+  {% endfor %}
+  {% csrf_token %}
+</form>
+
+<p>Create Log:</p>
+<form action="{% url 'add_log' %}" method="post">
+  {% for field in log_form.visible_fields %}
+    {{field.label_tag}}
+    {{field}}
+    {% for error in field.errors %}
+      <span style="color:red"> {{ error }} </span>
+    {% endfor %}
+    <br>
+  {% endfor %}
+  <input type="submit" value="Submit">
+  {% for field in log_form.hidden_fields %}
+    {{field}}
+  {% endfor %}
+  {% csrf_token %}
+</form>
+
+{% endblock %}

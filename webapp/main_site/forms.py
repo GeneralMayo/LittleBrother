@@ -4,6 +4,7 @@ from models import *
 
 #Form for device creation
 class DeviceForm(forms.ModelForm):
+
     class Meta:
         model = Device
         exclude = ('time_server',)
@@ -24,10 +25,11 @@ class DeviceForm(forms.ModelForm):
 class SensorForm(forms.ModelForm):
     class Meta:
         model = Sensor
-        exclude = ('time_server','device',)
+        exclude = ('time_server',)
+
 
 #form for log creation
 class LogForm(forms.ModelForm):
     class Meta:
         model = Log
-        exclude = ('time_server','sensor')
+        exclude = ('time_server',)

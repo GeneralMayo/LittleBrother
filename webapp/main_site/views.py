@@ -18,6 +18,13 @@ def home(request):
 def home_redirect(request):
     return redirect(reverse('home'))
 
+def test(request):
+    context = {}
+    context['device_form'] = DeviceForm()
+    context['sensor_form'] = SensorForm()
+    context['log_form'] = LogForm()
+    return render(request,'test.html',context)
+
 @transaction.atomic
 def add_device(request):
     form = DeviceForm(request.POST)
@@ -45,10 +52,9 @@ def add_sensor(request):
 
     if not form.is_valid():
         return HttpResponseBadRequest('Sensor parameters invalid')
-
     
 
-    new_sensor = Sensor(id=form.cleaned_data['id'],
+    new_sensor = Sensor(custom_id=form.cleaned_data['custom_id'],
                         name=form.cleaned_data['name'],
                         time_server=datetime.now(),
                         device=device)
@@ -61,7 +67,12 @@ def add_log(request):
     if 'sensor' not in request.POST:
         return HttpResponseBadRequest('Sensor id required')
 
-    sensor = get_object_or_404(Sensor,pk=request.POST['sensor'])
+    if 'device' not in request.POST:
+        return HttpResponseBadRequest('Device id required')
+
+    device = get_object_or_404(Device,pk=request.POST['device'])
+    sensor_set = Device.sensor_set.all()
+    sensor = get_object_or_404(sensor_set,custom_id=request.POST['sensor'])
 
     form = LogForm(request.POST)
 
