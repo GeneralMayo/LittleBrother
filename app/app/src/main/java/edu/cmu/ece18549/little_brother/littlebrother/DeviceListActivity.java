@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +22,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import edu.cmu.ece18549.little_brother.littlebrother.dummy.DummyContent;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,11 +48,18 @@ public class DeviceListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
 
-    private DeviceFinderService mDeviceService;
+    private DeviceFinderServiceInterface mDeviceService;
     private boolean mBound;
-    private List<Device> mDevices;
+    private Collection<Device> mDevices;
     private SimpleItemRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
+    private final static String TAG = "DEVICE_LIST_ACTIVITY";
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,17 +89,38 @@ public class DeviceListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
         // Bind to LocalService
         Intent intent = new Intent(this, FakeDataService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "DeviceList Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://edu.cmu.ece18549.little_brother.littlebrother/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
     }
 
-    /** Defines callbacks for service binding, passed to bindService() */
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -98,7 +133,10 @@ public class DeviceListActivity extends AppCompatActivity {
             mDevices = mDeviceService.getDevices();
             mAdapter = new SimpleItemRecyclerViewAdapter(mDevices);
             mRecyclerView.setAdapter(mAdapter);
-
+            Log.i(TAG, "Bound to service");
+            for (Device d : mDevices) {
+                Log.i("TAG", d.toString());
+            }
         }
 
         @Override
@@ -110,20 +148,39 @@ public class DeviceListActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "DeviceList Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app deep link URI is correct.
+                Uri.parse("android-app://edu.cmu.ece18549.little_brother.littlebrother/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
         // Unbind from the service
         if (mBound) {
             unbindService(mConnection);
             mBound = false;
         }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.disconnect();
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<Device> mValues;
+        private final Device[] mValues;
+        private final int mSize;
 
-        public SimpleItemRecyclerViewAdapter(List<Device> items) {
-            mValues = items;
+        public SimpleItemRecyclerViewAdapter(Collection<Device> items) {
+            mSize = items.size();
+            mValues = items.toArray(new Device[mSize]);
+
         }
 
         @Override
@@ -135,16 +192,16 @@ public class DeviceListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).getId());
-            holder.mContentView.setText(mValues.get(position).getName());
+            holder.mItem = mValues[position];
+            holder.mIdView.setText(mValues[position].getId());
+            holder.mContentView.setText(mValues[position].getName());
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(DeviceDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
+                        arguments.putString(DeviceDetailFragment.ARG_ITEM_ID, holder.mItem.getName());
                         DeviceDetailFragment fragment = new DeviceDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -153,7 +210,7 @@ public class DeviceListActivity extends AppCompatActivity {
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, DeviceDetailActivity.class);
-                        intent.putExtra(DeviceDetailFragment.ARG_ITEM_ID, holder.mItem.getId());
+                        intent.putExtra(DeviceDetailFragment.ARG_ITEM_ID, holder.mItem.getName());
 
                         context.startActivity(intent);
                     }
@@ -163,7 +220,7 @@ public class DeviceListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return mSize;
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {

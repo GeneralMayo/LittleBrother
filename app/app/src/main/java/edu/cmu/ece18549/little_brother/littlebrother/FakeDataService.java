@@ -11,50 +11,66 @@ import android.os.Message;
 import android.os.Process;
 import android.util.Log;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
-public class FakeDataService extends Service implements DeviceFinderService {
-   private final LocalBinder mBinder = new LocalBinder();
-   private List<Device> mDevices;
-    private Looper mServiceLooper;
-    private ServiceHandler mServiceHandler;
-    private final static int THREAD_WAIT_TIME = 10000;
+public class FakeDataService extends Service implements DeviceFinderServiceInterface {
+    private final static int WAIT_LOWER = 3000;
+    private final static int WAIT_UPPER = 10000;
     private final static int SERVICE_START_MODE = START_STICKY;
+    private final static int RANDOM_SEED = 0xdeadbeef;
+    private final static int MAX_NUM_DEVICES = 3;
+    private final static int P_DELETION = 3;
+    private final static String TAG = "FAKE_DATA_SERVICE";
 
-    // Handler that receives messages from the thread
-    private final class ServiceHandler extends Handler {
-        public ServiceHandler(Looper looper) {
-            super(looper);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            //add one device to the list of devices every 10 seconds until 10 devices are present
-            try {
-                int counter = 0;
-                while(true) {
-                    if (counter < 10) {
-                        mDevices.add(new Device(counter));
-                        counter++;
-                    }
-                        Thread.sleep(THREAD_WAIT_TIME);
-                }
-            } catch (InterruptedException e) {
-                // Restore interrupt status.
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
+    private final static FakeDeviceFactory mFakeDeviceFactory = new SimpleFakeDeviceFactory(RANDOM_SEED);
+    private final static Random mRandom = new Random(RANDOM_SEED);
+
+   private final LocalBinder mBinder = new LocalBinder();
+   private Collection<Device> mDevices;
+
 
     @Override
     public void onCreate() {
-        mDevices = Collections.synchronizedList(new LinkedList<Device>());
-        HandlerThread thread = new HandlerThread("SimpleWorker", Process.THREAD_PRIORITY_BACKGROUND);
-        thread.start();
+        mDevices = Collections.synchronizedSet(new HashSet<Device>());
+        new Thread(new Runnable() {
 
-        mServiceLooper = thread.getLooper();
-        mServiceHandler = new ServiceHandler(mServiceLooper);
+            @Override
+            public void run() {
+                while (true) {
+                    Device device = mFakeDeviceFactory.makeDevice();
+                    Log.i(TAG,"Device " + device + " found");
+                    if (device != null) {
+                        if (mDevices.contains(device)) {
+                            if (mRandom.nextInt(P_DELETION) == 0) {
+                                mDevices.remove(device);
+                                Log.i(TAG, "Device " + device + " removed");
+                            } else {
+                                Log.i(TAG, "Device " + device + " remains");
+                            }
+                        } else {
+                            mDevices.add(device);
+                            Log.i(TAG, "Device " + device + " added");
+                        }
+                    } else {
+                        Log.i(TAG,"No device found");
+                    }
+
+                    try {
+                        long toSleep = WAIT_LOWER + mRandom.nextInt(WAIT_UPPER - WAIT_LOWER);
+                        Log.i(TAG,"Sleeping for " + ((float)toSleep) / 1000.0 + " seconds");
+                        Thread.sleep(toSleep);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        }).start();
+        Log.i("FAKE_DATA_SERVICE","Thread started");
     }
 
     @Override
@@ -75,7 +91,7 @@ public class FakeDataService extends Service implements DeviceFinderService {
     }
 
     @Override
-    public List<Device> getDevices() {
+    public Collection<Device> getDevices() {
         return mDevices;
     }
 }
