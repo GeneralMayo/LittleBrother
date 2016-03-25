@@ -30,6 +30,9 @@ class SensorForm(forms.ModelForm):
 
 #form for log creation
 class LogForm(forms.ModelForm):
+    device = forms.IntegerField()
+    sensor_id = forms.IntegerField()
+
     class Meta:
         model = Log
-        exclude = ('time_server',)
+        exclude = ('time_server','sensor')

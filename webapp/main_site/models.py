@@ -25,7 +25,7 @@ class Device(models.Model):
 #that each have a temperature sensor will generate unique temperature sensor
 #models.
 class Sensor(models.Model):
-	custom_id = models.IntegerField()
+	custom_id = models.IntegerField(default=0)
 	name = models.CharField(max_length=30)
 	device = models.ForeignKey(Device)
 	time_server = models.DateTimeField()
@@ -41,12 +41,12 @@ class Sensor(models.Model):
 
 #Logs
 class Log(models.Model):
-	custom_id = models.IntegerField()
+	custom_id = models.IntegerField(default=0)
 	time = models.DateTimeField()
 	value = models.IntegerField()
 	sensor = models.ForeignKey(Sensor)
 	time_app = models.DateTimeField()  #time app received log
-    time_server = models.DateTimeField()  #time server recieved log
+    	time_server = models.DateTimeField()  #time server recieved log
 
 	def __unicode__(self):
 		return "Log: %d %s %d %d" % (self.id, str(self.time), self.value,

@@ -32,7 +32,7 @@
 {% for sensor in sensors %}    
   <tr>
     <td>{{sensor.name}}</td>
-    <td>{{sensor.id}}</td>
+    <td>{{sensor.custom_id}}</td>
     <td>{{sensor.time_server}}</td>
     <td>{{sensor.device.id}}</td>
   </tr>   
@@ -51,12 +51,12 @@
   </tr>
 {% for log in logs %}    
   <tr>
-    <td>{{log.id}}</td>
+    <td>{{log.custom_id}}</td>
     <td>{{log.value}}</td>
     <td>{{log.time}}</td>
-    <td>{{log.sensor.id}}</td>
+    <td>{{log.sensor.custom_id}}</td>
     <td>{{log.time_app}}</td>
-    <td>{{log.time_Server}}</td>
+    <td>{{log.time_server}}</td>
   </tr>   
 {% endfor %}   
 </table>      

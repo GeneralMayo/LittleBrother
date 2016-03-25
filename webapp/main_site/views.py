@@ -56,7 +56,10 @@ def add_sensor(request):
     if not form.is_valid():
         return HttpResponseBadRequest('Sensor parameters invalid')
     
-
+    other_sensors = device.sensor_set.filter(custom_id=form.cleaned_data['custom_id'])
+    if len(other_sensors) != 0:
+	return HttpResponseBadRequest('Sensor custom id taken')
+    
     new_sensor = Sensor(custom_id=form.cleaned_data['custom_id'],
                         name=form.cleaned_data['name'],
                         time_server=datetime.now(),
@@ -68,24 +71,27 @@ def add_sensor(request):
 @transaction.atomic
 def add_log(request):
 
-    if 'sensor' not in request.POST:
+    if 'sensor_id' not in request.POST:
         return HttpResponseBadRequest('Sensor id required')
 
     if 'device' not in request.POST:
         return HttpResponseBadRequest('Device id required')
 
     device = get_object_or_404(Device,pk=request.POST['device'])
-    sensor_set = Device.sensor_set.all()
-    sensor = get_object_or_404(sensor_set,custom_id=request.POST['sensor'])
+    sensor_set = device.sensor_set.all()
+    sensor = get_object_or_404(sensor_set,custom_id=request.POST['sensor_id'])
 
     form = LogForm(request.POST)
 
     if not form.is_valid():
         return HttpResponseBadRequest('Log parameters invalid')
 
-    
+    other_logs = sensor.log_set.filter(custom_id=form.cleaned_data['custom_id'])
 
-    new_log = Log(id=form.cleaned_data['id'],
+    if len(other_logs) != 0:
+        return HttpResponseBadRequest('Log custom id already added')
+
+    new_log = Log(custom_id=form.cleaned_data['custom_id'],
                         time_server=datetime.now(),
                         sensor=sensor,
                         time_app=form.cleaned_data['time_app'],
