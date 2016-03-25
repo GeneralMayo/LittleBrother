@@ -3,6 +3,7 @@ from django.http import HttpResponse,HttpResponseBadRequest
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 
 from models import *
 from forms import *
@@ -25,6 +26,7 @@ def test(request):
     context['log_form'] = LogForm()
     return render(request,'test.html',context)
 
+@csrf_exempt
 @transaction.atomic
 def add_device(request):
     form = DeviceForm(request.POST)
@@ -40,6 +42,7 @@ def add_device(request):
     new_device.save()
     return HttpResponse('Device saved')
 
+@csrf_exempt
 @transaction.atomic
 def add_sensor(request):
 
@@ -61,6 +64,7 @@ def add_sensor(request):
     new_sensor.save()
     return HttpResponse('Sensor saved')
 
+@csrf_exempt
 @transaction.atomic
 def add_log(request):
 
