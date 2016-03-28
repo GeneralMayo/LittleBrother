@@ -29,6 +29,9 @@ public abstract class FakeDeviceFactory {
         return mRandom.nextInt();
     }
     protected int getRandomInt(int range) { return mRandom.nextInt(range); }
+    protected long getRandomLong() {
+        return mRandom.nextLong();
+    }
 
     protected abstract Device getNewDevice();
     protected abstract void getNewSensors(Device device);

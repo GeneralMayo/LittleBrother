@@ -77,6 +77,6 @@ public class SimpleFakeDeviceFactory extends FakeDeviceFactory {
 
     @Override
     protected void getNewLogs(Device device) {
-        //do nothing in here since sensors were already created
+        //do nothing in here since logs were already created
     }
 }
