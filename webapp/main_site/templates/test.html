@@ -15,7 +15,6 @@
   {% for field in device_form.hidden_fields %}
     {{field}}
   {% endfor %}
-  {% csrf_token %}
 </form>
 
 <p>Create Sensor:</p>
@@ -32,7 +31,6 @@
   {% for field in sensor_form.hidden_fields %}
     {{field}}
   {% endfor %}
-  {% csrf_token %}
 </form>
 
 <p>Create Log:</p>
@@ -49,7 +47,6 @@
   {% for field in log_form.hidden_fields %}
     {{field}}
   {% endfor %}
-  {% csrf_token %}
 </form>
 
 {% endblock %}

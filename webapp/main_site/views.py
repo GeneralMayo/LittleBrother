@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse,HttpResponseBadRequest
+from django.http import HttpResponse,HttpResponseBadRequest,JsonResponse
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404
@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from models import *
 from forms import *
 from datetime import datetime
+import sys
 
 '''TODO:
 checkRegistered() - check if device is registered
@@ -78,11 +79,18 @@ def add_sensor(request):
 @csrf_exempt
 @transaction.atomic
 def add_log(request):
+    log = open('/home/ubuntu/Little-Brother/webapp/logs.txt','a')
+    log.write(request.body+'\n')    
+    #log.close()
 
     if 'sensor_id' not in request.POST:
+        log.write("sensor_id not in post\n")
+        log.close()
         return HttpResponseBadRequest('Sensor id required')
 
     if 'device' not in request.POST:
+        log.write("device not in post\n")
+        log.close()
         return HttpResponseBadRequest('Device id required')
 
     device = get_object_or_404(Device,pk=request.POST['device'])
@@ -92,11 +100,15 @@ def add_log(request):
     form = LogForm(request.POST)
 
     if not form.is_valid():
+        log.write("Failed form check\n")
+        log.close()
         return HttpResponseBadRequest('Log parameters invalid')
 
     other_logs = sensor.log_set.filter(custom_id=form.cleaned_data['custom_id'])
 
     if len(other_logs) != 0:
+        log.write("log id already exists\n")
+        log.close()
         return HttpResponseBadRequest('Log custom id already added')
 
     new_log = Log(custom_id=form.cleaned_data['custom_id'],
@@ -106,4 +118,6 @@ def add_log(request):
                         value=form.cleaned_data['value'],
                         time=form.cleaned_data['time'])
     new_log.save()
-    return HttpResponse('Log saved')    
+    log.write("log saved successfully\n")
+    log.close()
+    return JsonResponse({'success' : 'Log saved'})    
