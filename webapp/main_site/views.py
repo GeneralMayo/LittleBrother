@@ -9,6 +9,14 @@ from models import *
 from forms import *
 from datetime import datetime
 
+'''TODO:
+checkRegistered() - check if device is registered
+deleteDevice() - remove a device
+deleteLogs() - clear all logs for a device
+getUniqueId() - get unique id for device registration
+editDevice() - edit already registered devices
+'''
+
 def home(request):
     context = {}
     context['devices'] = Device.objects.all()
