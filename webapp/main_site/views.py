@@ -8,13 +8,14 @@ from django.views.decorators.csrf import csrf_exempt
 from models import *
 from forms import *
 from datetime import datetime
+
+from utils import write_log
 import sys
 
 '''TODO:
 checkRegistered() - check if device is registered
 deleteDevice() - remove a device
 deleteLogs() - clear all logs for a device
-getUniqueId() - get unique id for device registration
 editDevice() - edit already registered devices
 '''
 
@@ -38,9 +39,11 @@ def test(request):
 @csrf_exempt
 @transaction.atomic
 def add_device(request):
+    write_log("Adding new device")
     form = DeviceForm(request.POST)
 
     if not form.is_valid():
+        write_log("Device parameters invalid: " + str(form.errors.as_data()))
         return HttpResponseBadRequest('Device parameters invalid')
     
     new_device = Device(name=form.cleaned_data['name'],
@@ -48,13 +51,16 @@ def add_device(request):
                         longitude=form.cleaned_data['longitude'],
                         time_server=datetime.now())
     new_device.save()
-    return JsonResponse({'id' : new_device.id})
+    write_log("New device saved")
+    return JsonResponse({'id' : new_device.id,
+                         'sucess': 'Device saved'})
 
 @csrf_exempt
 @transaction.atomic
 def add_sensor(request):
-
+    write_log("Adding new sensor")
     if 'device' not in request.POST:
+        write_log("Device id not included in POST")
         return HttpResponseBadRequest('Device id required')
 
     device = get_object_or_404(Device,pk=request.POST['device'])
@@ -62,6 +68,7 @@ def add_sensor(request):
     form = SensorForm(request.POST)
 
     if not form.is_valid():
+        write_log("Sensor paramters invalid: " + str(form.errors.as_data()))
         return HttpResponseBadRequest('Sensor parameters invalid')
     
     other_sensors = device.sensor_set.filter(custom_id=form.cleaned_data['custom_id'])
@@ -73,23 +80,19 @@ def add_sensor(request):
                         time_server=datetime.now(),
                         device=device)
     new_sensor.save()
-    return HttpResponse('Sensor saved')
+    write_log("New sensor saved")
+    return JsonResponse({'success' : 'Sensor saved'})
 
 @csrf_exempt
 @transaction.atomic
 def add_log(request):
-    log = open('/home/ubuntu/Little-Brother/webapp/logs.txt','a')
-    log.write(request.body+'\n')    
-    #log.close()
-
+    write_log('Adding new log')
     if 'sensor_id' not in request.POST:
-        log.write("sensor_id not in post\n")
-        log.close()
+        write_log('Sensor id not in POST')
         return HttpResponseBadRequest('Sensor id required')
 
     if 'device' not in request.POST:
-        log.write("device not in post\n")
-        log.close()
+        write_log('Device id not in post')
         return HttpResponseBadRequest('Device id required')
 
     device = get_object_or_404(Device,pk=request.POST['device'])
@@ -99,15 +102,12 @@ def add_log(request):
     form = LogForm(request.POST)
 
     if not form.is_valid():
-        log.write("Failed form check\n")
-        log.close()
+        write_log('Log parameters invalid: ' + str(form.errors.as_data()))
         return HttpResponseBadRequest('Log parameters invalid')
 
     other_logs = sensor.log_set.filter(custom_id=form.cleaned_data['custom_id'])
 
     if len(other_logs) != 0:
-        log.write("log id already exists\n")
-        log.close()
         return HttpResponseBadRequest('Log custom id already added')
 
     new_log = Log(custom_id=form.cleaned_data['custom_id'],
@@ -117,6 +117,5 @@ def add_log(request):
                         value=form.cleaned_data['value'],
                         time=form.cleaned_data['time'])
     new_log.save()
-    log.write("log saved successfully\n")
-    log.close()
+    write_log('New log saved')
     return JsonResponse({'success' : 'Log saved'})    
