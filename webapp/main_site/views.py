@@ -43,13 +43,12 @@ def add_device(request):
     if not form.is_valid():
         return HttpResponseBadRequest('Device parameters invalid')
     
-    new_device = Device(id=form.cleaned_data['id'],
-                        name=form.cleaned_data['name'],
+    new_device = Device(name=form.cleaned_data['name'],
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'],
                         time_server=datetime.now())
     new_device.save()
-    return HttpResponse('Device saved')
+    return JsonResponse({'id' : new_device.id})
 
 @csrf_exempt
 @transaction.atomic

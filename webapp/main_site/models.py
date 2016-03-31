@@ -4,7 +4,6 @@ from django.db import models
 
 #Little Brother Devices
 class Device(models.Model):
-	id = models.IntegerField(primary_key=True)
 	name = models.CharField(max_length=30)
 	latitude = models.DecimalField(max_digits=9,decimal_places=7)
 	longitude = models.DecimalField(max_digits=10,decimal_places=7)
