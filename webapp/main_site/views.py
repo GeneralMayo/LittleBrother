@@ -12,18 +12,11 @@ from datetime import datetime
 from utils import write_log
 import sys
 
-'''TODO:
-checkRegistered() - check if device is registered
-deleteDevice() - remove a device
-deleteLogs() - clear all logs for a device
-editDevice() - edit already registered devices
-'''
-
 def home(request):
     context = {}
     context['devices'] = Device.objects.all()
     context['sensors'] = Sensor.objects.all()
-    context['logs'] = Log.objects.all()
+    context['logs']    = Log.objects.all()
     return render(request,'device_info.html',context)
 
 def home_redirect(request):
@@ -118,4 +111,10 @@ def add_log(request):
                         time=form.cleaned_data['time'])
     new_log.save()
     write_log('New log saved')
-    return JsonResponse({'success' : 'Log saved'})    
+    return JsonResponse({'success' : 'Log saved'})
+
+@transaction.atomic
+def delete_all_logs(request):
+    Log.objects.all().delete()
+    write_log("Deleted all Logs")
+    return JsonResponse({'success' : 'All logs deleted'})
