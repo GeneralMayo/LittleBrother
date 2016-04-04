@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-        startService(new Intent(this,FakeDataService.class));
+        startService(new Intent(this,DeviceFinderService.class));
     }
 
     public void loadDeviceListActivity(View v) {
