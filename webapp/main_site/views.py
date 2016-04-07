@@ -144,3 +144,9 @@ def device_data(request, id):
     context['sensors'] = sensors
     return render(request,'device_data.html',context)
 
+def test_chart(request):
+    for log in Log.objects.all():
+        print log.time
+    context = {}
+    context["logs"] = Log.objects.all()
+    return render(request,'test_chart.html', context)
