@@ -6,6 +6,8 @@
     <title>LittleBrother</title>
 
    {% load staticfiles %}
+   {% block refs %}
+   {% endblock %}
     <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'assets/css/base.css' %}" rel="stylesheet">
 </head>
@@ -29,9 +31,7 @@
             <li class="">
                 <a href="#">Home</a></li>
             <li class="">
-                <a href="#">Your Profile</a></li>
-            <li class=""><a
-                href="#">Following</a></li>
+                <a href="#">Your Devices</a></li>
             <li><a href="#">Log out</a></li>
             {% endblock %}
           </ul>

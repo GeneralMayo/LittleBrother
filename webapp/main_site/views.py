@@ -131,8 +131,8 @@ def delete_device_logs(request):
     return home(request)
 
 @transaction.atomic
-def device_data(request, id):
-    device = Device.objects.get(id=id)
+def device_data(request, device_id):
+    device = Device.objects.get(id=device_id)
     sensors = Sensor.objects.filter(device=device)
 
     for sensor in sensors:
