@@ -118,3 +118,29 @@ def delete_all_logs(request):
     Log.objects.all().delete()
     write_log("Deleted all Logs")
     return JsonResponse({'success' : 'All logs deleted'})
+
+@transaction.atomic
+def delete_device_logs(request):
+    if 'device' not in request.POST:
+        write_log('delete_device_logs: device id not in post')
+        return HttpResponseBadRequest('Device id required')
+    
+    device = get_object_or_404(Device,pk=request.POST['device'])
+    logs = Log.objects.filter(device=device)
+    logs.delete()
+    return home(request)
+
+@transaction.atomic
+def device_data(request, id):
+    device = Device.objects.get(id=id)
+    sensors = Sensor.objects.filter(device=device)
+
+    for sensor in sensors:
+        logs = Log.objects.filter(sensor=sensor)
+        sensor.logs = logs
+
+    context = {}
+    context['device'] = device
+    context['sensors'] = sensors
+    return render(request,'device_data.html',context)
+

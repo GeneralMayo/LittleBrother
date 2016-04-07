@@ -4,10 +4,51 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>LittleBrother</title>
+
+   {% load staticfiles %}
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/base.css' %}" rel="stylesheet">
 </head>
 
 <body>
-{% block content %}
-{% endblock %}
+    <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'home' %}">Little Brother</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            {% block links %}
+            <li class="">
+                <a href="#">Home</a></li>
+            <li class="">
+                <a href="#">Your Profile</a></li>
+            <li class=""><a
+                href="#">Following</a></li>
+            <li><a href="#">Log out</a></li>
+            {% endblock %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="content">
+        {% block content %}
+
+        {% endblock %}
+        </div>
+    </div>
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
 </html>
