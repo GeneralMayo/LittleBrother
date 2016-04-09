@@ -2,7 +2,12 @@ package edu.cmu.ece18549.little_brother.littlebrother;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -21,14 +26,14 @@ import java.util.List;
  * Created by Ramsey on 4/2/2016.
  */
 public class BluetoothScanner {
-    private static final long SCAN_PERIOD = 10000;
+    private static final long SCAN_PERIOD = 5000;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mBLEScanner;
     private Handler handler;
     private boolean mScanning;
 
     private final static String TAG = "BLUETOOTH_SCANNER";
-
+    private final Context mContext;
     //private List<ScanFilter> mFilters;
     //private ScanSettings mScanSettings;
 
@@ -38,6 +43,7 @@ public class BluetoothScanner {
         mBluetoothAdapter = bluetoothManager.getAdapter();
         mBLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
         handler = new Handler();
+        mContext = context;
         //mFilters = new LinkedList<ScanFilter>();
         //setupFilters();
         //mScanSettings = getScanSettings();
@@ -49,17 +55,70 @@ public class BluetoothScanner {
     }
 
     public Collection<Device> getDevices() {
-        final List<BluetoothDevice> bluetoothDevices = Collections.synchronizedList(new LinkedList<BluetoothDevice>());
+        //final List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
+
+        final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
+            @Override
+            public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+                super.onServicesDiscovered(gatt, status);
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    Log.i(TAG,"Gatt services discovered");
+                    List<BluetoothGattService> services = gatt.getServices();
+                    for(BluetoothGattService service : services) {
+                        Log.i(TAG,service.toString());
+                        Log.i(TAG,"UUID: "+service.getUuid());
+                        List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+                        if (characteristics != null) {
+                            Log.i(TAG,"Found " + characteristics.size() + " characteristics");
+                            for (BluetoothGattCharacteristic characteristic : characteristics) {
+                                Log.i(TAG, "Data: " + characteristic.getStringValue(0));
+                            }
+                        } else {
+                            Log.i(TAG,"Found no characteristics");
+                        }
+                    }
+
+                } else {
+                    Log.w(TAG, "onServicesDiscovered received: " + status);
+                }
+            }
+
+            @Override
+            public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+                super.onConnectionStateChange(gatt, status, newState);
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    Log.i(TAG, "Connected to GATT server.");
+                    Log.i(TAG, "Attempting to start service discovery:" +
+                            gatt.discoverServices());
+
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    Log.i(TAG, "Disconnected from GATT server.");
+                }
+            }
+
+            @Override
+            public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+                super.onCharacteristicRead(gatt, characteristic, status);
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    Log.i(TAG,"Characteristic Read Successful");
+                } else {
+                    Log.i(TAG,"onCharacteristicRead recieved " + status);
+                }
+
+            }
+        };
         ScanCallback callback = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
                 BluetoothDevice device = result.getDevice();
-                bluetoothDevices.add(device);
                 Log.i(TAG,"Device Found:\nName="+device.getName());
+                BluetoothGatt gattConnection = device.connectGatt(mContext,false,mGattCallback);
+                Log.i(TAG,"After connect");
+
             }
         };
-
+        scanLeDevice(true,callback);
         return null;
     }
 
@@ -71,6 +130,7 @@ public class BluetoothScanner {
                 public void run() {
                     mScanning = false;
                     mBLEScanner.stopScan(callback);
+                    Log.i(TAG, "Scanning stopped");
                 }
             }, SCAN_PERIOD);
 
@@ -80,6 +140,7 @@ public class BluetoothScanner {
         } else {
             mScanning = false;
             mBLEScanner.stopScan(callback);
+            Log.i(TAG,"Scanning stopped");
         }
 
     }
