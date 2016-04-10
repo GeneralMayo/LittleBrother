@@ -7,4 +7,5 @@ import java.util.Collection;
  */
 public interface DeviceFinderServiceInterface {
     Collection<Device> getDevices();
+    void registerListener(Observer o);
 }
