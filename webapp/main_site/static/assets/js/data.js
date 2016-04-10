@@ -1,99 +1,6 @@
-{% extends "base.html" %}
+// (It's CSV, but GitHub Pages only gzip's JSON at the moment.)
+d3.csv("flights-3m.json", function(flights) {
 
-{% block refs %}
-  {% load staticfiles %}
-  <link href="{% static 'assets/css/crossfilter.css' %}" rel="stylesheet">
-{% endblock %}
-
-{% block content %}
-
-<div id="body">
-  <div id="charts">
-    <div id="delay-chart" class="chart">
-      <div class="title">Sensor values</div>
-    </div>
-  </div>
-
-  <aside id="totals"><span id="active">-</span> of <span id="total">-</span> logs selected.</aside>
-
-  <div id="lists">
-    <div id="flight-list" class="list"></div>
-  </div>
-</div>
-
-<h2>Devices</h2>
-<table class="table table-bordered table-striped">
-  <thead>
-    <th>Name</th>
-    <th>Id</th>
-    <th>Latitude</th>
-    <th>Longitude</th>
-    <th>Time_Created</th>
-  </thead>
-  <tbody>
-{% for device in devices %}
-  <tr>
-    <td><a href="{% url 'device_data' device.id %}">{{device.name}}</td>
-    <td>{{device.id}}</td>
-    <td>{{device.latitude}}</td>
-    <td>{{device.longitude}}</td>
-    <td>{{device.time_server}}</td>
-  </tr>
-{% endfor %}
-  </tbody>
-</table>
-
-<h2>Sensors</h2>
-<table class="table table-bordered table-striped">
-  <thead>
-    <th>Name</th>
-    <th>Id</th>
-    <th>Time_Created</th>
-    <th>Device_Id</th>
-  </thead>
-  <tbody>
-{% for sensor in sensors %}    
-  <tr>
-    <td>{{sensor.name}}</td>
-    <td>{{sensor.custom_id}}</td>
-    <td>{{sensor.time_server}}</td>
-    <td>{{sensor.device.id}}</td>
-  </tr>   
-{% endfor %}   
-  </tbody>
-</table>
-
-<h2>Logs</h2>
-<table class="table table-bordered table-striped">
-  <thead>
-    <th>Id</th>
-    <th>Value</th>
-    <th>Time</th>
-    <th>Device_Id</th>
-    <th>Sensor_Id</th>
-    <th>Time_App</th>
-    <th>Time_Server</th>
-  </thead>
-  <tbody>
-{% for log in logs %}    
-  <tr>
-    <td>{{log.custom_id}}</td>
-    <td>{{log.value}}</td>
-    <td>{{log.time}}</td>
-    <td>{{log.sensor.device.id}}</td>
-    <td>{{log.sensor.custom_id}}</td>
-    <td>{{log.time_app}}</td>
-    <td>{{log.time_server}}</td>
-  </tr>   
-{% endfor %}   
-  <tbody>
-</table>      
-<script src="{% static 'assets/js/crossfilter.v1.min.js' %}"></script>
-<script src="{% static 'assets/js/d3.v2.min.js' %}"></script>
-<script>
-function graph_data(data) {
-
-  console.log(data[0]);
   // Various formatters.
   var formatNumber = d3.format(",d"),
       formatChange = d3.format("+,d"),
@@ -105,16 +12,19 @@ function graph_data(data) {
       .key(function(d) { return d3.time.day(d.date); });
 
   // A little coercion, since the CSV is untyped.
-  data.forEach(function(d, i) {
+  flights.forEach(function(d, i) {
     d.index = i;
     d.date = parseDate(d.date);
     if (i<10){
     	 console.log(d.date)
     }
+   
+    d.delay = +d.delay;
+    d.distance = +d.distance;
   });
 
   // Create the crossfilter for the relevant dimensions and groups.
-  var flight = crossfilter(data),
+  var flight = crossfilter(flights),
       all = flight.groupAll(),
       date = flight.dimension(function(d) { return d3.time.day(d.date); }),
       dates = date.group(),
@@ -126,7 +36,7 @@ function graph_data(data) {
       distances = distance.group(function(d) { return Math.floor(d / 50) * 50; });
 
   var charts = [
-/*
+
     barChart()
         .dimension(hour)
         .group(hours)
@@ -140,7 +50,13 @@ function graph_data(data) {
       .x(d3.scale.linear()
         .domain([-60, 150])
         .rangeRound([0, 10 * 21])),
-*/
+
+    barChart()
+        .dimension(distance)
+        .group(distances)
+      .x(d3.scale.linear()
+        .domain([0, 2000])
+        .rangeRound([0, 10 * 40])),
 
     barChart()
         .dimension(date)
@@ -227,9 +143,21 @@ function graph_data(data) {
           .text(function(d) { return formatTime(d.date); });
 
       flightEnter.append("div")
+          .attr("class", "origin")
+          .text(function(d) { return d.origin; });
+
+      flightEnter.append("div")
+          .attr("class", "destination")
+          .text(function(d) { return d.destination; });
+
+      flightEnter.append("div")
+          .attr("class", "distance")
+          .text(function(d) { return formatNumber(d.distance) + " mi."; });
+
+      flightEnter.append("div")
           .attr("class", "delay")
           .classed("early", function(d) { return d.delay < 0; })
-          .text(function(d) { return formatChange(d.delay) + " "; });
+          .text(function(d) { return formatChange(d.delay) + " min."; });
 
       flight.exit().remove();
 
@@ -428,24 +356,4 @@ function graph_data(data) {
 
     return d3.rebind(chart, brush, "on");
   }
-}
-
-data = 
-[
-{% for log in logs %}
-{date: "01010001", delay: "{{log.value}}", destination: "{{log.sensor}}"},
-{% endfor %}
-{date: "01014001", delay: "1", destination: "This one"},
-{date: "01104001", delay: "1", destination: "This one"},
-{date: "01144001", delay: "1", destination: "This one"},
-{date: "01304001", delay: "1", destination: "This one"},
-{date: "01044001", delay: "1", destination: "This one"},
-{date: "02114001", delay: "1", destination: "This one"},
-{date: "03114001", delay: "1", destination: "This one"},
-]
-graph_data(data) ;
-
-</script>
-
-{% endblock %}
-
+});
