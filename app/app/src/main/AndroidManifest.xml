@@ -72,6 +72,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.cmu.ece18549.little_brother.littlebrother.MainActivity" />
         </activity>
+        <activity
+            android:name=".StoredDataActivity"
+            android:label="@string/title_activity_load_stored_data"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

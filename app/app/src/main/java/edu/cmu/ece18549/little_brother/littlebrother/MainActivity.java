@@ -35,8 +35,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadDevicesAroundActivity(View v) {
-        System.out.println("##############################################################################################################");
         Intent intent = new Intent(this, DevicesAroundActivity.class);
+        startActivity(intent);
+    }
+
+    public void loadStoredDataActivity(View v) {
+        Intent intent = new Intent(this, StoredDataActivity.class);
         startActivity(intent);
     }
 
