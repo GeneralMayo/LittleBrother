@@ -3,24 +3,37 @@
 {% block refs %}
   {% load staticfiles %}
   <link href="{% static 'assets/css/crossfilter.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/map.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div id="body">
-  <div id="charts">
-    <div id="delay-chart" class="chart">
-      <div class="title">Sensor values</div>
+
+<div id="map"></div>
+
+<div class="container">
+  <div class="content">
+    <div id="body">
+      <div id="charts">
+        <div id="delay-chart" class="chart">
+          <div class="title"> Sensor values </div>
+        </div>
+      </div>
+
+      <aside id="totals">
+        <span id="active">-</span> of <span id="total">-</span> logs selected.
+      </aside>
+
+      <div id="lists">
+        <div id="flight-list" class="list"> </div>
+      </div>
     </div>
   </div>
-
-  <aside id="totals"><span id="active">-</span> of <span id="total">-</span> logs selected.</aside>
-
-  <div id="lists">
-    <div id="flight-list" class="list"></div>
 </div>
 
-</div>
 
+<script src="{% static 'assets/js/map.js' %}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCboXXYiG8-62iduO1DQmQSLBPtJqNskUk&callback=initMap"
+async defer></script>
 <script src="{% static 'assets/js/crossfilter.v1.min.js' %}"></script>
 <script src="{% static 'assets/js/d3.v2.min.js' %}"></script>
 <script>
@@ -41,9 +54,6 @@ function graph_data(data) {
   data.forEach(function(d, i) {
     d.index = i;
     d.date = parseDate(d.date);
-    if (i<10){
-    	 console.log(d.date)
-    }
   });
 
   // Create the crossfilter for the relevant dimensions and groups.
