@@ -45,7 +45,7 @@
     var devices = [];
     {% for device in devices %}
     latlngs.push({lat: {{device.latitude}}, lng: {{device.longitude}} });
-    devices.push({name: "{{device.name}}" });
+    devices.push({name: "{{device.name}}", url: "{% url 'device_data' device.id %}" });
     {% endfor %}
     
     var markers = new Array(latlngs.length)
@@ -57,8 +57,7 @@
                    });
       var f = function(i) {
         return function() {
-          map.setZoom(14);
-          map.setCenter(markers[i].getPosition());
+          window.location.href = devices[i].url;
         }
       };
       markers[i].addListener('click', f(i));
