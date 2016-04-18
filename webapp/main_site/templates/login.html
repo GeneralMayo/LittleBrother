@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block errors %}
+{% if form.errors %}
+    <p style="color:red">Incorrect user name and password.</p>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <form role="form" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+    <table>
+    <tr>
+        <td>{{ form.username.label_tag }}</td>
+        <td>{{ form.username }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.password.label_tag }}</td>
+        <td>{{ form.password }}</td>
+    </tr>
+    </table>
+    <input type="submit" value="Login" />
+    {% csrf_token %}
+  </form>
+  <a href="{% url 'register' %}"></span>Register Here</a>
+{% endblock %}

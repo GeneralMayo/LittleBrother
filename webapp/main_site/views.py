@@ -38,11 +38,18 @@ def add_device(request):
     if not form.is_valid():
         write_log("Device parameters invalid: " + str(form.errors.as_data()))
         return HttpResponseBadRequest('Device parameters invalid')
-    
-    new_device = Device(name=form.cleaned_data['name'],
+    if form.cleaned_data['admin']:
+    	new_device = Device(name=form.cleaned_data['name'],
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'],
-                        time_server=datetime.now())
+                        time_server=datetime.now(),
+			admin=User.objects.get(username=form.cleaned_data['admin']))
+    else:
+        new_device = Device(name=form.cleaned_data['name'],
+                        latitude=form.cleaned_data['latitude'],
+                        longitude=form.cleaned_data['longitude'],
+                        time_server=datetime.now(),
+                        admin=User.objects.get(username="all_users"))
     new_device.save()
     write_log("New device saved")
     return JsonResponse({'id' : new_device.id,
@@ -150,3 +157,26 @@ def test_chart(request):
     context = {}
     context["logs"] = Log.objects.all()
     return render(request,'test_chart.html', context)
+
+@transaction.atomic
+def register(request):
+    context = {}
+
+    if request.method == 'GET':
+        context['form'] = RegistrationForm()
+        return render(request, 'register.html', context)
+
+    form = RegistrationForm(request.POST)
+    context['form'] = form
+
+    if not form.is_valid():
+        return render(request, 'register.html', context)
+
+    new_user = User.objects.create_user(username=form.cleaned_data['username'], 
+                                        password=form.cleaned_data['password1'],
+                                        email=form.cleaned_data['email']
+                                        )
+    myuser = MyUser(user=new_user)
+    myuser.save()
+    new_user.save()
+    return redirect(reverse('home'))

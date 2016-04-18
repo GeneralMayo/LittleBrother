@@ -27,22 +27,33 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            {% block links %}
             <li class="">
-                <a href="#">Home</a></li>
             <li class="">
                 <a href="#">Your Devices</a></li>
-            <li><a href="#">Log out</a></li>
-            {% endblock %}
           </ul>
+	<ul class="nav navbar-nav navbar-right">
+		<li><a href="{% url 'register' %}"><span class="glyphicon glyphicon-user"></span> Register</a></li>
+		{% if user.is_authenticated %}
+		<li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+		{% else %}
+		<li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+		{% endif %}
+	</ul>
         </div>
       </div>
     </nav>
 
     <div class="container">
-      <div class="content">
-        {% block content %}
+        <div class="errors">
+        {% block errors %}
+        {% for error in errors %}
+            <p style="color:red">{{error}}</p>
+        {% endfor %}
+        {% endblock %}
+        </div>
 
+        <div class="content">
+        {% block content %}
         {% endblock %}
         </div>
     </div>

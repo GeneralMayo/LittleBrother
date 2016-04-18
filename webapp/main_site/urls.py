@@ -1,5 +1,5 @@
 from django.conf.urls import url
-
+import django.contrib.auth.views as auth_views
 from main_site import views
 
 urlpatterns = [
@@ -11,4 +11,7 @@ urlpatterns = [
     url(r'^delete_all_logs$', views.delete_all_logs, name='delete_all_logs'),
     url(r'^device_data/(?P<device_id>\d+)$', views.device_data, name='device_data'),
     url(r'^test_chart$', views.test_chart, name='test_chart'),
+    url(r'^login$',auth_views.login, {'template_name':'login.html'}, name='login'),
+    url(r'^logout$',auth_views.logout_then_login, name='logout'),
+    url(r'^register$',views.register, name='register'),
 ]
