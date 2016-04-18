@@ -180,3 +180,34 @@ def register(request):
     myuser.save()
     new_user.save()
     return redirect(reverse('home'))
+
+@transaction.atomic
+def configure(request):
+    context = {}
+
+    if request.method == 'GET':
+        context['form'] = ConfigurationForm()
+        return render(request, 'configure.html', context)
+
+    form = ConfigurationForm(request.POST)
+    context['form'] = form
+
+    if not form.is_valid():
+        return render(request, 'configure.html', context)
+
+    config = Configuration(username=form.cleaned_data['username'],
+                                        password=form.cleaned_data['password1'],
+                                        email=form.cleaned_data['email']
+                                        )
+    config.save()
+    context['success'] = "Configuration completed successfully"
+    return render(request,'configure.html',context)
+
+def download_config(request,device_id):
+    context = {}
+    
+    if not Device.objects.filter(id=device_id).exists():
+        return JsonResponse({'error': "Device does not exist"})
+
+    config = Device.objects.get(id=device_id)
+    

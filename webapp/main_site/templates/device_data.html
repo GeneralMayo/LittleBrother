@@ -2,12 +2,12 @@
 
 {% block content %}
 <h1>{{device.name}}</h1>
-
+<p> <a href="{% url 'configure' %}">Configure</a></p>
 {% for sensor in sensors %}
 <h3>{{sensor.name}}</h3>
 
 <table class="table table-bordered table-striped">
-  <head>
+  <thead>
     <th>Log Id</th>
     <th>Value</th>
     <th>Time</th>

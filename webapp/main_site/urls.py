@@ -14,4 +14,6 @@ urlpatterns = [
     url(r'^login$',auth_views.login, {'template_name':'login.html'}, name='login'),
     url(r'^logout$',auth_views.logout_then_login, name='logout'),
     url(r'^register$',views.register, name='register'),
+    url(r'configure$',views.configure,name='configure'),
+    url(r'download_config/(?P<device_id>\d+)',views.download_config,name='download_config'),
 ]
