@@ -37,7 +37,8 @@ def add_device(request):
 
     if not form.is_valid():
         write_log("Device parameters invalid: " + str(form.errors.as_data()))
-        return HttpResponseBadRequest('Device parameters invalid')
+        return HttpResponseBadRequest('Device parameters invalid \n' + \
+                                       str(form.errors.as_data()))
     
     new_device = Device(name=form.cleaned_data['name'],
                         latitude=form.cleaned_data['latitude'],
@@ -145,8 +146,7 @@ def device_data(request, device_id):
     return render(request,'device_data.html',context)
 
 def test_visuals(request):
-    for log in Log.objects.all():
-        print log.time
     context = {}
     context["logs"] = Log.objects.all()
+    context["devices"] = Device.objects.all()
     return render(request,'test_chart.html', context)

@@ -5,8 +5,8 @@ from django.db import models
 #Little Brother Devices
 class Device(models.Model):
 	name = models.CharField(max_length=30)
-	latitude = models.DecimalField(max_digits=9,decimal_places=7)
-	longitude = models.DecimalField(max_digits=10,decimal_places=7)
+	latitude = models.FloatField()
+	longitude = models.FloatField()
 	time_server = models.DateTimeField()
 
 	def __unicode__(self):

@@ -11,12 +11,14 @@ class DeviceForm(forms.ModelForm):
 
     def clean_latitude(self):
         latitude = float(self.cleaned_data.get('latitude'))
+        print latitude
         if (latitude > 90.0 or latitude < -90.0):
             raise forms.ValidationError('Latitude must be between -90 and 90')
         return latitude
 
     def clean_longitude(self):
         longitude = float(self.cleaned_data.get('longitude'))
+        print longitude
         if (longitude > 180.0 or longitude < -180.0):
             raise forms.ValidationError('Longitude must be between -180 and 180')
         return longitude

@@ -31,7 +31,40 @@
 </div>
 
 
-<script src="{% static 'assets/js/map.js' %}"></script>
+<script>
+  function initMap() {
+    var cmuLatLng = {lat: 40.4425, lng: -79.9426};
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 12,
+      center: cmuLatLng
+    });
+
+
+    var latlngs = [];
+    var devices = [];
+    {% for device in devices %}
+    latlngs.push({lat: {{device.latitude}}, lng: {{device.longitude}} });
+    devices.push({name: "{{device.name}}" });
+    {% endfor %}
+    
+    var markers = new Array(latlngs.length)
+    for (i = 0; i < latlngs.length; i++) {
+      markers[i] = new google.maps.Marker({
+                     position: latlngs[i],
+                     map: map,
+                     title: devices[i].name
+                   });
+      var f = function(i) {
+        return function() {
+          map.setZoom(14);
+          map.setCenter(markers[i].getPosition());
+        }
+      };
+      markers[i].addListener('click', f(i));
+    }
+  }
+</script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCboXXYiG8-62iduO1DQmQSLBPtJqNskUk&callback=initMap"
 async defer></script>
 <script src="{% static 'assets/js/crossfilter.v1.min.js' %}"></script>
@@ -373,19 +406,13 @@ function graph_data(data) {
   }
 }
 
-data = 
-[
+data = [];
 {% for log in logs %}
-{date: "01010001", delay: "{{log.value}}", destination: "{{log.sensor}}"},
+console.log("{{log.time}}");
+data.push({date: "01010001", delay: "{{log.value}}", destination:
+  "{{log.sensor}}"});
 {% endfor %}
-{date: "01014001", delay: "1", destination: "This one"},
-{date: "01104001", delay: "1", destination: "This one"},
-{date: "01144001", delay: "1", destination: "This one"},
-{date: "01304001", delay: "1", destination: "This one"},
-{date: "01044001", delay: "1", destination: "This one"},
-{date: "02114001", delay: "1", destination: "This one"},
-{date: "03114001", delay: "1", destination: "This one"},
-]
+
 graph_data(data) ;
 
 </script>
