@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^delete_all_logs$', views.delete_all_logs, name='delete_all_logs'),
     url(r'^device_data/(?P<device_id>\d+)$', views.device_data, name='device_data'),
     url(r'^test_chart$', views.test_visuals, name='test_visuals'),
+    url(r'^device_info$', views.device_info, name='device_info'),
 ]

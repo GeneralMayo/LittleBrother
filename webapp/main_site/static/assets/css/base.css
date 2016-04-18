@@ -1,5 +1,6 @@
 .content {
     padding: 70px 15px;
+    width 70%;
 }
 
 .post {
@@ -29,3 +30,8 @@
     font-weight: bold;
 }
 
+.buttons {
+    width: 7%;
+    margin: 0 auto;
+    margin-top: 100px;
+}

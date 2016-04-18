@@ -11,8 +11,14 @@ from datetime import datetime
 
 from utils import write_log
 import sys
+import time
 
 def home(request):
+    context = {}
+    context['devices'] = Device.objects.all()
+    return render(request,'home.html',context)
+
+def device_info(request):
     context = {}
     context['devices'] = Device.objects.all()
     context['sensors'] = Sensor.objects.all()
@@ -135,14 +141,24 @@ def delete_device_logs(request):
 def device_data(request, device_id):
     device = Device.objects.get(id=device_id)
     sensors = Sensor.objects.filter(device=device)
+    logs = Log.objects.none()
+
+    log = Log.objects.get(id=1)
+    print dir(log.time)
+    print str(log.time.date()) + " " + str(log.time.time())
 
     for sensor in sensors:
-        logs = Log.objects.filter(sensor=sensor)
-        sensor.logs = logs
+        sensor_logs = Log.objects.filter(sensor=sensor)
+        sensor.logs = sensor_logs
+        logs = logs | sensor_logs
+
+    for log in logs:
+        log.datetime = str(log.time.date()) + " " + str(log.time.time())
 
     context = {}
     context['device'] = device
     context['sensors'] = sensors
+    context["logs"] = logs
     return render(request,'device_data.html',context)
 
 def test_visuals(request):
