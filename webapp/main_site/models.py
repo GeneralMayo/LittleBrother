@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import User
 
 #Little Brother Devices
 class Device(models.Model):
@@ -8,6 +10,7 @@ class Device(models.Model):
 	latitude = models.FloatField()
 	longitude = models.FloatField()
 	time_server = models.DateTimeField()
+        admin = models.ForeignKey(settings.AUTH_USER_MODEL,blank=True,null=True)
 
 	def __unicode__(self):
 		return "Device: %d %s %s %s" % (self.id, self.name,
@@ -56,3 +59,15 @@ class Log(models.Model):
 
 	class Meta:
 		ordering = ['sensor','time','time_app','time_server']
+
+class MyUser(models.Model):
+	user = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+
+class Configuration(models.Model):
+        device = models.ForeignKey(Device)
+        device_off = models.BooleanField(blank=True,default=False)
+        sensors_off = models.IntegerField(blank=True,default=0) #put in binary
+	device_sleep = models.BooleanField(blank=True,default=False)
+        time = models.DateTimeField()
+        
+        

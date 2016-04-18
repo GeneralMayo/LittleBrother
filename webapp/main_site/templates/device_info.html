@@ -19,6 +19,7 @@
     <th>Latitude</th>
     <th>Longitude</th>
     <th>Time_Created</th>
+    <th>Admin</th>
   </thead>
   <tbody>
 {% for device in devices %}
@@ -28,6 +29,7 @@
     <td>{{device.latitude}}</td>
     <td>{{device.longitude}}</td>
     <td>{{device.time_server}}</td>
+    <td>{{device.admin.username}}</td>
   </tr>
 {% endfor %}
   </tbody>
