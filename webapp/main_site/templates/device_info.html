@@ -29,15 +29,17 @@
     <th>Latitude</th>
     <th>Longitude</th>
     <th>Time_Created</th>
+    <th>Admin</th>
   </thead>
   <tbody>
 {% for device in devices %}
   <tr>
-    <td><a href="#">{{device.name}}</td>
+    <td><a href="{% url 'device_data' device.id %}">{{device.name}}</td>
     <td>{{device.id}}</td>
     <td>{{device.latitude}}</td>
     <td>{{device.longitude}}</td>
     <td>{{device.time_server}}</td>
+    <td>{{device.admin.username}}</td>
   </tr>
 {% endfor %}
   </tbody>

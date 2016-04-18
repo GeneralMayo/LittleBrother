@@ -1,20 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Data for device {{device.name}}</h1>
+<h1>{{device.name}}</h1>
 
-<h2> Sensors: </h2>
 {% for sensor in sensors %}
 <h3>{{sensor.name}}</h3>
-<h4>Logs: </h4>
 
 <table class="table table-bordered table-striped">
-  <thead>
-    <th>Id</th>
+  <head>
+    <th>Log Id</th>
     <th>Value</th>
     <th>Time</th>
-    <th>Device_Id</th>
-    <th>Sensor_Id</th>
     <th>Time_App</th>
     <th>Time_Server</th>
   </thead>
@@ -24,8 +20,6 @@
     <td>{{log.custom_id}}</td>
     <td>{{log.value}}</td>
     <td>{{log.time}}</td>
-    <td>{{log.sensor.device.id}}</td>
-    <td>{{log.sensor.custom_id}}</td>
     <td>{{log.time_app}}</td>
     <td>{{log.time_server}}</td>
   </tr>   
@@ -36,3 +30,4 @@
 {% endfor %}
 
 {% endblock %}
+
