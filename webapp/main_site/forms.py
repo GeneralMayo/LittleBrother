@@ -71,3 +71,39 @@ class RegistrationForm(forms.Form):
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("Username already exists")
         return username
+
+class ConfigurationForm(forms.ModelForm):
+    id = forms.IntegerField()
+
+    class Meta:
+        model = Configuration
+        exclude = ("time","device")
+
+    def __init__(self, *args, **kwargs):
+        super(ConfigurationForm, self).__init__(*args, **kwargs)
+        ordered_fields = ['id']
+        self.fields.keyOrder = ordered_fields + [k for k in self.fields.keys() if k not in ordered_fields]
+
+    def clean(self):
+        cleaned_data = super(ConfigurationForm,self).clean()
+        device = Device.objects.get(cleaned_data["id"])
+        if ("device_off" not in cleaned_data):
+            cleaned_data["device_off"] = device.device_off
+        if ("sensors_off" not in cleaned_data):
+            cleaned_data["sensors_off"] = device.sensors_off
+        if ("device_sleep" not in cleaned_data):
+            cleaned_data["device_sleep"] = device.logs_sleep
+        return cleaned_data
+
+    def clean_id(self):
+        if not Device.objects.filter(id=self.cleaned_data["id"]).exists():
+            raise forms.ValidationError('Device does not exist')
+
+    def clean_sensors_off(self):
+	device = Device.objects.get(id=self.cleaned_data["id"])
+        sensors_off = self.cleaned_data["sensors_off"]
+        if (2**len(device.sensor_set.all()) - 1 < sensors_off):
+            raise forms.ValidationError("Device does not have that many sensors")
+        return sensors_off
+
+        

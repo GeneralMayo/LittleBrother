@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  {% for error in form.non_field_errors %}
+    <p style="color: red"> {{ error }} </p>
+  {% endfor %}
+
+	<form role="form" method="post" action="{% url 'configure' %}">
+    <table>
+      {% for field in form.visible_fields %}
+        <tr>
+          <td>{{field.label_tag}}</td>
+          <td>{{field}}</td>
+          <td style="color: red">{{field.errors}}</td>
+        </tr>
+      {% endfor %}
+      </table>
+      {% for field in form.hidden_fields %}
+        {{field}}
+      {% endfor %}
+    <button type="submit" value="Register" class="btn btn-default">Configure</button>
+    {% csrf_token %}
+  </form>
+{% endblock %}

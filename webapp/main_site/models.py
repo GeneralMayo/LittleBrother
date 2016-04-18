@@ -62,3 +62,12 @@ class Log(models.Model):
 
 class MyUser(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+
+class Configuration(models.Model):
+        device = models.ForeignKey(Device)
+        device_off = models.BooleanField(blank=True,default=False)
+        sensors_off = models.IntegerField(blank=True,default=0) #put in binary
+	device_sleep = models.BooleanField(blank=True,default=False)
+        time = models.DateTimeField()
+        
+        

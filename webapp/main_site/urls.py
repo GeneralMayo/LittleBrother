@@ -15,5 +15,6 @@ urlpatterns = [
     url(r'^logout$',auth_views.logout_then_login, name='logout'),
     url(r'^register$',views.register, name='register'),
     url(r'configure$',views.configure,name='configure'),
-    url(r'download_config/(?P<device_id>\d+)',views.download_config,name='download_config'),
+    url(r'download_config/(?P<last_config>\d+)$',views.download_config,name='download_config'),
+    url(r'your_devices)$',views.your_devices,name='your_devices'),
 ]

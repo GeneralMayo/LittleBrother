@@ -4,7 +4,9 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+import django.core.serializers
 
+from django.contrib.auth.decorators import login_required
 from models import *
 from forms import *
 from datetime import datetime
@@ -182,6 +184,7 @@ def register(request):
     return redirect(reverse('home'))
 
 @transaction.atomic
+@login_required
 def configure(request):
     context = {}
 
@@ -195,19 +198,41 @@ def configure(request):
     if not form.is_valid():
         return render(request, 'configure.html', context)
 
-    config = Configuration(username=form.cleaned_data['username'],
-                                        password=form.cleaned_data['password1'],
-                                        email=form.cleaned_data['email']
-                                        )
+    device = Device.objects.get(id=form.cleaned_data['device_id'])
+    if not request.user == device.admin:
+        context['errors'] = ["You are not an admin for device %d" % (form.cleaned_data['device_id'])]
+        return (request,'configure.html',context)
+
+    config = Configuration(device=Device.objects.get(id=form.cleaned_data['id']),
+                           device_off = form.cleaned_data['device_off'],
+                           sensors_off = form.cleaned_data['sensors_off'],
+                           device_sleep = form.cleaned_dta['device_sleep'],
+                           time = datetime.now())
+             
     config.save()
     context['success'] = "Configuration completed successfully"
     return render(request,'configure.html',context)
 
-def download_config(request,device_id):
+@transaction.atomic
+def download_config(request,last_config):
     context = {}
     
-    if not Device.objects.filter(id=device_id).exists():
-        return JsonResponse({'error': "Device does not exist"})
-
-    config = Device.objects.get(id=device_id)
+    if not Configuration.objects.filter(id=last_config).exists():
+        return JsonResponse({"error": "Configuration does not exist"})
     
+    latest_config = Configuration.objects.get(id=last_config).device.configuration_set.all().order_by("-id")[0]
+    if (latest_config.id > last_config):
+        response = django.core.serializers.serialize('json',[latest_config])
+        response.strip('[]')
+        return JsonResponse(response)
+    elif latest_config.id == last_config:
+        return JsonResponse({"success" : "You already have the latest config"})
+    else:
+        return JsonResponse({"error" : "Supplied config is newer than latest config"})
+
+@login_required
+def your_devices(request):
+    context = {}
+    context["devices"] = Device.objects.filter(admin=request.user)
+
+    return render(request,"device_info.html",context)
