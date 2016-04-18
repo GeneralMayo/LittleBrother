@@ -26,11 +26,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-        startService(new Intent(this,DeviceFinderService.class));
+        //startService(new Intent(this,DeviceFinderService.class));
     }
 
     public void loadDeviceListActivity(View v) {
         Intent intent = new Intent(this, DeviceListActivity.class);
+        startActivity(intent);
+    }
+
+    public void loadDevicesAroundActivity(View v) {
+        Intent intent = new Intent(this, DevicesAroundActivity.class);
+        startActivity(intent);
+    }
+
+    public void loadStoredDataActivity(View v) {
+        Intent intent = new Intent(this, StoredDataActivity.class);
         startActivity(intent);
     }
 

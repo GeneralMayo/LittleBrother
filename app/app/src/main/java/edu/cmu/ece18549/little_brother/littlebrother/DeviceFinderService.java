@@ -13,17 +13,20 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface{
     private final static int SERVICE_START_MODE = START_STICKY;
-    private final static int INTERVAL = 15000;
+    private final static int INTERVAL = 10000;
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
     private BlockingQueue<Device> mDevices;
     private BluetoothScanner mBluetoothScanner;
     private Handler handler;
+    private List<Observer> listeners;
 
     public class LocalBinder extends Binder {
         DeviceFinderService getService() {
@@ -47,19 +50,38 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
         mDevices = new LinkedBlockingQueue<Device>();
         mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
         handler = new Handler();
+        listeners = new LinkedList<Observer>();
         startProducerThread();
         //startConsumerThread();
     }
 
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "Service ending");
+    }
+
     private void startProducerThread() {
-        handler.postDelayed(new Runnable() {
+        new Thread(new Runnable() {
+
             @Override
             public void run() {
-                Log.i(TAG,"Initiating scan for devices");
-                mBluetoothScanner.getDevices();
+                int iterations = 0;
+                while (true) {
+                    if (iterations == 10) {
+                        stopSelf();
+                    } else {
+                        Log.i(TAG, "Initiating device scan " +iterations);
+                        mBluetoothScanner.getDevices();
+                        iterations++;
+                        try {
+                            Thread.sleep(INTERVAL);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
             }
-        }, INTERVAL);
-        Log.i("FAKE_DATA_SERVICE", "Producer thread started");
+        }).start();
     }
 
     private void startConsumerThread() {
@@ -96,5 +118,16 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     @Override
     public Collection<Device> getDevices() {
         return mDevices;
+    }
+
+    @Override
+    public void registerListener(Observer o) {
+        listeners.add(o);
+    }
+
+    private void notifyChange() {
+        for(Observer o : listeners) {
+            o.notifyChange();
+        }
     }
 }

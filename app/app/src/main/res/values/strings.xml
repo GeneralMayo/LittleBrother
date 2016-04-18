@@ -3,4 +3,12 @@
     <string name="title_device_detail">Device Detail</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="see_devices">Devices</string>
+    <string name="devices_around">Devices around you</string>
+    <string name="see_data">Data</string>
+    <string name="go_to_web">Go to Web</string>
+    <string name="your_devices">Your Devices</string>
+    <string name="test">Test</string>
+    <string name="settings">Settings</string>
+    <string name="title_activity_devices_around">Devices Around Activity</string>
+    <string name="title_activity_load_stored_data">LoadStoredDataActivity</string>
 </resources>
