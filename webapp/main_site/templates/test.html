@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <p>Create Device:</p>
 <form action="{% url 'add_device' %}" method="post">
   {% for field in device_form.visible_fields %}
