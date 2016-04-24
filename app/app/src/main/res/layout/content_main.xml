@@ -44,6 +44,7 @@
         android:height="@dimen/main_button_size"
         android:text="@string/go_to_web"
         android:id="@+id/button3"
+        android:onClick="viewWebappActivity"
         android:layout_marginTop="53dp"
         android:layout_below="@+id/button2"
         android:layout_alignStart="@+id/button2" />

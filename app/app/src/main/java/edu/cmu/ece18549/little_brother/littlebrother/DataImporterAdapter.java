@@ -3,9 +3,9 @@ package edu.cmu.ece18549.little_brother.littlebrother;
 /**
  * Created by alexmaeda on 4/23/16.
  */
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -15,47 +15,16 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-public class DeviceDetailListAdapter extends BaseExpandableListAdapter {
+public class DataImporterAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
     //List of Device names
-    private List<String> mDevices;
-    private HashMap<String, List<String>> mDeviceDetails;
+    private List<String> mDevices = new ArrayList<>();
+    private HashMap<String, List<String>> mDeviceDetails = new HashMap<>();
 
-    public DeviceDetailListAdapter(Context context) {
+    public DataImporterAdapter(Context context, DataImporter di) {
         this.mContext = context;
-        importData();
-
-    }
-
-    //TODO: Add import data to be attached to blue tooth and devices
-    private void importData() {
-        mDevices = new ArrayList<String>();
-        mDeviceDetails = new HashMap<String, List<String>>();
-
-        String newDevice = "Device 1";
-        ArrayList<String> deviceDetails = new ArrayList<String>();
-        deviceDetails.add("Name: Device 1");
-        deviceDetails.add("Active from: 1/10/16 12:00:00 EST");
-        deviceDetails.add("Battery: 100%");
-        mDevices.add(newDevice);
-        mDeviceDetails.put(newDevice, deviceDetails);
-
-        newDevice = "Device 2";
-        deviceDetails = new ArrayList<String>();
-        deviceDetails.add("Name: Device 2");
-        deviceDetails.add("Active from: 1/10/16 12:00:00 EST");
-        deviceDetails.add("Battery: 100%");
-        mDevices.add(newDevice);
-        mDeviceDetails.put(newDevice, deviceDetails);
-
-        newDevice = "Device 3";
-        deviceDetails = new ArrayList<String>();
-        deviceDetails.add("Name: Device 3");
-        deviceDetails.add("Active from: 1/10/16 12:00:00 EST");
-        deviceDetails.add("Battery: 100%");
-        mDevices.add(newDevice);
-        mDeviceDetails.put(newDevice, deviceDetails);
+        di.importData(mDevices, mDeviceDetails);
     }
 
     @Override
@@ -80,7 +49,7 @@ public class DeviceDetailListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.list_item, null);
         }
 
-        TextView txtListChild = (TextView) convertView.findViewById(R.id.lblListItem);
+        TextView txtListChild = (TextView) convertView.findViewById(R.id.device_details);
 
         txtListChild.setText(childText);
         return convertView;
@@ -116,10 +85,10 @@ public class DeviceDetailListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.list_group, null);
         }
 
-        TextView lblListHeader = (TextView) convertView
+        TextView listHeaderLabel = (TextView) convertView
                 .findViewById(R.id.listHeaderLabel);
-        lblListHeader.setTypeface(null, Typeface.BOLD);
-        lblListHeader.setText(headerTitle);
+        listHeaderLabel.setTypeface(null, Typeface.BOLD);
+        listHeaderLabel.setText(headerTitle);
 
         return convertView;
     }
