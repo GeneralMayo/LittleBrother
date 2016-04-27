@@ -2,6 +2,7 @@ package edu.cmu.ece18549.little_brother.littlebrother;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -36,8 +37,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void viewWebappActivity(View v) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webappURI));
-        startActivity(browserIntent);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(webappURI));
+        startActivity(intent);
+    }
+
+    public void viewSettingsActivity(View v) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
 }

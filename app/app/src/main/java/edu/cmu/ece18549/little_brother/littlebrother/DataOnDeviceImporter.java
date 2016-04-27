@@ -36,6 +36,102 @@ public class DataOnDeviceImporter implements DataImporter {
         deviceDetail.add("Air Quality: 81%");
         devices.add(newDevice);
         deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 2 - 2/11/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 42");
+        deviceDetail.add("Humidity: 12");
+        deviceDetail.add("Air Quality: 86%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 3 - 3/3/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 76");
+        deviceDetail.add("Humidity: 86");
+        deviceDetail.add("Air Quality: 81%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 2 - 2/11/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 42");
+        deviceDetail.add("Humidity: 12");
+        deviceDetail.add("Air Quality: 86%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 3 - 3/3/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 76");
+        deviceDetail.add("Humidity: 86");
+        deviceDetail.add("Air Quality: 81%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 2 - 2/11/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 42");
+        deviceDetail.add("Humidity: 12");
+        deviceDetail.add("Air Quality: 86%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 3 - 3/3/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 76");
+        deviceDetail.add("Humidity: 86");
+        deviceDetail.add("Air Quality: 81%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 2 - 2/11/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 42");
+        deviceDetail.add("Humidity: 12");
+        deviceDetail.add("Air Quality: 86%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 3 - 3/3/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 76");
+        deviceDetail.add("Humidity: 86");
+        deviceDetail.add("Air Quality: 81%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 2 - 2/11/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 42");
+        deviceDetail.add("Humidity: 12");
+        deviceDetail.add("Air Quality: 86%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 3 - 3/3/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 76");
+        deviceDetail.add("Humidity: 86");
+        deviceDetail.add("Air Quality: 81%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 2 - 2/11/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 42");
+        deviceDetail.add("Humidity: 12");
+        deviceDetail.add("Air Quality: 86%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
+
+        newDevice = "Device 3 - 3/3/16 12:00:01 EST";
+        deviceDetail = new ArrayList<String>();
+        deviceDetail.add("Temperature: 76");
+        deviceDetail.add("Humidity: 86");
+        deviceDetail.add("Air Quality: 81%");
+        devices.add(newDevice);
+        deviceDetails.put(newDevice, deviceDetail);
     }
 
 }

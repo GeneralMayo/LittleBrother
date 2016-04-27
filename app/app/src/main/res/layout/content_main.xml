@@ -64,20 +64,22 @@
         android:layout_height="wrap_content"
         android:width="@dimen/main_button_size"
         android:height="@dimen/main_button_size"
-        android:text="@string/test"
-        android:id="@+id/button5"
-        android:layout_marginTop="71dp"
-        android:layout_below="@+id/button3"
-        android:layout_alignStart="@+id/button3" />
+        android:text="@string/settings"
+        android:id="@+id/button6"
+        android:onClick="viewSettingsActivity"
+        android:layout_alignTop="@+id/button5"
+        android:layout_alignStart="@+id/button4" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:width="@dimen/main_button_size"
         android:height="@dimen/main_button_size"
-        android:text="@string/settings"
-        android:id="@+id/button6"
-        android:layout_alignTop="@+id/button5"
-        android:layout_alignStart="@+id/button4" />
+        android:text="@string/test"
+        android:id="@+id/button5"
+        android:layout_marginTop="71dp"
+        android:layout_below="@+id/button3"
+        android:layout_alignStart="@+id/button3" />
+
 
 </RelativeLayout>

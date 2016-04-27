@@ -66,11 +66,14 @@
         <activity
             android:name=".DevicesAroundActivity"
             android:label="@string/title_activity_devices_around"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".StoredDataActivity"
             android:label="@string/title_activity_load_stored_data"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>
