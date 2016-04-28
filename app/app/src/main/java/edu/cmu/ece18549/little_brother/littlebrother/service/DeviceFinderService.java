@@ -1,9 +1,6 @@
-package edu.cmu.ece18549.little_brother.littlebrother;
+package edu.cmu.ece18549.little_brother.littlebrother.service;
 
 import android.app.Service;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
@@ -17,6 +14,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import edu.cmu.ece18549.little_brother.littlebrother.adapter.BluetoothScanner;
+import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicationException;
+import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface{
     private final static int SERVICE_START_MODE = START_STICKY;

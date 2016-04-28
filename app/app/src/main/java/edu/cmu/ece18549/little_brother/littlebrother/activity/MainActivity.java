@@ -7,7 +7,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.net.Uri;
 
-import edu.cmu.ece18549.little_brother.littlebrother.DeviceListActivity;
 import edu.cmu.ece18549.little_brother.littlebrother.R;
 
 public class MainActivity extends AppCompatActivity {

@@ -1,6 +1,8 @@
-package edu.cmu.ece18549.little_brother.littlebrother;
+package edu.cmu.ece18549.little_brother.littlebrother.service;
 
 import java.util.Collection;
+
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 
 /**
  * Created by Ramsey on 3/20/2016.

@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
-import edu.cmu.ece18549.little_brother.littlebrother.DeviceListActivity;
 import edu.cmu.ece18549.little_brother.littlebrother.R;
 
 /**

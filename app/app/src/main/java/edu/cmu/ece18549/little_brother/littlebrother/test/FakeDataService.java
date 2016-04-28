@@ -13,8 +13,8 @@ import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import edu.cmu.ece18549.little_brother.littlebrother.DeviceFinderServiceInterface;
-import edu.cmu.ece18549.little_brother.littlebrother.Observer;
+import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderServiceInterface;
+import edu.cmu.ece18549.little_brother.littlebrother.service.Observer;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicationException;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;

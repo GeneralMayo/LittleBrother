@@ -1,4 +1,4 @@
-package edu.cmu.ece18549.little_brother.littlebrother;
+package edu.cmu.ece18549.little_brother.littlebrother.activity;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -7,30 +7,28 @@ import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import edu.cmu.ece18549.little_brother.littlebrother.dummy.DummyContent;
+import edu.cmu.ece18549.little_brother.littlebrother.R;
+import edu.cmu.ece18549.little_brother.littlebrother.activity.DeviceDetailActivity;
+import edu.cmu.ece18549.little_brother.littlebrother.activity.DeviceDetailFragment;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
+import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderServiceInterface;
+import edu.cmu.ece18549.little_brother.littlebrother.test.FakeDataService;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * An activity representing a list of Devices. This activity

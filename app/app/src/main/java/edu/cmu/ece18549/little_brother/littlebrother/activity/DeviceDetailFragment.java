@@ -9,9 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import edu.cmu.ece18549.little_brother.littlebrother.DeviceListActivity;
 import edu.cmu.ece18549.little_brother.littlebrother.R;
-import edu.cmu.ece18549.little_brother.littlebrother.activity.DeviceDetailActivity;
 import edu.cmu.ece18549.little_brother.littlebrother.dummy.DummyContent;
 
 /**
