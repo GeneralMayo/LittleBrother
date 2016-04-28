@@ -11,7 +11,8 @@ import java.util.Map;
  * Created by Ramsey on 3/20/2016.
  */
 public class Device {
-    private final int mId;
+    private boolean registered;
+    private int mId;
     private String mName;
     private double mLatitude;
     private double mLongitude;
@@ -19,10 +20,26 @@ public class Device {
 
     public Device(int id, String name, double latitude, double longitude) {
         mId = id;
-        mName = name;
+        if (id < 0) {
+            registered = false;
+            mName = "Unregistered Device";
+        } else {
+            registered = true;
+            mName = name;
+        }
         mLatitude = latitude;
         mLongitude = longitude;
-        mComponents = new HashMap<Sensor,List<DeviceLog>>();
+        mComponents = new HashMap<>();
+    }
+
+    public void registerDevice(int newId, String name) {
+        if (registered) {
+            new DeviceException("Device has already been registered");
+        } else {
+            mId = newId;
+            mName = name;
+            registered = true;
+        }
     }
 
     public String getName() {

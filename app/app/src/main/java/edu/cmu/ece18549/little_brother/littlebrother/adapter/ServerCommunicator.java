@@ -13,6 +13,7 @@ import java.util.Date;
 import cz.msebera.android.httpclient.Header;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
 
 /**
  * Created by Ramsey on 3/25/2016.
@@ -49,6 +50,7 @@ public class ServerCommunicator {
     private ServerCommunicator() {};
 
     public static void uploadLog(DeviceLog log) throws ServerCommunicationException {
+       // String url = BASE_URL + ADD_LOG_URL;
         String url = "http://ec2-52-90-105-31.compute-1.amazonaws.com/little_brother/add_log";
         RequestParams params = new RequestParams();
         params.add("custom_id",log.getId() + "");
@@ -67,7 +69,6 @@ public class ServerCommunicator {
                 Log.e(TAG,e.getMessage());
             }
         }
-
     }
 
     public static int requestUniqueId() throws ServerCommunicationException {
@@ -105,11 +106,30 @@ public class ServerCommunicator {
         return id.getId();
     }
 
-    public static void registerDevice(Device device) throws ServerCommunicationException {
+    public static void registerSensor(Sensor sensor) throws ServerCommunicationException {
+        String url = BASE_URL + ADD_SENSOR_URL;
+        RequestParams params = new RequestParams();
+        params.add("custom_id", sensor.getId() + "");
+        params.add("name", sensor.getName());
+        params.add("device", sensor.getDevice().getId() + "");
+        try {
+            Log.i(TAG,"Registering new device with parameters " + params.toString());
+            client.post(url, params, post_handler);
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof ServerCommunicationException) {
+                throw (ServerCommunicationException) e.getCause();
+            } else {
+                Log.e(TAG,e.getMessage());
+            }
+        }
+    }
+
+    public static void registerDevice(Device device, String newDeviceName) throws ServerCommunicationException {
         String url = BASE_URL + ADD_DEVICE_URL;
         RequestParams params = new RequestParams();
-        params.add("id",device.getId()+"");
-        params.add("name",device.getName());
+        int newId = requestUniqueId();
+        params.add("id", newId+"");
+        params.add("name",newDeviceName);
         params.add("latitude",device.getLatitude()+"");
         params.add("longitude",device.getLongitude()+"");
         try {
@@ -122,7 +142,7 @@ public class ServerCommunicator {
                 Log.e(TAG,e.getMessage());
             }
         }
-
+        device.registerDevice(newId, newDeviceName);
     }
 
     private static String convertDate(Date date) {

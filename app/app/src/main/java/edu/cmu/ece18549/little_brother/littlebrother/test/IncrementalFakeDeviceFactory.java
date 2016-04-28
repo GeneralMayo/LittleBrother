@@ -38,11 +38,12 @@ public class IncrementalFakeDeviceFactory extends FakeDeviceFactory {
         mDevices = new LinkedList<Device>();
         mSensorCount = 0;
         mDeviceCount = 0;
+        mLogCount = 0;
     }
 
     @Override
     public Device getNewDevice() {
-        Device device = new Device(mDeviceCount, "Device " + mDeviceCount,
+        Device device = new Device(-1, "Device " + mDeviceCount,
                                    INIT_LAT + 0.1*mDeviceCount, INIT_LONG + 0.1*mDeviceCount);
         int numSensors = getRandomInt(3);
         for (int i = 0; i < numSensors; i++) {
