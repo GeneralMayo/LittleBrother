@@ -7,9 +7,9 @@
 #include "app_error.h"
 #include "SEGGER_RTT.h"
 
-/**@brief Function for adding our new characterstic to "Our service" that we initiated in the previous tutorial. 
+/**@brief Function for adding characterstics to "Our service" that we initiated in the previous tutorial. 
  *
- * @param[in]   p_our_service        Our Service structure.
+ * @param[in]   p_our_service        Service the characteristics are being added to
  *
  */
 static uint32_t chars_add(ble_dis_t * p_our_service)
@@ -23,7 +23,7 @@ static uint32_t chars_add(ble_dis_t * p_our_service)
     err_code = sd_ble_uuid_vs_add(&base_uuid, &name_uuid.type);
     APP_ERROR_CHECK(err_code);
 	
-		// Add device id UUID
+    // Add device id UUID
     ble_uuid_t          id_uuid;
     id_uuid.uuid      = BLE_UUID_DEVICE_NAME_CHARACTERISTC_UUID;
     sd_ble_uuid_vs_add(&base_uuid, &id_uuid.type);
@@ -69,7 +69,7 @@ static uint32_t chars_add(ble_dis_t * p_our_service)
     attr_name_value.p_value     = name_value;
 		
 		
-		// Configure the id characteristic value attribute
+    // Configure the id characteristic value attribute
     ble_gatts_attr_t    attr_id_value;
     memset(&attr_id_value, 0, sizeof(attr_id_value));        
     attr_id_value.p_uuid      = &id_uuid;

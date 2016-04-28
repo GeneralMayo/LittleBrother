@@ -1,0 +1,45 @@
+<!DOCTYPE CrossStudio_Session_File>
+<session>
+ <Bookmarks/>
+ <Breakpoints/>
+ <ExecutionProfileWindow/>
+ <FrameBufferWindow>
+  <FrameBufferWindow addressText="" bufferWidth="-1" bufferHeight="-1" addressSpace="" />
+ </FrameBufferWindow>
+ <Memory1/>
+ <Memory2/>
+ <Memory3/>
+ <Memory4/>
+ <Project>
+  <ProjectSessionItem path="nrf51-ble-tutorial-characteristic" name="unnamed" />
+  <ProjectSessionItem path="nrf51-ble-tutorial-characteristic;nrf51422_xxac_s130" name="unnamed" />
+  <ProjectSessionItem path="nrf51-ble-tutorial-characteristic;nrf51422_xxac_s130;RTT Files" name="unnamed" />
+  <ProjectSessionItem path="nrf51-ble-tutorial-characteristic;nrf51422_xxac_s130;Source Files" name="unnamed" />
+  <ProjectSessionItem path="nrf51-ble-tutorial-characteristic;nrf51422_xxac_s130;Source Files;Application" name="unnamed" />
+  <ProjectSessionItem path="nrf51-ble-tutorial-characteristic;nrf51422_xxac_s130;Source Files;nRF_Libraries" name="unnamed" />
+ </Project>
+ <Register1/>
+ <Register2/>
+ <Register3/>
+ <Register4/>
+ <TargetWindow programAction="" uploadFileType="" programLoadAddress="" programSize="" uploadFileName="" uploadMemoryInterface="" programFileName="" uploadStartAddress="" programFileType="" uploadSize="" programMemoryInterface="" />
+ <TraceWindow>
+  <Trace enabled="Yes" />
+ </TraceWindow>
+ <Watch1>
+  <Watches active="1" update="Never" />
+ </Watch1>
+ <Watch2>
+  <Watches active="0" update="Never" />
+ </Watch2>
+ <Watch3>
+  <Watches active="0" update="Never" />
+ </Watch3>
+ <Watch4>
+  <Watches active="0" update="Never" />
+ </Watch4>
+ <Files>
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Default" x="19" debugPath="../../../main.c" y="21" path="../../../main.c" left="0" selected="1" name="unnamed" top="11" />
+ </Files>
+ <ARMCrossStudioWindow activeProject="nrf51422_xxac_s130" autoConnectTarget="J-Link" debugSearchFileMap="" fileDialogInitialDirectory="" fileDialogDefaultFilter="*.c" autoConnectCapabilities="3199" debugSearchPath="" buildConfiguration="Debug" />
+</session>
