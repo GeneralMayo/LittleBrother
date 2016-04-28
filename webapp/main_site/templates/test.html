@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <p>Create Device:</p>
 <form action="{% url 'add_device' %}" method="post">
   {% for field in device_form.visible_fields %}
@@ -49,4 +50,8 @@
   {% endfor %}
 </form>
 
+<form action="{% url 'download_config' %}" method="get">
+Id: <input type="text" name="id"><br>
+<input type="submit" value="Submit">
+</form>
 {% endblock %}

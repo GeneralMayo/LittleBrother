@@ -4,15 +4,23 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+import django.core.serializers
 
+from django.contrib.auth.decorators import login_required
 from models import *
 from forms import *
 from datetime import datetime
 
 from utils import write_log
 import sys
+import time
 
 def home(request):
+    context = {}
+    context['devices'] = Device.objects.all()
+    return render(request,'home.html',context)
+
+def device_info(request):
     context = {}
     context['devices'] = Device.objects.all()
     context['sensors'] = Sensor.objects.all()
@@ -38,11 +46,18 @@ def add_device(request):
     if not form.is_valid():
         write_log("Device parameters invalid: " + str(form.errors.as_data()))
         return HttpResponseBadRequest('Device parameters invalid')
-    
-    new_device = Device(name=form.cleaned_data['name'],
+    if form.cleaned_data['admin']:
+    	new_device = Device(name=form.cleaned_data['name'],
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'],
-                        time_server=datetime.now())
+                        time_server=datetime.now(),
+			admin=User.objects.get(username=form.cleaned_data['admin']))
+    else:
+        new_device = Device(name=form.cleaned_data['name'],
+                        latitude=form.cleaned_data['latitude'],
+                        longitude=form.cleaned_data['longitude'],
+                        time_server=datetime.now(),
+                        admin=User.objects.get(username="all_users"))
     new_device.save()
     write_log("New device saved")
     return JsonResponse({'id' : new_device.id,
@@ -134,19 +149,105 @@ def delete_device_logs(request):
 def device_data(request, device_id):
     device = Device.objects.get(id=device_id)
     sensors = Sensor.objects.filter(device=device)
+    logs = Log.objects.none()
+
+    log = Log.objects.get(id=1)
+    print dir(log.time)
+    print str(log.time.date()) + " " + str(log.time.time())
 
     for sensor in sensors:
-        logs = Log.objects.filter(sensor=sensor)
-        sensor.logs = logs
+        sensor_logs = Log.objects.filter(sensor=sensor)
+        sensor.logs = sensor_logs
+        logs = logs | sensor_logs
+
+    for log in logs:
+        log.datetime = str(log.time.date()) + " " + str(log.time.time())
 
     context = {}
     context['device'] = device
     context['sensors'] = sensors
+    context["logs"] = logs
     return render(request,'device_data.html',context)
 
-def test_chart(request):
-    for log in Log.objects.all():
-        print log.time
+def test_visuals(request):
     context = {}
     context["logs"] = Log.objects.all()
+    context["devices"] = Device.objects.all()
     return render(request,'test_chart.html', context)
+
+@transaction.atomic
+def register(request):
+    context = {}
+
+    if request.method == 'GET':
+        context['form'] = RegistrationForm()
+        return render(request, 'register.html', context)
+
+    form = RegistrationForm(request.POST)
+    context['form'] = form
+
+    if not form.is_valid():
+        return render(request, 'register.html', context)
+
+    new_user = User.objects.create_user(username=form.cleaned_data['username'], 
+                                        password=form.cleaned_data['password1'],
+                                        email=form.cleaned_data['email']
+                                        )
+    myuser = MyUser(user=new_user)
+    myuser.save()
+    new_user.save()
+    return redirect(reverse('home'))
+
+@transaction.atomic
+@login_required
+def configure(request):
+    context = {}
+
+    if request.method == 'GET':
+        context['form'] = ConfigurationForm()
+        return render(request, 'configure.html', context)
+
+    form = ConfigurationForm(request.POST)
+    context['form'] = form
+
+    if not form.is_valid():
+        return render(request, 'configure.html', context)
+
+    device = Device.objects.get(id=form.cleaned_data['device_id'])
+    if not request.user == device.admin:
+        context['errors'] = ["You are not an admin for device %d" % (form.cleaned_data['device_id'])]
+        return (request,'configure.html',context)
+
+    config = Configuration(device=Device.objects.get(id=form.cleaned_data['id']),
+                           device_off = form.cleaned_data['device_off'],
+                           sensors_off = form.cleaned_data['sensors_off'],
+                           device_sleep = form.cleaned_dta['device_sleep'],
+                           time = datetime.now())
+             
+    config.save()
+    context['success'] = "Configuration completed successfully"
+    return render(request,'configure.html',context)
+
+@transaction.atomic
+def download_config(request,last_config):
+    context = {}
+    
+    if not Configuration.objects.filter(id=last_config).exists():
+        return JsonResponse({"error": "Configuration does not exist"})
+    
+    latest_config = Configuration.objects.get(id=last_config).device.configuration_set.all().order_by("-id")[0]
+    if (latest_config.id > last_config):
+        response = django.core.serializers.serialize('json',[latest_config])
+        response.strip('[]')
+        return JsonResponse(response)
+    elif latest_config.id == last_config:
+        return JsonResponse({"success" : "You already have the latest config"})
+    else:
+        return JsonResponse({"error" : "Supplied config is newer than latest config"})
+
+@login_required
+def your_devices(request):
+    context = {}
+    context["devices"] = Device.objects.filter(admin=request.user)
+
+    return render(request,"device_info.html",context)

@@ -37,6 +37,11 @@ public class FakeDataService extends Service implements DeviceFinderServiceInter
 
 
     @Override
+    public void registerListener(Observer o){
+        return;
+    }
+
+    @Override
     public void onCreate() {
         mDevices = new LinkedBlockingQueue<Device>();
         startProducerThread();

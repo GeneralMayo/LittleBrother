@@ -54,6 +54,10 @@ MIDDLEWARE_CLASSES = [
 
 ROOT_URLCONF = 'little_brother.urls'
 
+LOGIN_URL = '/little_brother/login'
+
+LOGIN_REDIRECT_URL = '/little_brother/'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

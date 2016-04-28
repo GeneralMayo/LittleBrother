@@ -15,27 +15,30 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.os.Handler;
+import android.os.ParcelUuid;
 import android.util.Log;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Ramsey on 4/2/2016.
  */
 public class BluetoothScanner {
     private static final long SCAN_PERIOD = 5000;
+    private static final ParcelUuid DEVICE_INFO_UUID = new ParcelUuid(new UUID(0x9846299054794454L,0x899c0b29c95d704fL));
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mBLEScanner;
     private Handler handler;
     private boolean mScanning;
+    private final List<ScanFilter> scanFilters;
+    private final ScanSettings scanSettings;
 
     private final static String TAG = "BLUETOOTH_SCANNER";
     private final Context mContext;
-    //private List<ScanFilter> mFilters;
-    //private ScanSettings mScanSettings;
 
     public BluetoothScanner(Context context) {
         final BluetoothManager bluetoothManager =
@@ -44,14 +47,24 @@ public class BluetoothScanner {
         mBLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
         handler = new Handler();
         mContext = context;
-        //mFilters = new LinkedList<ScanFilter>();
-        //setupFilters();
-        //mScanSettings = getScanSettings();
+        scanFilters = setupFilters();
+        scanSettings = setupSettings();
     }
 
-    private void setupFilters() {
-        //ScanFilter.Builder builder = new ScanFilter.Builder();
-        //builder.set
+    private List<ScanFilter> setupFilters() {
+        ScanFilter.Builder builder = new ScanFilter.Builder();
+        List<ScanFilter> filters = new LinkedList<ScanFilter>();
+        builder.setServiceUuid(DEVICE_INFO_UUID);
+        filters.add(builder.build());
+        return filters;
+   }
+
+    private ScanSettings setupSettings() {
+        ScanSettings.Builder builder = new ScanSettings.Builder();
+        builder.setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES);
+        builder.setMatchMode(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT);
+        builder.setScanMode(ScanSettings.SCAN_MODE_BALANCED);
+        return builder.build();
     }
 
     public Collection<Device> getDevices() {
@@ -71,7 +84,7 @@ public class BluetoothScanner {
                         if (characteristics != null) {
                             Log.i(TAG,"Found " + characteristics.size() + " characteristics");
                             for (BluetoothGattCharacteristic characteristic : characteristics) {
-                                Log.i(TAG, "Data: " + characteristic.getStringValue(0));
+                                gatt.readCharacteristic(characteristic);
                             }
                         } else {
                             Log.i(TAG,"Found no characteristics");
@@ -101,6 +114,7 @@ public class BluetoothScanner {
                 super.onCharacteristicRead(gatt, characteristic, status);
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     Log.i(TAG,"Characteristic Read Successful");
+                    Log.i(TAG,"Data="+characteristic.getStringValue(0));
                 } else {
                     Log.i(TAG,"onCharacteristicRead recieved " + status);
                 }
@@ -135,7 +149,7 @@ public class BluetoothScanner {
             }, SCAN_PERIOD);
 
             mScanning = true;
-            mBLEScanner.startScan(callback);
+            mBLEScanner.startScan(scanFilters, scanSettings,callback);
             Log.i(TAG,"Scanning started");
         } else {
             mScanning = false;

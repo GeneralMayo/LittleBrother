@@ -13,6 +13,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -24,6 +26,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     private BlockingQueue<Device> mDevices;
     private BluetoothScanner mBluetoothScanner;
     private Handler handler;
+    private List<Observer> listeners;
 
     public class LocalBinder extends Binder {
         DeviceFinderService getService() {
@@ -47,13 +50,14 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
         mDevices = new LinkedBlockingQueue<Device>();
         mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
         handler = new Handler();
+        listeners = new LinkedList<Observer>();
         startProducerThread();
         //startConsumerThread();
     }
 
     @Override
     public void onDestroy() {
-        Log.i(TAG,"Service ending");
+        Log.i(TAG, "Service ending");
     }
 
     private void startProducerThread() {
@@ -114,5 +118,16 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     @Override
     public Collection<Device> getDevices() {
         return mDevices;
+    }
+
+    @Override
+    public void registerListener(Observer o) {
+        listeners.add(o);
+    }
+
+    private void notifyChange() {
+        for(Observer o : listeners) {
+            o.notifyChange();
+        }
     }
 }
