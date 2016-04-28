@@ -115,19 +115,19 @@ static uint32_t data_value_char_add(ble_tss_t * p_our_service)
 static uint32_t name_char_add(ble_tss_t * p_our_service){
 		uint32_t   err_code = 0;
 	
-		// Add sensor name UUID
+    // Add sensor name UUID
     ble_uuid_t          name_uuid;
     name_uuid.uuid      = BLE_UUID_SENSOR_NAME_CHARACTERISTC_UUID;
     ble_uuid128_t       base_uuid = BLE_UUID_TEMPERATURE_BASE_UUID;
 		sd_ble_uuid_vs_add(&base_uuid, &name_uuid.type);
 	
-		// Add read/write properties
+    // Add read/write properties
     ble_gatts_char_md_t char_md;
     memset(&char_md, 0, sizeof(char_md));
     char_md.char_props.read = 1;
     char_md.char_props.write = 1;
 	
-		// Configure Client Characteristic Configuration Descriptor metadata and add to char_md structure
+    // Configure Client Characteristic Configuration Descriptor metadata and add to char_md structure
     ble_gatts_attr_md_t cccd_md;
     memset(&cccd_md, 0, sizeof(cccd_md));
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
@@ -136,7 +136,7 @@ static uint32_t name_char_add(ble_tss_t * p_our_service){
     char_md.p_cccd_md           = &cccd_md;
     char_md.char_props.notify   = 1;
 	
-		// Configure the attribute metadata
+    // Configure the attribute metadata
     ble_gatts_attr_md_t attr_md;
     memset(&attr_md, 0, sizeof(attr_md)); 
     attr_md.vloc        = BLE_GATTS_VLOC_STACK;   
@@ -144,7 +144,7 @@ static uint32_t name_char_add(ble_tss_t * p_our_service){
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
 		
-		// Configure the name characteristic value attribute
+    // Configure the name characteristic value attribute
     ble_gatts_attr_t    attr_name_value;
     memset(&attr_name_value, 0, sizeof(attr_name_value));        
     attr_name_value.p_uuid      = &name_uuid;
@@ -154,31 +154,31 @@ static uint32_t name_char_add(ble_tss_t * p_our_service){
     char *name_value          = "Temp_Sensor";
     attr_name_value.p_value     = name_value;
 	
-		//Add new characteristics to the service
+    //Add new characteristics to the service
     err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
                                        &char_md,
                                        &attr_name_value,
 																			 &p_our_service->name_handles);
-		//APP_ERROR_CHECK(err_code);
-		return NRF_SUCCESS;
+    APP_ERROR_CHECK(err_code);
+    return NRF_SUCCESS;
 }
 
 static uint32_t id_char_add(ble_tss_t * p_our_service){
 		uint32_t   err_code = 0;
 	
-		// Add sensor name UUID
+    // Add sensor name UUID
     ble_uuid_t          id_uuid;
     id_uuid.uuid      = BLE_UUID_SENSOR_ID_CHARACTERISTC_UUID;
     ble_uuid128_t       base_uuid = BLE_UUID_TEMPERATURE_BASE_UUID;
 		sd_ble_uuid_vs_add(&base_uuid, &id_uuid.type);
 	
-		// Add read/write properties 
+    // Add read/write properties 
     ble_gatts_char_md_t char_md;
     memset(&char_md, 0, sizeof(char_md));
     char_md.char_props.read = 1;
     char_md.char_props.write = 1;
 	
-		// Configure Client Characteristic Configuration Descriptor metadata and add to char_md structure
+    // Configure Client Characteristic Configuration Descriptor metadata and add to char_md structure
     ble_gatts_attr_md_t cccd_md;
     memset(&cccd_md, 0, sizeof(cccd_md));
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
@@ -187,7 +187,7 @@ static uint32_t id_char_add(ble_tss_t * p_our_service){
     char_md.p_cccd_md           = &cccd_md;
     char_md.char_props.notify   = 1;
 	
-		// Configure the attribute metadata
+    // Configure the attribute metadata
     ble_gatts_attr_md_t attr_md;
     memset(&attr_md, 0, sizeof(attr_md)); 
     attr_md.vloc        = BLE_GATTS_VLOC_STACK;   
@@ -195,7 +195,7 @@ static uint32_t id_char_add(ble_tss_t * p_our_service){
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
 		
-		// Configure the id characteristic value attribute
+    // Configure the id characteristic value attribute
     ble_gatts_attr_t    attr_id_value;
     memset(&attr_id_value, 0, sizeof(attr_id_value));        
     attr_id_value.p_uuid      = &id_uuid;
@@ -222,7 +222,7 @@ static uint32_t id_char_add(ble_tss_t * p_our_service){
  */
 void temperature_service_init(ble_tss_t * p_our_service)
 {
-		uint32_t   err_code;
+    uint32_t   err_code;
 
     // Declare 16-bit service and 128-bit base UUIDs and add them to the BLE stack
     ble_uuid_t        service_uuid;
@@ -235,20 +235,20 @@ void temperature_service_init(ble_tss_t * p_our_service)
                                         &service_uuid,
                                         &p_our_service->service_handle);
 		
-		// there is initially no connection with any device
-		p_our_service->conn_handle = BLE_CONN_HANDLE_INVALID;
+    // there is initially no connection with any device
+    p_our_service->conn_handle = BLE_CONN_HANDLE_INVALID;
     
     data_value_char_add(p_our_service);
-		//name_char_add(p_our_service);
-		//id_char_add(p_our_service);
+    //name_char_add(p_our_service);
+    //id_char_add(p_our_service);
 }
 
 // Function to be called when updating characteristic value
 void termperature_characteristic_update(ble_tss_t *p_tss_service, int32_t *temperature_value, uint32_t *time)
 {
     uint32_t err_code;
-		//SEGGER_RTT_printf(0,"Updating Temp Service\n");
-		// Update characteristic value if device still connected to Little Brother
+		
+    // Update characteristic value if device still connected to Little Brother
     if (p_tss_service->conn_handle != BLE_CONN_HANDLE_INVALID)
     {
         uint16_t               len = 10;
@@ -267,8 +267,5 @@ void termperature_characteristic_update(ble_tss_t *p_tss_service, int32_t *tempe
         hvx_params.p_data = (uint8_t*)&log;  
 				
         err_code= sd_ble_gatts_hvx(p_tss_service->conn_handle, &hvx_params);
-				//SEGGER_RTT_printf(0,"Connection Handle: %u\n",p_tss_service->conn_handle);
-				//SEGGER_RTT_printf(0,"Invalid Connection Handle: %u\n",BLE_CONN_HANDLE_INVALID);
-				//APP_ERROR_CHECK(err_code);
     }   
 }

@@ -107,57 +107,55 @@ static void timer_timeout_handler(void * p_context)
 	
     static int32_t previous_temperature = 0;
 		static uint32_t time = 0;
-		// Get temperature from on chip sensor
+    // Get temperature from on chip sensor
     sd_temp_get(&temperature);
-		time++;
-		termperature_characteristic_update(&temperature_service, &temperature,&time);
+    time++;
+    termperature_characteristic_update(&temperature_service, &temperature,&time);
 
 	
-    // Check if current temperature is different from last temperature
-    //if(temperature != previous_temperature)
-    //{
-        // If new temperature then send notification
-        //our_termperature_characteristic_update(&m_our_service, &temperature);
-				//termperature_characteristic_update(&temperature_service, &temperature,&time);
-    //}
-		
-		
-		
-		//static uint8_t temperaturePointer = 0;
-		//static int32_t temperatureBuff[256];
-		//static uint8_t offset = 0;
-		//uint16_t buffsize = 256;
-		
-		//if(temperature_service.conn_handle != BLE_CONN_HANDLE_INVALID){
-			
-		//	temperatureBuff[temperaturePointer] = temperature;
-		//	temperaturePointer+=1;
-			
-		//	if(temperaturePointer == 255){
-				//stop advertising ?
-		//		uint32_t          retval;    
-		//		retval = pstorage_store(&block_handle, temperatureBuff, buffsize, offset*buffsize);
-		//		APP_ERROR_CHECK(retval);
-		//		offset += 1;
-				//start advertising ?
-		//	}
-		//} else {
-		//	if(offset != 0){
-		//		uint32_t tempBuff[256];
-		//		while(offset != 0){
-		//			retval = pstorage_load(tempBuff, &block_handle, buffsize, (offset-1)*buffsize);
-		//			termperature_characteristic_update(&temperature_service, tempBuff,256);
-		//			offset-=1;
-		//		}
-		//	}
-			
-		//	temperatureBuff[temperaturePointer] = temperature;
-		//	temperaturePointer+=1;
-		//	termperature_characteristic_update(&temperature_service, tempBuff,temperaturePointer);
-		//}			
-		
-		
+  // Check if current temperature is different from last temperature
+  //if(temperature != previous_temperature)
+  //{
+      // If new temperature then send notification
+      //our_termperature_characteristic_update(&m_our_service, &temperature);
+                              //termperature_characteristic_update(&temperature_service, &temperature,&time);
+  //}
+              
+              
+              
+    //static uint8_t temperaturePointer = 0;
+    //static int32_t temperatureBuff[256];
+    //static uint8_t offset = 0;
+    //uint16_t buffsize = 256;
     
+    //if(temperature_service.conn_handle != BLE_CONN_HANDLE_INVALID){
+            
+    //	temperatureBuff[temperaturePointer] = temperature;
+    //	temperaturePointer+=1;
+            
+    //	if(temperaturePointer == 255){
+                    //stop advertising ?
+    //		uint32_t          retval;    
+    //		retval = pstorage_store(&block_handle, temperatureBuff, buffsize, offset*buffsize);
+    //		APP_ERROR_CHECK(retval);
+    //		offset += 1;
+                    //start advertising ?
+    //	}
+    //} else {
+    //	if(offset != 0){
+    //		uint32_t tempBuff[256];
+    //		while(offset != 0){
+    //			retval = pstorage_load(tempBuff, &block_handle, buffsize, (offset-1)*buffsize);
+    //			termperature_characteristic_update(&temperature_service, tempBuff,256);
+    //			offset-=1;
+    //		}
+    //	}
+            
+    //	temperatureBuff[temperaturePointer] = temperature;
+    //	temperaturePointer+=1;
+    //	termperature_characteristic_update(&temperature_service, tempBuff,temperaturePointer);
+    //}			
+		
     // Save current temperature until next measurement
     previous_temperature = temperature;
     nrf_gpio_pin_toggle(LED_4);
@@ -373,8 +371,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     on_ble_evt(p_ble_evt);
     ble_advertising_on_ble_evt(p_ble_evt);
     //ble_our_service_on_ble_evt(&m_our_service, p_ble_evt);
-		
-		ble_temperature_service_on_ble_evt(&temperature_service, p_ble_evt);
+    ble_temperature_service_on_ble_evt(&temperature_service, p_ble_evt);
 }
 
 
@@ -634,29 +631,29 @@ static void uart_config(void)
  */
 int main(void)
 {   
-		//uint32_t retval;
-		//retval = pstorage_init();
-		//APP_ERROR_CHECK(retval);
-	
-		uint32_t err_code;
+    //uint32_t retval;
+    //retval = pstorage_init();
+    //APP_ERROR_CHECK(retval);
+    
+    uint32_t err_code;
     bool erase_bonds;
 		
-		//pstorage_handle_t       handle;
-		//pstorage_module_param_t param;
-		//pstorage_ntf_cb_t cbHandler;
-		//param.block_size  = 100;
-		//param.block_count = 10;
-		//param.cb          = cbHandler;
-				
-		//retval = pstorage_register(&param, &handle);
-		//APP_ERROR_CHECK(retval);
+    //pstorage_handle_t       handle;
+    //pstorage_module_param_t param;
+    //pstorage_ntf_cb_t cbHandler;
+    //param.block_size  = 100;
+    //param.block_count = 10;
+    //param.cb          = cbHandler;
+                    
+    //retval = pstorage_register(&param, &handle);
+    //APP_ERROR_CHECK(retval);
 		
 			
     
     uart_config();
     // Initialize.
     timers_init();
-    //buttons_leds_init(&erase_bonds);
+    buttons_leds_init(&erase_bonds);
     ble_stack_init();
     device_manager_init(erase_bonds);
     gap_params_init();

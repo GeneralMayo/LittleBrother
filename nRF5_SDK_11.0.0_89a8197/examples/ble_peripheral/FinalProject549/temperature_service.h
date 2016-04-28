@@ -22,14 +22,14 @@
 // status information for temperature_service
 typedef struct
 {	
-		//handles for ble connection
-		uint16_t                    conn_handle; 
-		// service handle for ble stack
-    uint16_t                    service_handle;
-		// characteristic handels for ble stack
-    ble_gatts_char_handles_t    id_handles;
-		ble_gatts_char_handles_t    name_handles;
-		ble_gatts_char_handles_t    data_handles;
+        //handles for ble connection  
+        uint16_t                    conn_handle; 
+        // service handle for ble stack
+        uint16_t                    service_handle;
+        // characteristic handels for ble stack
+        ble_gatts_char_handles_t    id_handles;
+        ble_gatts_char_handles_t    name_handles;
+        ble_gatts_char_handles_t    data_handles;
 }ble_tss_t;
 
 struct  __attribute__((__packed__)) temp_log{
