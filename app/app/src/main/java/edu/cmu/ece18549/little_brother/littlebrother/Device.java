@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by Ramsey on 3/20/2016.
  */
 public class Device {
-    private final int mId;
+    private int mId;
     private String mName;
     private double mLatitude;
     private double mLongitude;
@@ -26,6 +26,10 @@ public class Device {
         mComponents = new HashMap<Sensor,List<DeviceLog>>();
     }
 
+    public Device() {
+
+    }
+
     public String getName() {
         return mName;
     }
@@ -36,6 +40,10 @@ public class Device {
 
     public int getId() {
         return mId;
+    }
+
+    public void setId(int id) {
+        mId = id;
     }
 
     public double getLatitude() {

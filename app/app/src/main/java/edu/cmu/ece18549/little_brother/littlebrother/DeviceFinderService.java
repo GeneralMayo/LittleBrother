@@ -67,7 +67,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
             public void run() {
                 int iterations = 0;
                 while (true) {
-                    if (iterations == 10) {
+                    if (iterations == 1) {
                         stopSelf();
                     } else {
                         Log.i(TAG, "Initiating device scan " +iterations);

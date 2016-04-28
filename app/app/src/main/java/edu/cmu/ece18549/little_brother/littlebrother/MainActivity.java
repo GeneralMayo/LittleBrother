@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //startService(new Intent(this,DeviceFinderService.class));
+        startService(new Intent(this,DeviceFinderService.class));
     }
 
     public void loadDeviceListActivity(View v) {
