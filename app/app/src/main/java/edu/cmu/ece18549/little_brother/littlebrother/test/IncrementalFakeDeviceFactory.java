@@ -1,10 +1,13 @@
 package edu.cmu.ece18549.little_brother.littlebrother.test;
 
+import android.util.Log;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceException;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
 
@@ -16,7 +19,7 @@ public class IncrementalFakeDeviceFactory extends FakeDeviceFactory {
     private final double INIT_LONG = -79.9449;
 
     private List<Device> mDevices;
-    private final static String TAG = "SIMPLE_DEVICE_FACTORY";
+    private final static String TAG = "INC_DEVICE_FACTORY";
     private int mDeviceCount;
     private int mSensorCount;
     private int mLogCount;
@@ -38,15 +41,20 @@ public class IncrementalFakeDeviceFactory extends FakeDeviceFactory {
     }
 
     @Override
-    protected Device getNewDevice() {
+    public Device getNewDevice() {
         Device device = new Device(mDeviceCount, "Device " + mDeviceCount,
                                    INIT_LAT + 0.1*mDeviceCount, INIT_LONG + 0.1*mDeviceCount);
         int numSensors = getRandomInt(3);
-        Sensor[] sensors = new Sensor[numSensors];
         for (int i = 0; i < numSensors; i++) {
-            sensors[i] = new Sensor(mSensorCount, "Sensor " + mSensorCount, device);
-            new DeviceLog(0, new Date(), mLogCount, new Date(), sensors[i]);
-            mSensorCount += 1;
+            try {
+                Sensor sensor = new Sensor(mSensorCount, "Sensor " + mSensorCount, device);
+                device.addSensor(sensor);
+                device.addLog(new DeviceLog(mLogCount, new Date(), mLogCount, new Date(), sensor));
+                mLogCount += 1;
+                mSensorCount += 1;
+            } catch (DeviceException e) {
+                Log.e(TAG, "Device exception, add sensor or add log failed");
+            }
         }
 
         mDeviceCount += 1;

@@ -18,7 +18,6 @@ public class Device {
     private Map<Sensor,List<DeviceLog>> mComponents;
 
     public Device(int id, String name, double latitude, double longitude) {
-
         mId = id;
         mName = name;
         mLatitude = latitude;
@@ -110,6 +109,10 @@ public class Device {
         mComponents.put(sensor,newLogs);
     }
 
+    public synchronized Map<Sensor, List<DeviceLog>> getComponents(){
+        return mComponents;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof Device)) {
@@ -126,7 +129,7 @@ public class Device {
 
     @Override
     public String toString() {
-        return "" + mId;
+        return mId + ": " + mName;
     }
 
 }

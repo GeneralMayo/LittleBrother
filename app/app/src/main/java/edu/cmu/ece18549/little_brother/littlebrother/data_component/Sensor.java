@@ -43,6 +43,6 @@ public class Sensor {
 
     @Override
     public String toString() {
-        return mName + " " + mId;
+        return mName;
     }
 }

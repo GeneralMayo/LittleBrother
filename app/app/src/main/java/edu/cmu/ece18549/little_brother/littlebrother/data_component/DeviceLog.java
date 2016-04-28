@@ -61,6 +61,6 @@ public class DeviceLog {
 
     @Override
     public String toString() {
-        return ""+mId;
+        return "" + mId + mDate + mValue + mTimeRecieved;
     }
 }

@@ -49,7 +49,6 @@ public class ServerCommunicator {
     private ServerCommunicator() {};
 
     public static void uploadLog(DeviceLog log) throws ServerCommunicationException {
-       // String url = BASE_URL + ADD_LOG_URL;
         String url = "http://ec2-52-90-105-31.compute-1.amazonaws.com/little_brother/add_log";
         RequestParams params = new RequestParams();
         params.add("custom_id",log.getId() + "");

@@ -27,6 +27,7 @@ public class DataImporterAdapter extends BaseExpandableListAdapter {
     public DataImporterAdapter(Context context, DataImporter di) {
         this.mContext = context;
         di.importData();
+        di.exportData(mDevices, mDeviceDetails);
     }
 
     @Override
