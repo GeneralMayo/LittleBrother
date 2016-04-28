@@ -39,7 +39,21 @@ public class DataOnDeviceImporter implements DataImporter {
     }
 
     @Override
-    public void exportData(List<String> devices, HashMap<String, List<String>> deviceDetails) {
+    public void exportDataAsDevices(List<Device> devices, HashMap<Device, List<String>> deviceDetails){
+        if (devices == null) {
+            new RuntimeException("DataOnDeviceImporter: devices cannot be null.");
+        }
+
+        devices.clear();
+
+        for (Device d : mDevices) {
+            devices.add(d);
+        }
+    }
+
+
+    @Override
+    public void exportDataAsStrings(List<String> devices, HashMap<String, List<String>> deviceDetails) {
         if (devices == null || deviceDetails == null) {
             new Exception("DataOnDeviceImporter: devices or deviceDetails cannot be null.");
         }

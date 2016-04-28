@@ -149,4 +149,7 @@ public class Device {
         return mId + ": " + mName;
     }
 
+    public boolean is_registered() {
+        return registered;
+    }
 }

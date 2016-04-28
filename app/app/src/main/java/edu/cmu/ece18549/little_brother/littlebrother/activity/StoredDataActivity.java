@@ -28,6 +28,7 @@ public class StoredDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_stored_data);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mDataListView = (ExpandableListView) findViewById(R.id.dataList);
         mData = new DataOnDeviceImporter();

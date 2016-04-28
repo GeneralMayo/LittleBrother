@@ -66,14 +66,35 @@
         <activity
             android:name=".activity.DevicesAroundActivity"
             android:label="@string/title_activity_devices_around"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.ece18549.little_brother.littlebrother.activity.MainActivity" />
+        </activity>
         <activity
             android:name=".activity.StoredDataActivity"
             android:label="@string/title_activity_load_stored_data"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.ece18549.little_brother.littlebrother.activity.MainActivity" />
+        </activity>
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.ece18549.little_brother.littlebrother.activity.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activity.DeviceRegisterActivity"
+            android:label="@string/title_activity_device_register"
+            android:parentActivityName=".activity.DevicesAroundActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="edu.cmu.ece18549.little_brother.littlebrother.activity.DevicesAroundActivity" />
+        </activity>
     </application>
 
 </manifest>

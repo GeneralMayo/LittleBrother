@@ -30,39 +30,45 @@ public class DeviceInfoImporter implements DataImporter {
         for (int i = 0; i < NUM_DEVICES; i++) {
             mDevices.add(ifdf.getNewDevice());
         }
-//        List<String> devices
-//        HashMap<String, List<String>> deviceDetails
-//        String newDevice = "Device 1";
-//        ArrayList<String> deviceDetail = new ArrayList<String>();
-//        deviceDetail.add("Name: Device 1");
-//        deviceDetail.add("Active from: 1/10/16 12:00:00 EST");
-//        deviceDetail.add("Battery: 100%");
-//        devices.add(newDevice);
-//        deviceDetails.put(newDevice, deviceDetail);
-//
-//        newDevice = "Device 2";
-//        deviceDetail = new ArrayList<String>();
-//        deviceDetail.add("Name: Device 2");
-//        deviceDetail.add("Active from: 1/10/16 12:00:00 EST");
-//        deviceDetail.add("Battery: 100%");
-//        devices.add(newDevice);
-//        deviceDetails.put(newDevice, deviceDetail);
-//
-//        newDevice = "Device 3";
-//        deviceDetail = new ArrayList<String>();
-//        deviceDetail.add("Name: Device 3");
-//        deviceDetail.add("Active from: 1/10/16 12:00:00 EST");
-//        deviceDetail.add("Battery: 100%");
-//        devices.add(newDevice);
-//        deviceDetails.put(newDevice, deviceDetail);
+    }
+
+    @Override
+    public void exportDataAsDevices(List<Device> devices, HashMap<Device, List<String>> deviceDetails) {
+        if (devices == null) {
+            new RuntimeException("DataOnDeviceImporter: devices cannot be null.");
+        }
+
+        devices.clear();
+
+        for (Device d : mDevices) {
+            devices.add(d);
+            List<String> deviceDetail = new ArrayList<String>();
+            String position = "";
+            String latitude = String.format("%.4f", Math.abs(d.getLatitude()));
+            String longitude = String.format("%.4f", Math.abs(d.getLongitude()));
+            position += latitude + "° ";
+            if (d.getLatitude() > 0) {
+                position += "N ";
+            } else {
+                position += "S ";
+            }
+            position += longitude + "° ";
+            if (d.getLongitude() > 0) {
+                position += "E";
+            } else {
+                position += "W";
+            }
+
+            deviceDetail.add("Position: " + position);
+            deviceDetails.put(d, deviceDetail);
+        }
 
     }
 
-
     @Override
-    public void exportData(List<String> devices, HashMap<String, List<String>> deviceDetails) {
+    public void exportDataAsStrings(List<String> devices, HashMap<String, List<String>> deviceDetails) {
         if (devices == null || deviceDetails == null) {
-            new Exception("DataOnDeviceImporter: devices or deviceDetails cannot be null.");
+            new RuntimeException("DataOnDeviceImporter: devices or deviceDetails cannot be null.");
         }
 
         devices.clear();
@@ -73,15 +79,15 @@ public class DeviceInfoImporter implements DataImporter {
             devices.add(deviceName);
             List<String> deviceDetail = new ArrayList<String>();
             String position = "";
-            String lati = String.format("%.4f", Math.abs(d.getLatitude()));
-            String longi = String.format("%.4f", Math.abs(d.getLongitude()));
-            position += lati + "° ";
+            String latitude = String.format("%.4f", Math.abs(d.getLatitude()));
+            String longitude = String.format("%.4f", Math.abs(d.getLongitude()));
+            position += latitude + "° ";
             if (d.getLatitude() > 0) {
                 position += "N ";
             } else {
                 position += "S ";
             }
-            position += longi + "° ";
+            position += longitude + "° ";
             if (d.getLongitude() > 0) {
                 position += "E";
             } else {

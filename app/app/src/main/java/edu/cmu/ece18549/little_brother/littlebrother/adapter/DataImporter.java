@@ -4,9 +4,7 @@ import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import edu.cmu.ece18549.little_brother.littlebrother.util.Pair;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 
 /**
@@ -18,6 +16,8 @@ public interface DataImporter {
 
     public void importData();
 
-    public void exportData(List<String> devices, HashMap<String, List<String>> deviceDetails);
+    public void exportDataAsDevices(List<Device> devices, HashMap<Device, List<String>> deviceDetails);
+
+    public void exportDataAsStrings(List<String> devices, HashMap<String, List<String>> deviceDetails);
 
 }

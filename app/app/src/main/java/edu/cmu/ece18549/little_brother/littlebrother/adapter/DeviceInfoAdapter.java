@@ -1,12 +1,5 @@
 package edu.cmu.ece18549.little_brother.littlebrother.adapter;
 
-/**
- * Created by alexmaeda on 4/23/16.
- */
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -15,19 +8,29 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import edu.cmu.ece18549.little_brother.littlebrother.R;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-public class DataImporterAdapter extends BaseExpandableListAdapter {
+import edu.cmu.ece18549.little_brother.littlebrother.R;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
+
+/**
+ * Created by alexmaeda on 4/28/16.
+ */
+public class DeviceInfoAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
     //List of Device names
-    private List<String> mDevices = new ArrayList<>();
-    private HashMap<String, List<String>> mDeviceDetails = new HashMap<>();
+    private List<Device> mDevices;
+    private HashMap<Device, List<String>> mDeviceDetails;
 
-    public DataImporterAdapter(Context context, DataImporter di) {
+    public DeviceInfoAdapter(Context context, DataImporter di) {
         this.mContext = context;
+        this.mDevices = new ArrayList<>();
+        this.mDeviceDetails = new HashMap<>();
         di.importData();
-        di.exportDataAsStrings(mDevices, mDeviceDetails);
+        di.exportDataAsDevices(mDevices, mDeviceDetails);
     }
 
     @Override
@@ -81,8 +84,19 @@ public class DataImporterAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
-        String headerTitle = (String) getGroup(groupPosition);
-        if (convertView == null) {
+        Device d = (Device) getGroup(groupPosition);
+        String headerTitle = d.toString();
+
+        if (!d.is_registered()) {
+            LayoutInflater infalInflater = (LayoutInflater) this.mContext
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = infalInflater.inflate(R.layout.list_group_unregistered, null);
+            TextView listHeaderLabel = (TextView) convertView
+                    .findViewById(R.id.unregisteredHeaderLabel);
+            listHeaderLabel.setTypeface(null, Typeface.BOLD);
+            listHeaderLabel.setText(headerTitle);
+            return convertView;
+        } else if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.list_group, null);
