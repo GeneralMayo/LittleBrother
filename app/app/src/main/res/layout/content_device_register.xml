@@ -12,4 +12,9 @@
     tools:context=".activity.DeviceRegisterActivity"
     tools:showIn="@layout/activity_device_register">
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/sensor_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 </RelativeLayout>
