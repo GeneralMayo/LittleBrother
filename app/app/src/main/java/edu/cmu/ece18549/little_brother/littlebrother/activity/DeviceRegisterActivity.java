@@ -1,10 +1,12 @@
 package edu.cmu.ece18549.little_brother.littlebrother.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -25,10 +27,10 @@ public class DeviceRegisterActivity extends AppCompatActivity {
         RecyclerView rvSensors = (RecyclerView) findViewById(R.id.sensor_list);
 
         // Initialize contacts
-        ArrayList<Sensor> sensors = new ArrayList<Sensor>();
-        sensors.add(new Sensor(0, "0", null));
-        sensors.add(new Sensor(1, "1", null));
-        sensors.add(new Sensor(2, "2", null));
+        ArrayList<String> sensors = new ArrayList<String>();
+        sensors.add("");
+        sensors.add("");
+        sensors.add("");
 
         // Create adapter passing in the sample user data
         SensorRegisterAdapter adapter = new SensorRegisterAdapter(sensors);
@@ -37,6 +39,16 @@ public class DeviceRegisterActivity extends AppCompatActivity {
         // Set layout manager to position the items
         rvSensors.setLayoutManager(new LinearLayoutManager(this));
 
+    }
+
+    public void addSensor(View v) {
+
+    }
+
+    public void registerDevice(View v) {
+
+        Intent intent = new Intent(this, DeviceListActivity.class);
+        startActivity(intent);
     }
 
 }
