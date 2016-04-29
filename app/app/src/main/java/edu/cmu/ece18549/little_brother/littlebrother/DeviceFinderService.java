@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class DeviceFinderService extends Service implements DeviceFinderServiceInterface{
+public class DeviceFinderService extends Service implements DeviceFinderServiceInterface, Observer{
     private final static int SERVICE_START_MODE = START_STICKY;
     private final static int INTERVAL = 10000;
     private final static String TAG = "DeviceFinder";
@@ -27,6 +27,19 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     private BluetoothScanner mBluetoothScanner;
     private Handler handler;
     private List<Observer> listeners;
+    private Collection<Device> tempDevices;
+
+    @Override
+    public void notifyChange() {
+        try {
+            for (Device d : tempDevices) {
+                mDevices.put(d);
+            }
+            notifyListeners();
+        } catch (InterruptedException e) {
+            Log.i(TAG,e.getMessage());
+        }
+    }
 
     public class LocalBinder extends Binder {
         DeviceFinderService getService() {
@@ -71,7 +84,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                         stopSelf();
                     } else {
                         Log.i(TAG, "Initiating device scan " +iterations);
-                        mBluetoothScanner.getDevices();
+                        tempDevices = mBluetoothScanner.getDevices();
                         iterations++;
                         try {
                             Thread.sleep(INTERVAL);
@@ -125,7 +138,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
         listeners.add(o);
     }
 
-    private void notifyChange() {
+    private void notifyListeners() {
         for(Observer o : listeners) {
             o.notifyChange();
         }
