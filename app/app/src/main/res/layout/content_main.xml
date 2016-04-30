@@ -9,54 +9,77 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="edu.cmu.ece18549.little_brother.littlebrother.MainActivity"
+    tools:context=".activity.MainActivity"
     tools:showIn="@layout/activity_main">
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:width="@dimen/main_button_size"
+        android:height="@dimen/main_button_size"
         android:text="@string/devices_around"
         android:id="@+id/button1"
         android:onClick="loadDevicesAroundActivity"
+        android:layout_marginStart="47dp"
+        android:layout_above="@+id/button3"
         android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:width="@dimen/main_button_size"
+        android:height="@dimen/main_button_size"
         android:text="@string/see_data"
         android:id="@+id/button2"
         android:onClick="loadStoredDataActivity"
-        android:layout_below="@+id/button1" />
+        android:layout_marginEnd="47dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="44dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:width="@dimen/main_button_size"
+        android:height="@dimen/main_button_size"
         android:text="@string/go_to_web"
         android:id="@+id/button3"
-        android:layout_below="@+id/button2" />
+        android:onClick="viewWebappActivity"
+        android:layout_marginTop="53dp"
+        android:layout_below="@+id/button2"
+        android:layout_alignStart="@+id/button2" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:width="@dimen/main_button_size"
+        android:height="@dimen/main_button_size"
         android:text="@string/your_devices"
         android:id="@+id/button4"
-        android:layout_below="@+id/button3"
-        android:layout_alignParentStart="true" />
+        android:layout_alignTop="@+id/button3"
+        android:layout_alignStart="@+id/button1" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/test"
-        android:id="@+id/button5"
-        android:layout_below="@+id/button4"
-        android:layout_alignParentStart="true"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:width="@dimen/main_button_size"
+        android:height="@dimen/main_button_size"
         android:text="@string/settings"
         android:id="@+id/button6"
-        android:layout_below="@+id/button5"
-        android:layout_alignParentStart="true" />
+        android:onClick="viewSettingsActivity"
+        android:layout_alignTop="@+id/button5"
+        android:layout_alignStart="@+id/button4" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:width="@dimen/main_button_size"
+        android:height="@dimen/main_button_size"
+        android:text="@string/test"
+        android:id="@+id/button5"
+        android:layout_marginTop="71dp"
+        android:layout_below="@+id/button3"
+        android:layout_alignStart="@+id/button3" />
+
 
 </RelativeLayout>
