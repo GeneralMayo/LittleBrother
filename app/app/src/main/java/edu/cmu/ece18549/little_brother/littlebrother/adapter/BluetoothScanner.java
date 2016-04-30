@@ -66,6 +66,8 @@ public class BluetoothScanner {
     private final static String TAG = "BLUETOOTH_SCANNER";
     private final Context mContext;
 
+    private final List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
+
     private boolean bluetoothEnabled;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -167,7 +169,7 @@ public class BluetoothScanner {
     }
 
     public Collection<Device> getDevices() {
-        final List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
+
         if (!bluetoothEnabled) {
             Log.i(TAG,"Bluetooth disabled, returning empty list");
             return devices;

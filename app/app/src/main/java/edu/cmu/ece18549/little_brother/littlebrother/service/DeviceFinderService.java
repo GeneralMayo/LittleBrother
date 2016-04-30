@@ -62,13 +62,13 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                 }
                 break;
             case DEVICE_DONE:
-                //Log.i(TAG,"Searching set to false");
+                notifyListeners(n,o);
                 break;
         }
     }
 
     public class LocalBinder extends Binder {
-        DeviceFinderService getService() {
+        public DeviceFinderService getService() {
             // Return this instance of LocalService so clients can call public methods
             return DeviceFinderService.this;
         }
@@ -86,6 +86,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
     @Override
     public void onCreate() {
+        Log.i(TAG,"Service starting");
         mLogs = new LinkedBlockingQueue<DeviceLog>();
         mDevices = Collections.synchronizedList(new LinkedList<Device>());
         mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
@@ -108,7 +109,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
             @Override
             public void run() {
                 while (true) {
-                    //Log.i(TAG, "Initiating device scan");
+                    Log.i(TAG, "Initiating device scan");
                     tempDevices = mBluetoothScanner.getDevices();
                     //Log.i(TAG, "Producer continuing");
                     try {

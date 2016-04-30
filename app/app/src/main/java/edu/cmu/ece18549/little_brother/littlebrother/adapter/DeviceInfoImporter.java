@@ -20,24 +20,26 @@ public class DeviceInfoImporter implements DataImporter {
 
     private final String TAG = "DEVICE_INFO_IMPORTER";
     List<Device> mDevices;
-    private final int NUM_DEVICES = 5;
 
     public DeviceInfoImporter(){
         mDevices = new ArrayList<Device>();
     }
 
+    public void addDevice(Device device){
+        mDevices.add(device);
+    }
+
     @Override
     public void importData() {
-        if (Device.devices.size() == 0) {
-            IncrementalFakeDeviceFactory ifdf = new IncrementalFakeDeviceFactory();
-            for (int i = 0; i < NUM_DEVICES; i++) {
-                Device.devices.put(i, ifdf.getNewDevice());
-            }
-        }
-        mDevices = new ArrayList<Device>(Device.devices.values());
-        for(int i = 0; i < mDevices.size(); i++){
-            Log.i(TAG, mDevices.get(i).toString());
-        }
+//        if (Device.devices.size() == 0) {
+//            IncrementalFakeDeviceFactory ifdf = new IncrementalFakeDeviceFactory();
+//            for (int i = 0; i < NUM_DEVICES; i++) {
+//                Device.devices.put(i, ifdf.getNewDevice());
+//            }
+//        }
+//        for(int i = 0; i < mDevices.size(); i++){
+//            Log.i(TAG, mDevices.get(i).toString());
+//        }
     }
 
     @Override

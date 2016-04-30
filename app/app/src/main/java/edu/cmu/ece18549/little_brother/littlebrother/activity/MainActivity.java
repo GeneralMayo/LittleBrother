@@ -10,6 +10,8 @@ import android.view.View;
 import android.net.Uri;
 
 import edu.cmu.ece18549.little_brother.littlebrother.R;
+import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderService;
+
 import android.preference.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Boolean b = prefs.getBoolean("use_wifi_only", true);
         Log.i(TAG, "value of use_wifi_only: " + b);
