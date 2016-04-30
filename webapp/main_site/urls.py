@@ -18,4 +18,6 @@ urlpatterns = [
     url(r'configure$',views.configure,name='configure'),
     url(r'download_config$',views.download_config,name='download_config'),
     url(r'your_devices$',views.your_devices,name='your_devices'),
+    url(r'add_many_logs$', views.add_many_logs),
+    url(r'test_graph$', views.test_graph),
 ]

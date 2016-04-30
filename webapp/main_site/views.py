@@ -9,11 +9,60 @@ import django.core.serializers
 from django.contrib.auth.decorators import login_required
 from models import *
 from forms import *
+from datetime import timedelta
 from datetime import datetime
 
 from utils import write_log
 import sys
 import time
+
+def test_graph(request):
+    context = {}
+    logs = Log.objects.all()
+
+    for log in logs:
+        log.time = log.time.strftime("%Y-%m-%d %H:%M:%S");
+    context['logs'] = logs
+
+    return render(request, 'test_graph.html', context)
+
+def add_many_logs(request):
+    Log.objects.all().delete()
+    sensor = Sensor.objects.all()[0]
+    dt = datetime.now()
+    for i in xrange(0, 15):
+        log =  Log(custom_id=i,
+                   time_server=datetime.now(),
+                   sensor=sensor,
+                   time_app=datetime.now(),
+                   value=i,
+                   time=(dt + timedelta(minutes=i)))
+        log.save()
+
+    sensor = Sensor.objects.all()[1]
+    dt = datetime.now()
+    for i in xrange(0, 15):
+        log =  Log(custom_id=i,
+                   time_server=datetime.now(),
+                   sensor=sensor,
+                   time_app=datetime.now(),
+                   value=(i + 2*i**2),
+                   time=(dt + timedelta(minutes=i)))
+        log.save()
+
+    sensor = Sensor.objects.all()[2]
+    dt = datetime.now()
+    for i in xrange(0, 15):
+        log =  Log(custom_id=i,
+                   time_server=datetime.now(),
+                   sensor=sensor,
+                   time_app=datetime.now(),
+                   value=(5*i + i**2),
+                   time=(dt + timedelta(minutes=i)))
+        log.save()
+
+    return JsonResponse({'sucess' : 'Logs saved'})
+
 
 def home(request):
     context = {}
@@ -154,16 +203,13 @@ def device_data(request, device_id):
 
     for sensor in sensors:
         sensor_logs = Log.objects.filter(sensor=sensor)
-        sensor.logs = sensor_logs
-        logs = logs | sensor_logs
-
-    for log in logs:
-        log.datetime = str(log.time.date()) + " " + str(log.time.time())
+        for log in sensor_logs:
+            log.datetime = log.time.strftime("%Y-%m-%d %H:%M:%S");
+        sensor.sensor_logs = sensor_logs
 
     context = {}
     context['device'] = device
     context['sensors'] = sensors
-    context["logs"] = logs
     return render(request,'device_data.html',context)
 
 def test_chart(request):

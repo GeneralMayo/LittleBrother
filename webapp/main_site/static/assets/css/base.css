@@ -31,7 +31,11 @@
 }
 
 .buttons {
-    width: 7%;
-    margin: 0 auto;
+    margin: auto;
     margin-top: 150px;
+}
+
+.padded-table {
+    margin: auto;
+    width: 80%;
 }
