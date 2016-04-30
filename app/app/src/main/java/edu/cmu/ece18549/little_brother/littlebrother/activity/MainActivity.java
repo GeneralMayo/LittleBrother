@@ -8,6 +8,7 @@ import android.view.View;
 import android.net.Uri;
 
 import edu.cmu.ece18549.little_brother.littlebrother.R;
+import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderService;
 
 public class MainActivity extends AppCompatActivity {
     private final String webappURI = "http://ec2-52-90-105-31.compute-1.amazonaws.com/";
@@ -19,12 +20,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        startService(new Intent(this,DeviceFinderService.class));
-    }
-
-    public void loadDeviceListActivity(View v) {
-        Intent intent = new Intent(this, DeviceListActivity.class);
-        startActivity(intent);
+        //startService(new Intent(this,DeviceFinderService.class));
     }
 
     public void loadDevicesAroundActivity(View v) {

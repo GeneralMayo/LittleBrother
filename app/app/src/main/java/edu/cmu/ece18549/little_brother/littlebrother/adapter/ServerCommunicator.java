@@ -120,11 +120,12 @@ public class ServerCommunicator {
             Log.i(TAG,"Registering new sensor with parameters " + params.toString());
             Log.i(TAG, "Registering to url: " + url + "?" + params.toString());
             client.post(url, params, post_handler);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             if (e.getCause() instanceof ServerCommunicationException) {
                 throw (ServerCommunicationException) e.getCause();
             } else {
                 Log.e(TAG,e.getMessage());
+                e.getStackTrace();
             }
         }
     }
@@ -146,6 +147,7 @@ public class ServerCommunicator {
                 throw (ServerCommunicationException) e.getCause();
             } else {
                 Log.e(TAG,e.getMessage());
+                e.getStackTrace();
             }
         }
     }
