@@ -1,9 +1,11 @@
 package edu.cmu.ece18549.little_brother.littlebrother.data_component;
 
+import java.io.Serializable;
+
 /**
  * Created by Ramsey on 3/21/2016.
  */
-public class Sensor {
+public class Sensor implements Serializable{
 
     private final int mId;
     private String mName;

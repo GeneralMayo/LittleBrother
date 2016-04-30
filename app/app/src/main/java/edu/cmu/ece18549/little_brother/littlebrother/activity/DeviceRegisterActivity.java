@@ -7,20 +7,27 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import edu.cmu.ece18549.little_brother.littlebrother.R;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.DeviceInfoAdapter;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.SensorRegisterAdapter;
+import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicationException;
+import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
 
 public class DeviceRegisterActivity extends AppCompatActivity {
     public static final String TAG = "DeviceRegister";
-    Device mDevice;
-    SensorRegisterAdapter mAdapter;
-    ArrayList<Sensor> mSensors;
+    private Device mDevice;
+    private SensorRegisterAdapter mAdapter;
+    private ArrayList<Sensor> mSensors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +56,31 @@ public class DeviceRegisterActivity extends AppCompatActivity {
     }
 
     public void registerDevice(View v) {
-
         //TODO get device data, sensor names, fill error messages
-
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                EditText deviceNameView = (EditText) findViewById(R.id.deviceNameEditText);
+                String deviceName = deviceNameView.getText().toString();
+                try {
+                    ServerCommunicator.registerDevice(mDevice, deviceName);
+                } catch (ServerCommunicationException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+                try {
+                    //configure sensors
+                    List<Sensor> sensors = new ArrayList<>();
+                    for (Sensor s : mSensors){
+                        Sensor sensor = new Sensor(sensors.size(), s.getName(), mDevice);
+                        sensors.add(sensor);
+                        Log.i(TAG, "current device id: " + mDevice.getId());
+                        ServerCommunicator.registerSensor(sensor);
+                    }
+                } catch (ServerCommunicationException e) {
+                }
+            }
+        }).start();
+        Log.i(TAG, "Registration started");
     }
 
 }

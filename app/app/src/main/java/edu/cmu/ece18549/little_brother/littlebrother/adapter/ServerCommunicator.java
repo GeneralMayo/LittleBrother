@@ -1,5 +1,6 @@
 package edu.cmu.ece18549.little_brother.littlebrother.adapter;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.loopj.android.http.*;
 
@@ -25,6 +26,7 @@ public class ServerCommunicator {
     public final static String ADD_DEVICE_URL = "add_device";
     public final static String ADD_SENSOR_URL = "add_sensor";
     public final static String REQUEST_ID_URL = "request_id";
+    public final static String DEFAULT_USER = "1";
 
     static SyncHttpClient client = new SyncHttpClient();
     static JsonHttpResponseHandler post_handler = new JsonHttpResponseHandler() {
@@ -37,12 +39,14 @@ public class ServerCommunicator {
         @Override
         public void onFailure(int statusCode, Header[] headers, String message, Throwable error){
             Log.e(TAG, "Request failed with status code " + statusCode);
+            Log.e(TAG, "ERROR: " + message);
             throw new RuntimeException(new ServerCommunicationException(error.getMessage()));
         }
 
         @Override
         public void onFailure(int statusCode, Header[] headers, Throwable error, JSONObject errorResponse){
             Log.e(TAG, "Request failed with status code " + statusCode);
+            Log.e(TAG, "ERROR: " + errorResponse.toString());
             throw new RuntimeException(new ServerCommunicationException(error.getMessage()));
         }
     };
@@ -113,7 +117,8 @@ public class ServerCommunicator {
         params.add("name", sensor.getName());
         params.add("device", sensor.getDevice().getId() + "");
         try {
-            Log.i(TAG,"Registering new device with parameters " + params.toString());
+            Log.i(TAG,"Registering new sensor with parameters " + params.toString());
+            Log.i(TAG, "Registering to url: " + url + "?" + params.toString());
             client.post(url, params, post_handler);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof ServerCommunicationException) {
@@ -127,14 +132,15 @@ public class ServerCommunicator {
     public static void registerDevice(Device device, String newDeviceName) throws ServerCommunicationException {
         String url = BASE_URL + ADD_DEVICE_URL;
         RequestParams params = new RequestParams();
-        int newId = requestUniqueId();
-        params.add("id", newId+"");
         params.add("name",newDeviceName);
         params.add("latitude",device.getLatitude()+"");
         params.add("longitude",device.getLongitude()+"");
+        params.add("admin", DEFAULT_USER);
         try {
             Log.i(TAG,"Registering new device with parameters " + params.toString());
-            client.post(url, params, post_handler);
+            ID responseId = new ID();
+            client.post(url, params, new JsonResponseRetrieverHandler(responseId));
+            device.registerDevice(responseId.getId(), newDeviceName);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof ServerCommunicationException) {
                 throw (ServerCommunicationException) e.getCause();
@@ -142,7 +148,6 @@ public class ServerCommunicator {
                 Log.e(TAG,e.getMessage());
             }
         }
-        device.registerDevice(newId, newDeviceName);
     }
 
     private static String convertDate(Date date) {
@@ -162,4 +167,38 @@ public class ServerCommunicator {
             return id;
         }
     }
+
+    private static class JsonResponseRetrieverHandler extends JsonHttpResponseHandler {
+        private ID responseId;
+
+        public JsonResponseRetrieverHandler(ID responseId) {
+            this.responseId = responseId;
+        }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject responseBody) {
+            Log.i(TAG,"Request successful with status code " + statusCode);
+            try {
+                responseId.setId(responseBody.getInt("id"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, String message, Throwable error){
+            Log.e(TAG, "Request failed with status code " + statusCode);
+            Log.e(TAG, "ERROR: " + message);
+            throw new RuntimeException(new ServerCommunicationException(error.getMessage()));
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable error, JSONObject errorResponse){
+            Log.e(TAG, "Request failed with status code " + statusCode);
+            Log.e(TAG, "ERROR: " + errorResponse.toString());
+            throw new RuntimeException(new ServerCommunicationException(error.getMessage()));
+        }
+    };
+
+
 }

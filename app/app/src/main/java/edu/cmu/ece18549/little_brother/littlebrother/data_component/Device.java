@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Created by Ramsey on 3/20/2016.
  */
-public class Device implements Serializable{
+public class Device implements Serializable {
     private boolean registered;
     private int mId;
     private String mName;
