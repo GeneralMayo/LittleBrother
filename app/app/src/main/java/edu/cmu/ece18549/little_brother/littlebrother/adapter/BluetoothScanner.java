@@ -24,12 +24,14 @@ import android.util.Log;
 import java.util.Collection;
 import java.util.Collections;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceException;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
 import edu.cmu.ece18549.little_brother.littlebrother.service.Notification;
 import edu.cmu.ece18549.little_brother.littlebrother.service.Observer;
@@ -44,10 +46,10 @@ public class BluetoothScanner {
     private static final UUID ID_CHARACTERISTIC_UUID = new UUID(0x4f700002290bac89L,0x5444795490294698L);
     private static final UUID SENSOR_CHARACTERISTIC_UUID = new UUID(0x4f700003290bac89L,0x5444795490294698L);
 
-    private static final UUID LOG_SERVICE_UUID = new UUID(0xbd59222291e1fe97L,0x3746bc007591507bL);
-    private static final UUID LOG_CHARACTERISTIC_UUID = new UUID(0xbd59000391e1fe97L,0x3746bc007591507bL);
-    private static final UUID NUM_LOG_CHARACTERISTIC_UUID = new UUID(0xbd59000291e1fe97L,0x3746bc007591507bL);
-    private static final UUID WRITE_CHARACTERISTIC_UUID = new UUID(0xbd59000191e1fe97L,0x3746bc007591507bL);
+    private static final UUID LOG_SERVICE_UUID = new UUID(0xbd592222a2e1fe97L,0x3746bc007591507bL);
+    private static final UUID LOG_CHARACTERISTIC_UUID = new UUID(0xbd590003a2e1fe97L,0x3746bc007591507bL);
+    private static final UUID NUM_LOG_CHARACTERISTIC_UUID = new UUID(0xbd590002a2e1fe97L,0x3746bc007591507bL);
+    private static final UUID WRITE_CHARACTERISTIC_UUID = new UUID(0xbd590001a2e1fe97L,0x3746bc007591507bL);
 
     //private static final ParcelUuid DEVICE_INFO_UUID_P = new ParcelUuid(DEVICE_INFO_SERVICE_UUID);
 
@@ -275,6 +277,8 @@ public class BluetoothScanner {
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                 super.onCharacteristicRead(gatt, characteristic, status);
+                boolean wantLog = false;
+                boolean success = true;
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     Log.i(TAG,"Characteristic Read Successful");
                     UUID characteristicUUID = characteristic.getUuid();
@@ -292,13 +296,14 @@ public class BluetoothScanner {
                         boolean found = false;
                         for (Device d : devices) {
                             if (d.getId() == id) {
+                                Log.i(TAG,"Found already existing device");
                                 newDevice.setDevice(d);
                                 found = true;
                                 break;
                             }
                         }
-
                         if(!found) {
+                            Log.i(TAG,"Did not find device");
                             Device d = new Device();
                             d.setId(id);
                             newDevice.setDevice(d);
@@ -324,11 +329,28 @@ public class BluetoothScanner {
                         Log.i(TAG,"Count="+logCount);
                         numLogs.setCount(logCount);
                     } else if (characteristicUUID.equals(LOG_CHARACTERISTIC_UUID)) {
+                        wantLog = true;
                         Log.i(TAG,"Log Characteristic Read");
-                        //parse log and add to newDevice
-                        numLogs.decCount();
-                        notifyListeners(Notification.LOG_FOUND,null);
-                        gatt.writeCharacteristic(logCharacteristics.get(1));
+                        Device d = newDevice.getDevice();
+                        byte[] logStruct = characteristic.getValue();
+                        int time = extractInt(logStruct,0);
+                        int value = extractInt(logStruct,4);
+                        int logId = extractInt(logStruct,8);
+                        int sensorId = extractShort(logStruct,12);
+                        Log.i(TAG,"time="+time);
+                        Log.i(TAG,"value="+value);
+                        Log.i(TAG,"logId="+logId);
+                        Log.i(TAG,"sensorId="+sensorId);
+                        DeviceLog log = new DeviceLog(logId,new Date(time),(double)value,new Date(),d.getSensor(sensorId));
+                        try {
+                            d.addLog(log);
+                            numLogs.decCount();
+                            notifyListeners(Notification.LOG_FOUND, null);
+                            gatt.writeCharacteristic(logCharacteristics.get(1));
+                        } catch (DeviceException e) {
+                            success = false;
+                            Log.i(TAG,e.getMessage());
+                        }
 
                     } else {
                         Log.i(TAG,"Received unknown characteristic with UUID " + characteristic.getUuid());
@@ -347,7 +369,9 @@ public class BluetoothScanner {
 
                     if (logCharacteristics.size() == 3) {
                         gatt.readCharacteristic(logCharacteristics.pop());
-                    } else if (logCharacteristics.size() == 0) {
+                    } else if (wantLog && !success) {
+                       gatt.readCharacteristic(logCharacteristics.get(0));
+                    }  else if (logCharacteristics.size() == 0) {
                         gatt.disconnect();
                     }
                 }
@@ -366,6 +390,26 @@ public class BluetoothScanner {
         };
         scanLeDevice(true,callback);
         return devices;
+    }
+
+    private int extractInt(byte[] b, int offset) {
+        int first = (b[0 + offset] & 0x00ff) << 28;
+        int second = (b[0 + offset] & 0xff00) << 24;
+        int third = (b[1 + offset] & 0x00ff) << 20;
+        int fourth = (b[1 + offset] & 0xff00) << 16;
+        int fifth = (b[2 + offset] & 0x00ff) << 12;
+        int sixth = (b[2 + offset] & 0xff00) << 8;
+        int seventh = (b[3 + offset] & 0x00ff) << 4;
+        int eigth = (b[3 + offset] & 0xff00);
+        return first & second & third & fourth & fifth & sixth & seventh & eigth;
+    }
+
+    private int extractShort(byte[] b, int offset) {
+        int fifth = (b[2 + offset] & 0x00ff) << 12;
+        int sixth = (b[2 + offset] & 0xff00) << 8;
+        int seventh = (b[3 + offset] & 0x00ff) << 4;
+        int eigth = (b[3 + offset] & 0xff00);
+        return fifth & sixth & seventh & eigth;
     }
 
     private void scanLeDevice(final boolean enable, final ScanCallback callback) {

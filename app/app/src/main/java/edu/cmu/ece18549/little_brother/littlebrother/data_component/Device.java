@@ -53,6 +53,16 @@ public class Device {
 
     }
 
+    public Sensor getSensor(int id) {
+        List<Sensor> sensors = getSensors();
+        for (Sensor s : sensors) {
+            if (s.getId() == id) {
+                return s;
+            }
+        }
+        return null;
+    }
+
     public String getName() {
         return mName;
     }
