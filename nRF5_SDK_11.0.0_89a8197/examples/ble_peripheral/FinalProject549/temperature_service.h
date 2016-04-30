@@ -14,9 +14,9 @@
 #define BLE_UUID_TEMPERATURE_SERVICE_UUID           0x2222 
 
 // Defining 16-bit characteristic UUIDs
-#define BLE_UUID_SENSOR_ID_CHARACTERISTC_UUID          	0x0001 
-#define BLE_UUID_SENSOR_NAME_CHARACTERISTC_UUID         0x0002
-#define BLE_UUID_SENSOR_VALUE_CHARACTERISTC_UUID				0x0003
+#define BLE_UUID_DUMMY_WRITE_CHARACTERISTC_UUID         0x0001 
+#define BLE_UUID_LOG_NUM_CHARACTERISTC_UUID             0x0002
+#define BLE_UUID_SENSOR_VALUE_CHARACTERISTC_UUID	0x0003
 
 
 // status information for temperature_service
@@ -27,16 +27,16 @@ typedef struct
         // service handle for ble stack
         uint16_t                    service_handle;
         // characteristic handels for ble stack
-        ble_gatts_char_handles_t    id_handles;
-        ble_gatts_char_handles_t    name_handles;
-        ble_gatts_char_handles_t    data_handles;
+        ble_gatts_char_handles_t    data_handle;
+        ble_gatts_char_handles_t    dummy_write_handle;
+        ble_gatts_char_handles_t    log_num_handle;
 }ble_tss_t;
 
-struct  __attribute__((__packed__)) temp_log{
+typedef struct  __attribute__((__packed__)){
 	uint32_t time;
 	uint32_t value;
 	uint16_t id;
-};
+}temp_log;
 
 
 /**@brief Function for initializing our new service.
@@ -50,7 +50,8 @@ void temperature_service_init(ble_tss_t * p_our_service);
  * @param[in]   p_our_service       Temperature Service structure.
  * @param[in]   p_ble_evt  Event received from the BLE stack.
  */
-void ble_temperature_service_on_ble_evt(ble_tss_t * p_temperature_service, ble_evt_t * p_ble_evt);
+void ble_temperature_service_on_ble_evt(ble_tss_t * p_temperature_service, ble_evt_t * p_ble_evt,
+                                        temp_log *logs, uint32_t len);
 
 /**@brief Function for updating and sending new characteristic values
  *
@@ -59,6 +60,7 @@ void ble_temperature_service_on_ble_evt(ble_tss_t * p_temperature_service, ble_e
  * @param[in]   p_tss_service            Temperature Service structure.
  * @param[in]   temperature_value     	 New temperature value.
  */
-void termperature_characteristic_update(ble_tss_t *p_tss_service, int32_t *temperature_value, uint32_t *time);
+void termperature_characteristic_update(ble_tss_t *p_tss_service,    
+                                        temp_log most_recent_log);
 
 #endif  /* _ TEMPERATURE_SERVICE_H__ */
