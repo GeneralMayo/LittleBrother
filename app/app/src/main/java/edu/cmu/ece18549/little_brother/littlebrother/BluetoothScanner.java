@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
@@ -20,6 +21,7 @@ import android.util.Log;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -29,11 +31,18 @@ import java.util.UUID;
  */
 public class BluetoothScanner {
     private static final long SCAN_PERIOD = 5000;
-    private static final UUID DEVICE_INFO_UUID = new UUID(0x4f701111290bac89L,0x5444795490294698L);
+    private static final UUID DEVICE_INFO_SERVICE_UUID = new UUID(0x4f701111290bac89L,0x5444795490294698L);
     private static final UUID NAME_CHARACTERISTIC_UUID = new UUID(0x4f700001290bac89L,0x5444795490294698L);
     private static final UUID ID_CHARACTERISTIC_UUID = new UUID(0x4f700002290bac89L,0x5444795490294698L);
-    private static final UUID SENSOR_CHARACTERISTIC_UUID = new UUID(0xdeadbeef,0xdeadbeef);
-    private static final ParcelUuid DEVICE_INFO_UUID_P = new ParcelUuid(DEVICE_INFO_UUID);
+    private static final UUID SENSOR_CHARACTERISTIC_UUID = new UUID(0x4f700003290bac89L,0x5444795490294698L);
+
+    private static final UUID LOG_SERVICE_UUID = new UUID(0xbd59222291e1fe97L,0x3746bc007591507bL);
+    private static final UUID LOG_CHARACTERISTIC_UUID = new UUID(0xbd59000391e1fe97L,0x3746bc007591507bL);
+    private static final UUID NUM_LOG_CHARACTERISTIC_UUID = new UUID(0xbd59000291e1fe97L,0x3746bc007591507bL);
+    private static final UUID WRITE_CHARACTERISTIC_UUID = new UUID(0xbd59000191e1fe97L,0x3746bc007591507bL);
+
+    //private static final ParcelUuid DEVICE_INFO_UUID_P = new ParcelUuid(DEVICE_INFO_SERVICE_UUID);
+
     private static final String DEVICE_NAME = "Little_Brother";
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mBLEScanner;
@@ -76,10 +85,32 @@ public class BluetoothScanner {
         builder.setScanMode(ScanSettings.SCAN_MODE_BALANCED);
         return builder.build();
     }
+    private class LogCount {
+        private int count;
+
+        public LogCount() {
+            this.count = 0;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public int getCount() {
+            return this.count;
+        }
+
+        public void decCount() {
+            this.count = this.count - 1;
+        }
+    }
 
     public Collection<Device> getDevices() {
         final List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
-        final LinkedList<BluetoothGattCharacteristic> readCharacteristics = new LinkedList<>();
+        final LinkedList<BluetoothGattCharacteristic> deviceCharacteristics = new LinkedList<>();
+        final LinkedList<BluetoothGattCharacteristic> logCharacteristics = new LinkedList<>();
+        final LogCount numLogs = new LogCount();
+
         final Device newDevice = new Device();
         final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
             @Override
@@ -89,19 +120,34 @@ public class BluetoothScanner {
                     Log.i(TAG,"Gatt services discovered");
                     List<BluetoothGattService> services = gatt.getServices();
                     for(BluetoothGattService service : services) {
-                        Log.i(TAG,service.toString());
                         UUID uuid = service.getUuid();
-                        if (uuid.equals(DEVICE_INFO_UUID)) {
+                        Log.i(TAG,"Service UUID: " + uuid);
+                        if (uuid.equals(DEVICE_INFO_SERVICE_UUID)) {
+                            Log.i(TAG,"Found device info service");
                             List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
                             Log.i(TAG, "Found " + characteristics.size() + " characteristics");
                             for (BluetoothGattCharacteristic characteristic : characteristics) {
-                                Log.i(TAG,"UUID:"+characteristic.getUuid());
-                                readCharacteristics.add(characteristic);
+                                Log.i(TAG, "UUID:" + characteristic.getUuid());
+                                deviceCharacteristics.add(characteristic);
                             }
-                            gatt.readCharacteristic(readCharacteristics.pop());
+                        } else if (uuid.equals(LOG_SERVICE_UUID)) {
+                            Log.i(TAG,"Found log service");
+                            List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+                            Log.i(TAG, "Found " + characteristics.size() + " characteristics");
+                            for (BluetoothGattCharacteristic characteristic : characteristics) {
+                                UUID charUUID = characteristic.getUuid();
+                                Log.i(TAG, "UUID:" + charUUID);
+                                if (!charUUID.equals(WRITE_CHARACTERISTIC_UUID)) {
+                                    if (charUUID.equals(NUM_LOG_CHARACTERISTIC_UUID)) {
+                                        logCharacteristics.add(0,characteristic);
+                                    } else {
+                                        logCharacteristics.add(characteristic);
+                                    }
+                                }
+                            }
                         }
                     }
-
+                    gatt.readCharacteristic(deviceCharacteristics.pop());
                 } else {
                     Log.w(TAG, "onServicesDiscovered received: " + status);
                 }
@@ -112,9 +158,8 @@ public class BluetoothScanner {
                 super.onConnectionStateChange(gatt, status, newState);
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     Log.i(TAG, "Connected to GATT server.");
-                    Log.i(TAG, "Attempting to start service discovery:" +
-                            gatt.discoverServices());
-
+                    Log.i(TAG, "Attempting to start service discovery:");
+                    gatt.discoverServices();
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     Log.i(TAG, "Disconnected from GATT server.");
                 }
@@ -128,36 +173,59 @@ public class BluetoothScanner {
                     UUID characteristicUUID = characteristic.getUuid();
                     Log.i(TAG,"Characteristic UUID:"+characteristicUUID);
                     if (characteristicUUID.equals(NAME_CHARACTERISTIC_UUID)) {
+                        Log.i(TAG,"Name Characteristic Read");
                         String name = characteristic.getStringValue(0);
                         Log.i(TAG, "Name=" + name);
                         newDevice.setName(name);
                     } else if (characteristicUUID.equals(ID_CHARACTERISTIC_UUID)) {
+                        Log.i(TAG,"Id Characteristic Read");
                         int id = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8,0);
                         Log.i(TAG,"Id=" + id);
                         newDevice.setId(id);
                     } else if (characteristicUUID.equals(SENSOR_CHARACTERISTIC_UUID)) {
+                        Log.i(TAG,"Sensor Characteristic Read");
                         String sensorInfo = characteristic.getStringValue(0);
                         int id = Character.getNumericValue(sensorInfo.charAt(0));
-                        String sensorName = sensorInfo.substring(1);
+                        String sensorName = sensorInfo.substring(2);
+                        Log.i(TAG,"Name=" + sensorName + " Id="+id);
                         Sensor newSensor = new Sensor(id,sensorName,newDevice);
                         try {
                             newDevice.addSensor(newSensor);
                         } catch (DeviceException e) {
-                            Log.i(TAG,e.getMessage());
+                            Log.e(TAG,e.getMessage());
                         }
+                    } else if (characteristicUUID.equals(NUM_LOG_CHARACTERISTIC_UUID)) {
+                        Log.i(TAG,"NumLog Characteristic Read");
+                        int logCount = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16,0);
+                        Log.i(TAG,"Count="+logCount);
+                        numLogs.setCount(logCount);
+                    } else if (characteristicUUID.equals(LOG_CHARACTERISTIC_UUID)) {
+                        Log.i(TAG,"Log Characteristic Read");
+                        //parse log and add to newDevice
+                        numLogs.decCount();
+                        notifyListeners(Notification.LOG_FOUND,null);
 
                     } else {
-                        Log.i(TAG,"Recieved unknown characteristic with UUID " + characteristic.getUuid());
+                        Log.i(TAG,"Received unknown characteristic with UUID " + characteristic.getUuid());
                     }
                 } else {
                     Log.i(TAG,"onCharacteristicRead not successful with status " + status);
                 }
-                if (readCharacteristics.size() > 0) {
-                    gatt.readCharacteristic(readCharacteristics.pop());
+
+                if (deviceCharacteristics.size() > 0) {
+                    gatt.readCharacteristic(deviceCharacteristics.pop());
                 } else {
-                    gatt.disconnect();
-                    devices.add(newDevice);
-                    notifyListeners();
+                    if (!devices.contains(newDevice)) {
+                        devices.add(newDevice);
+                        notifyListeners(Notification.DEVICE_ADDED,newDevice);
+                    }
+                    if (logCharacteristics.size() == 2) {
+                        gatt.readCharacteristic(logCharacteristics.pop());
+                    } else if(numLogs.getCount() > 0) {
+                        gatt.read
+                    } else {
+                        gatt.disconnect();
+                    }
                 }
             }
         };
@@ -199,13 +267,13 @@ public class BluetoothScanner {
 
     }
 
-    public void registerListener(Observer o) {
-        listeners.add(o);
+    public void registerListener(Observer obs) {
+        listeners.add(obs);
     }
 
-    private void notifyListeners() {
-        for(Observer o : listeners) {
-            o.notifyChange();
+    private void notifyListeners(Notification n, Object o) {
+        for(Observer obs : listeners) {
+            obs.notifyChange(n,o);
         }
     }
 }

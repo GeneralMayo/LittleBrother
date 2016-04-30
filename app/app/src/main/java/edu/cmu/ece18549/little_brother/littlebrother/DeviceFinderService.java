@@ -12,6 +12,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,21 +24,29 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     private final static int INTERVAL = 10000;
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
-    private BlockingQueue<Device> mDevices;
+    private BlockingQueue<DeviceLog> mLogs;
+    private List<Device> mDevices;
     private BluetoothScanner mBluetoothScanner;
     private Handler handler;
     private List<Observer> listeners;
     private Collection<Device> tempDevices;
 
     @Override
-    public void notifyChange() {
-        try {
-            for (Device d : tempDevices) {
-                mDevices.put(d);
-            }
-            notifyListeners();
-        } catch (InterruptedException e) {
-            Log.i(TAG,e.getMessage());
+    public void notifyChange(Notification n, Object o) {
+
+        switch(n) {
+            case DEVICE_ADDED:
+                mDevices.add((Device)o);
+                notifyListeners(n,o);
+                break;
+            case LOG_FOUND:
+                try {
+                    mLogs.put((DeviceLog) o);
+                    notifyListeners(n,o);
+                } catch (InterruptedException e) {
+                    Log.i(TAG,"NotifyChange interrupted on add");
+                }
+                break;
         }
     }
 
@@ -60,8 +69,10 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
     @Override
     public void onCreate() {
-        mDevices = new LinkedBlockingQueue<Device>();
+        mLogs = new LinkedBlockingQueue<DeviceLog>();
+        mDevices = Collections.synchronizedList(new LinkedList<Device>());
         mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
+        mBluetoothScanner.registerListener(this);
         handler = new Handler();
         listeners = new LinkedList<Observer>();
         startProducerThread();
@@ -105,18 +116,15 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                 HashSet<DeviceLog> sentLogs = new HashSet<DeviceLog>();
                 while (true) {
                     try {
-                        Device d = mDevices.take();
-                        Log.i(TAG,"Consumer thread found device " + d);
-                        ArrayList<DeviceLog> logs = d.getLogs();
-                        for (DeviceLog log : logs) {
-                            if (!sentLogs.contains(log)) {
-                                try {
-                                    Log.i(TAG,"Consumer initiating upload log");
-                                    ServerCommunicator.uploadLog(log);
-                                    sentLogs.add(log);
-                                } catch (ServerCommunicationException e) {
-                                    Log.e(TAG, "Server Error: " + e.getMessage());
-                                }
+                        DeviceLog log = mLogs.take();
+                        Log.i(TAG,"Consumer thread found log " + log);
+                        if (!sentLogs.contains(log)) {
+                            try {
+                                Log.i(TAG,"Consumer initiating upload log");
+                                ServerCommunicator.uploadLog(log);
+                                sentLogs.add(log);
+                            } catch (ServerCommunicationException e) {
+                                Log.e(TAG, "Server Error: " + e.getMessage());
                             }
                         }
                     } catch (InterruptedException e) {
@@ -125,7 +133,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                 }
             }
         }).start();
-        Log.i("FAKE_DATA_SERVICE", "Consumer thread started");
+        Log.i(TAG, "Consumer thread started");
     }
 
     @Override
@@ -134,13 +142,18 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     }
 
     @Override
+    public Collection<DeviceLog> getLogs() {
+        return mLogs;
+    }
+
+    @Override
     public void registerListener(Observer o) {
         listeners.add(o);
     }
 
-    private void notifyListeners() {
-        for(Observer o : listeners) {
-            o.notifyChange();
+    private void notifyListeners(Notification n, Object o) {
+        for(Observer obs : listeners) {
+            obs.notifyChange(n,o);
         }
     }
 }

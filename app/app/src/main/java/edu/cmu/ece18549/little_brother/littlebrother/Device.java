@@ -118,6 +118,16 @@ public class Device {
         mComponents.put(sensor,newLogs);
     }
 
+    public synchronized Sensor getSensor(int id) {
+        ArrayList<Sensor> sensors = getSensors();
+        for (Sensor s : sensors) {
+            if (s.getId() == id) {
+                return s;
+            }
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof Device)) {
