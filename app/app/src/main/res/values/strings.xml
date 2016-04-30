@@ -80,4 +80,6 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_device_register">DeviceRegister</string>
+    <string name="use_wifi_title"> Always use Wi-Fi </string>
+
 </resources>

@@ -1,8 +1,16 @@
 package edu.cmu.ece18549.little_brother.littlebrother.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +32,7 @@ import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceExcept
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
 
 public class DeviceRegisterActivity extends AppCompatActivity {
+    public static final String SUCCESS_TAG = "SUCCESS";
     public static final String TAG = "DeviceRegister";
     private int mDevice_id;
     private SensorRegisterAdapter mAdapter;
@@ -54,6 +63,30 @@ public class DeviceRegisterActivity extends AppCompatActivity {
         rvSensors.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean wifi_only = prefs.getBoolean("use_wifi_only", true);
+        if (wifi_only) {
+            WifiManager manager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+            if (!manager.isWifiEnabled()) {
+                AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                alertDialog.setTitle("Alert");
+                alertDialog.setMessage("Wi-Fi is currently disabled, please enable Wi-Fi or disable " +
+                                        "the \"only use Wi-Fi\" option in data sync/settings before " +
+                                        "registering devices");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        });
+                alertDialog.show();
+            }
+        }
+    }
+
     public void registerDevice(View v) {
 
         new Thread(new RunnableWithContext(this)).start();
@@ -69,6 +102,7 @@ public class DeviceRegisterActivity extends AppCompatActivity {
 
         @Override
         public void run() {
+            int success;
             EditText deviceNameView = (EditText) findViewById(R.id.deviceNameEditText);
             String deviceName = deviceNameView.getText().toString();
             Device device = Device.devices.get(mDevice_id);
@@ -89,12 +123,14 @@ public class DeviceRegisterActivity extends AppCompatActivity {
                 }
             } catch (RuntimeException e) {
                 Log.e(TAG, e.getMessage());
+                Device.devices.get(mDevice_id).clearSensors();
             } catch (DeviceException e) {
                 //undo all sensors added
                 Device.devices.get(mDevice_id).clearSensors();
             }
-
+            success = Device.devices.get(mDevice_id).getId();
             Intent intent = new Intent(context, DevicesAroundActivity.class);
+            intent.putExtra(SUCCESS_TAG, success);
             context.startActivity(intent);
         }
     }
