@@ -18,7 +18,6 @@ public class IncrementalFakeDeviceFactory extends FakeDeviceFactory {
     private final double INIT_LAT = 40.4443;
     private final double INIT_LONG = -79.9449;
 
-    private List<Device> mDevices;
     private final static String TAG = "INC_DEVICE_FACTORY";
     private int mDeviceCount;
     private int mSensorCount;
@@ -35,7 +34,6 @@ public class IncrementalFakeDeviceFactory extends FakeDeviceFactory {
     }
 
     private void initFactory() {
-        mDevices = new LinkedList<Device>();
         mSensorCount = 0;
         mDeviceCount = 0;
         mLogCount = 0;
@@ -43,7 +41,7 @@ public class IncrementalFakeDeviceFactory extends FakeDeviceFactory {
 
     @Override
     public Device getNewDevice() {
-        Device device = new Device(-1, "Device " + mDeviceCount,
+        Device device = new Device(-1 + mDeviceCount, "Device " + mDeviceCount,
                                    INIT_LAT + 0.1*mDeviceCount, INIT_LONG + 0.1*mDeviceCount);
         int numSensors = getRandomInt(3);
         for (int i = 0; i < numSensors; i++) {
@@ -59,6 +57,7 @@ public class IncrementalFakeDeviceFactory extends FakeDeviceFactory {
         }
 
         mDeviceCount += 1;
+        Device.addDevice(device);
         return device;
     }
 

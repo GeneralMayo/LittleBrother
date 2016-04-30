@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by Ramsey on 3/21/2016.
  */
-public class Sensor implements Serializable{
+public class Sensor {
 
     private final int mId;
     private String mName;

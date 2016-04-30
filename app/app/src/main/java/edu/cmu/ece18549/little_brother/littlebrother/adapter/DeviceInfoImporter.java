@@ -1,5 +1,7 @@
 package edu.cmu.ece18549.little_brother.littlebrother.adapter;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +28,15 @@ public class DeviceInfoImporter implements DataImporter {
 
     @Override
     public void importData() {
-        IncrementalFakeDeviceFactory ifdf = new IncrementalFakeDeviceFactory();
-        for (int i = 0; i < NUM_DEVICES; i++) {
-            mDevices.add(ifdf.getNewDevice());
+        if (Device.devices.size() == 0) {
+            IncrementalFakeDeviceFactory ifdf = new IncrementalFakeDeviceFactory();
+            for (int i = 0; i < NUM_DEVICES; i++) {
+                Device.devices.put(i, ifdf.getNewDevice());
+            }
+        }
+        mDevices = new ArrayList<Device>(Device.devices.values());
+        for(int i = 0; i < mDevices.size(); i++){
+            Log.i(TAG, mDevices.get(i).toString());
         }
     }
 

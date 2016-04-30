@@ -62,8 +62,8 @@ public class BluetoothScanner {
 
     private ScanSettings setupSettings() {
         ScanSettings.Builder builder = new ScanSettings.Builder();
-        builder.setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES);
-        builder.setMatchMode(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT);
+        //builder.setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES);
+        //builder.setMatchMode(ScanSettings.MATCH_NUM_MAX_ADVERTISEMENT);
         builder.setScanMode(ScanSettings.SCAN_MODE_BALANCED);
         return builder.build();
     }

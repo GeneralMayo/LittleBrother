@@ -155,7 +155,6 @@ public class ServerCommunicator {
         return format.format(date);
     }
 
-
     private static class ID {
         int id;
 

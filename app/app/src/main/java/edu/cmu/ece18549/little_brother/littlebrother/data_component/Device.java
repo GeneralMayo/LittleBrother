@@ -1,5 +1,8 @@
 package edu.cmu.ece18549.little_brother.littlebrother.data_component;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,7 +14,10 @@ import java.util.Map;
 /**
  * Created by Ramsey on 3/20/2016.
  */
-public class Device implements Serializable {
+public class Device {
+    public static HashMap<Integer, Device> devices = new HashMap<>();
+    private static int deviceCount = 0;
+
     private boolean registered;
     private int mId;
     private String mName;
@@ -152,5 +158,10 @@ public class Device implements Serializable {
 
     public boolean is_registered() {
         return registered;
+    }
+
+    public static void addDevice(Device d){
+        devices.put(deviceCount, d);
+        deviceCount += 1;
     }
 }
