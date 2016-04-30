@@ -22,8 +22,6 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import edu.cmu.ece18549.little_brother.littlebrother.R;
-import edu.cmu.ece18549.little_brother.littlebrother.activity.DeviceDetailActivity;
-import edu.cmu.ece18549.little_brother.littlebrother.activity.DeviceDetailFragment;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderServiceInterface;
 import edu.cmu.ece18549.little_brother.littlebrother.test.FakeDataService;

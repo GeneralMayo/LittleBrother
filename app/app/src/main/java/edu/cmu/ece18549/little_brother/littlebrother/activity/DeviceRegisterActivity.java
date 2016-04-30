@@ -54,8 +54,6 @@ public class DeviceRegisterActivity extends AppCompatActivity {
     }
 
     public void registerDevice(View v) {
-        //TODO get device data, sensor names, fill error messages
-
 
         new Thread(new RunnableWithContext(this)).start();
         Log.i(TAG, "Registration started");

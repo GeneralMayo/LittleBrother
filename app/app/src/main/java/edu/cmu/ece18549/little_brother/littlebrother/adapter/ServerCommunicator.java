@@ -100,7 +100,7 @@ public class ServerCommunicator {
         try {
             Log.i(TAG,"Requesting id");
             client.get(url, get_handler);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             if (e.getCause() instanceof ServerCommunicationException) {
                 throw (ServerCommunicationException) e.getCause();
             } else {
@@ -120,7 +120,7 @@ public class ServerCommunicator {
             Log.i(TAG,"Registering new sensor with parameters " + params.toString());
             Log.i(TAG, "Registering to url: " + url + "?" + params.toString());
             client.post(url, params, post_handler);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             if (e.getCause() instanceof ServerCommunicationException) {
                 throw (ServerCommunicationException) e.getCause();
             } else {
