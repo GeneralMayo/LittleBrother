@@ -26,7 +26,7 @@ import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface, Observer{
     private final static int SERVICE_START_MODE = START_STICKY;
-    private final static int INTERVAL = 10000;
+    private final static int INTERVAL = 15000;
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
     private BlockingQueue<DeviceLog> mLogs;
@@ -38,10 +38,11 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
     @Override
     public void notifyChange(Notification n, Object o) {
-
+        //Log.i(TAG,"Received notification");
         switch(n) {
             case DEVICE_ADDED:
                 Device o1 = (Device) o;
+                //Log.i(TAG,"Device notified with id="+o1.getId());
                 if (mDevices.contains(o1)) {
                     mDevices.remove(o1);
                     mDevices.add(o1);
@@ -51,12 +52,17 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                 notifyListeners(n,o);
                 break;
             case LOG_FOUND:
+                DeviceLog o2 = (DeviceLog)o;
+                //Log.i(TAG,"Log notified with id="+String.format("%x",o2.getId()));
                 try {
-                    mLogs.put((DeviceLog) o);
+                    mLogs.put(o2);
                     notifyListeners(n,o);
                 } catch (InterruptedException e) {
                     Log.i(TAG,"NotifyChange interrupted on add");
                 }
+                break;
+            case DEVICE_DONE:
+                //Log.i(TAG,"Searching set to false");
                 break;
         }
     }
@@ -101,20 +107,15 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
             @Override
             public void run() {
-                int iterations = 0;
                 while (true) {
-                    if (iterations == 1) {
-                        stopSelf();
-                    } else {
-                        Log.i(TAG, "Initiating device scan " +iterations);
-                        tempDevices = mBluetoothScanner.getDevices();
-                        iterations++;
-                        try {
-                            Thread.sleep(INTERVAL);
+                    //Log.i(TAG, "Initiating device scan");
+                    tempDevices = mBluetoothScanner.getDevices();
+                    //Log.i(TAG, "Producer continuing");
+                    try {
+                        Thread.sleep(INTERVAL);
                         } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
+                          Thread.currentThread().interrupt();
                         }
-                    }
                 }
             }
         }).start();

@@ -50,6 +50,7 @@ public class Device {
     }
 
     public Device() {
+        mComponents = new HashMap<>();
 
     }
 
