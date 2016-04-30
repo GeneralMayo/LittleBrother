@@ -72,6 +72,7 @@ Output/nrf51422_xxac_s130\ Debug/Obj/main.o: \
  /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../our_service.h \
  /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../device_info_service.h \
  /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../temperature_service.h \
+ /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../flash_operations.h \
  ../../../../../../external/segger_rtt/SEGGER_RTT.h \
  ../../../../../../components/libraries/uart/app_uart.h \
  ../../../../../../components/libraries/util/app_util_platform.h \

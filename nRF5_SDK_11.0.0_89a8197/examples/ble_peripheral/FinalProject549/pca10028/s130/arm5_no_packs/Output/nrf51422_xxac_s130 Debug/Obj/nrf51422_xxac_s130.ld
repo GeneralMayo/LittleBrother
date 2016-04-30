@@ -36,8 +36,8 @@ SECTIONS
 
   . = ASSERT(__vectors_ram_start__ == __vectors_ram_end__ || (__vectors_ram_end__ >= __RAM_segment_start__ && __vectors_ram_end__ <= __RAM_segment_end__) , "error: .vectors_ram is too large to fit in RAM memory segment");
 
-  __vectors_load_start__ = 0x1B000;
-  .vectors 0x1B000 : AT(0x1B000)
+  __vectors_load_start__ = 0x1b000;
+  .vectors 0x1b000 : AT(0x1b000)
   {
     __vectors_start__ = .;
     *(.vectors .vectors.*)

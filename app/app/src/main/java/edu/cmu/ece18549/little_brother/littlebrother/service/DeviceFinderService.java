@@ -1,8 +1,12 @@
 package edu.cmu.ece18549.little_brother.littlebrother.service;
 
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -37,7 +41,13 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
         switch(n) {
             case DEVICE_ADDED:
-                mDevices.add((Device)o);
+                Device o1 = (Device) o;
+                if (mDevices.contains(o1)) {
+                    mDevices.remove(o1);
+                    mDevices.add(o1);
+                } else {
+                    mDevices.add(o1);
+                }
                 notifyListeners(n,o);
                 break;
             case LOG_FOUND:
@@ -82,6 +92,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
     @Override
     public void onDestroy() {
+        mBluetoothScanner.delete();
         Log.i(TAG, "Service ending");
     }
 

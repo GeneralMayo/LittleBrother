@@ -13,7 +13,8 @@
 
 // Defining 16-bit characteristic UUID
 #define BLE_UUID_DEVICE_NAME_CHARACTERISTC_UUID          0x0001 
-#define BLE_UUID_DEVICE_ID_CHARACTERISTC_UUID          0x0002
+#define BLE_UUID_DEVICE_ID_CHARACTERISTC_UUID            0x0002
+#define BLE_UUID_SENSOR_START_CHARACTERISTC_UUID         0x0003
 
 
 // This structure contains various status information for our service. 

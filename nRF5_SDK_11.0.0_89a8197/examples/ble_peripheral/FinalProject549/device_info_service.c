@@ -25,9 +25,29 @@ static uint32_t chars_add(ble_dis_t * p_our_service)
 	
     // Add device id UUID
     ble_uuid_t          id_uuid;
-    id_uuid.uuid      = BLE_UUID_DEVICE_NAME_CHARACTERISTC_UUID;
+    id_uuid.uuid      = BLE_UUID_DEVICE_ID_CHARACTERISTC_UUID;
     sd_ble_uuid_vs_add(&base_uuid, &id_uuid.type);
     APP_ERROR_CHECK(err_code);
+    
+
+    const char *names[3];
+    names[0] = "0_Tmp102";
+    names[1] = "1_OPT101";
+    names[2] = "2_ADXL345";
+    uint8_t nameLens[3];
+    nameLens[0] = 8;
+    nameLens[1] = 8;
+    nameLens[2] = 9;
+    uint8_t len = 3;
+    
+    //add sensor char uuid's
+    ble_uuid_t          sensor_names_uuid[len];
+    for(int i = 0; i< len; i++){
+      sensor_names_uuid[i].uuid      = BLE_UUID_SENSOR_START_CHARACTERISTC_UUID;//+i;
+      err_code = sd_ble_uuid_vs_add(&base_uuid, &sensor_names_uuid[i].type);
+      APP_ERROR_CHECK(err_code);
+    }
+    
     
     // Add read properties to our characteristics
     ble_gatts_char_md_t char_md;
@@ -61,11 +81,9 @@ static uint32_t chars_add(ble_dis_t * p_our_service)
     memset(&attr_name_value, 0, sizeof(attr_name_value));        
     attr_name_value.p_uuid      = &name_uuid;
     attr_name_value.p_attr_md   = &attr_md;
-    
-    // Set name characteristic length in number of bytes
-    attr_name_value.max_len     = 32;
-    attr_name_value.init_len    = 12;
-    char *name_value          = "Device_Info";
+    attr_name_value.max_len     = 3;
+    attr_name_value.init_len    = 3;
+    char *name_value          = "LB1";
     attr_name_value.p_value     = name_value;
 		
 		
@@ -74,28 +92,41 @@ static uint32_t chars_add(ble_dis_t * p_our_service)
     memset(&attr_id_value, 0, sizeof(attr_id_value));        
     attr_id_value.p_uuid      = &id_uuid;
     attr_id_value.p_attr_md   = &attr_md;
-    
-    // Set name characteristic length in number of bytes
     attr_id_value.max_len     = 4;
-    attr_id_value.init_len    = 2;
+    attr_id_value.init_len    = 4;
     uint8_t id_value          = 1;
     attr_id_value.p_value     = &id_value;
 
-    // OUR_JOB: Step 2.E, Add our new characteristic to the service
+    // Configure the sensor name characteristic value attributes
+    ble_gatts_attr_t    attr_sensor_names_value[len];
+    for(int i = 0; i<len;i++){
+      memset(&(attr_sensor_names_value[i]), 0, sizeof(attr_sensor_names_value[i]));        
+      attr_sensor_names_value[i].p_uuid      = &(sensor_names_uuid[i]);
+      attr_sensor_names_value[i].p_attr_md   = &attr_md;
+      attr_sensor_names_value[i].max_len     = nameLens[i];
+      attr_sensor_names_value[i].init_len    = nameLens[i];
+      attr_sensor_names_value[i].p_value     = names[i];
+    }
+    
+    // Add our new characteristic to the service
     err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
                                        &char_md,
                                        &attr_name_value,
                                        &p_our_service->char_handles);
-																			 
-		err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
-                                       &char_md,
-                                       &attr_id_value,
-                                       &p_our_service->char_handles);
+    APP_ERROR_CHECK(err_code);                                                                                                                                                                                    
+    err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
+                           &char_md,
+                           &attr_id_value,
+                           &p_our_service->char_handles);
     APP_ERROR_CHECK(err_code);
     
-    printf("Service handle: %d\n\r", p_our_service->service_handle);
-    printf("Char value handle: %d\r\n", p_our_service->char_handles.value_handle);
-    printf("Char cccd handle: %d\r\n", p_our_service->char_handles.cccd_handle);
+    for(int i = 0; i<len; i++){
+      err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
+                           &char_md,
+                           &attr_sensor_names_value[i],
+                           &p_our_service->char_handles);
+      APP_ERROR_CHECK(err_code);
+    }
 
     return NRF_SUCCESS;
 }
