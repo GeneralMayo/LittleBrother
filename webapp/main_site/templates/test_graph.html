@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block refs %}
+  {% load staticfiles %}
+  <link href="{% static 'assets/css/line_graph.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<div id="line_graph">
+</div>
+
+
+<script src="{% static 'assets/js/d3.v3.min.js' %}"></script>
+<script src="{% static 'assets/js/line_graph.js' %}"></script>
+<script>
+
+var format = d3.time.format("%Y-%m-%d %H:%M:%S");
+data = []
+{% for log in logs %}
+data.push({date: format.parse("{{ log.time }}"),
+  close: parseInt("{{ log.value }}")})
+{% endfor %}
+
+graph(data)
+
+function type(d) {
+  d.date = formatDate.parse(d.date);
+  d.close = +d.close;
+  return d;
+}
+
+</script>
+
+{% endblock %}

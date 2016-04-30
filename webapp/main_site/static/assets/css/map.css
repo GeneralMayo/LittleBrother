@@ -9,3 +9,10 @@ html, body {
   width: 1000px;
 }
 
+#small-map {
+  position: absolute;
+  right: 10%;
+  top: 30%;
+  height: 50%;
+  width: 40%;
+}
