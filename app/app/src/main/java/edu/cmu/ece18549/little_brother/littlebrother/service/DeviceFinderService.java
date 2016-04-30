@@ -41,7 +41,13 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
         switch(n) {
             case DEVICE_ADDED:
-                mDevices.add((Device)o);
+                Device o1 = (Device) o;
+                if (mDevices.contains(o1)) {
+                    mDevices.remove(o1);
+                    mDevices.add(o1);
+                } else {
+                    mDevices.add(o1);
+                }
                 notifyListeners(n,o);
                 break;
             case LOG_FOUND:
