@@ -14,7 +14,10 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.util.Log;
 
@@ -60,18 +63,46 @@ public class BluetoothScanner {
     private final static String TAG = "BLUETOOTH_SCANNER";
     private final Context mContext;
 
+    private boolean bluetoothEnabled;
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG,"Received intent");
+            String action = intent.getAction();
+            if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                int newState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.ERROR);
+                if (newState == BluetoothAdapter.STATE_ON) {
+                    Log.i(TAG,"Bluetooth turned on");
+                    bluetoothEnabled = true;
+                    mBLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+                } else if (newState == BluetoothAdapter.STATE_OFF) {
+                    Log.i(TAG,"Bluetooth turned off");
+                    bluetoothEnabled = false;
+                }
+            }
+        }
+    };
+
 
 
     public BluetoothScanner(Context context) {
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
-        mBLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+        if (mBluetoothAdapter.isEnabled()) {
+            mBLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+            bluetoothEnabled = true;
+        } else {
+            bluetoothEnabled = false;
+        }
+
         handler = new Handler();
         mContext = context;
         scanFilters = setupFilters();
         scanSettings = setupSettings();
         listeners = new LinkedList<Observer>();
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        context.registerReceiver(receiver, filter);
     }
 
     private List<ScanFilter> setupFilters() {
@@ -133,6 +164,11 @@ public class BluetoothScanner {
 
     public Collection<Device> getDevices() {
         final List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
+        if (!bluetoothEnabled) {
+            Log.i(TAG,"Bluetooth disabled, returning empty list");
+            return devices;
+        }
+
         final LinkedList<BluetoothGattCharacteristic> deviceCharacteristics = new LinkedList<>();
         final LinkedList<BluetoothGattCharacteristic> logCharacteristics = new LinkedList<>();
         final LogCount numLogs = new LogCount();
@@ -363,5 +399,9 @@ public class BluetoothScanner {
         for(Observer obs : listeners) {
             obs.notifyChange(n,o);
         }
+    }
+
+    public void delete() {
+        mContext.unregisterReceiver(receiver);
     }
 }
