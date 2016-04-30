@@ -33,6 +33,8 @@ import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
 
 public class DeviceRegisterActivity extends AppCompatActivity {
     public static final String SUCCESS_TAG = "SUCCESS";
+    public static final String WIFI = "Wi-Fi";
+    public static final String ANY = "Any";
     public static final String TAG = "DeviceRegister";
     private int mDevice_id;
     private SensorRegisterAdapter mAdapter;
@@ -66,24 +68,44 @@ public class DeviceRegisterActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Boolean wifi_only = prefs.getBoolean("use_wifi_only", true);
-        if (wifi_only) {
-            WifiManager manager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-            if (!manager.isWifiEnabled()) {
-                AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-                alertDialog.setTitle("Alert");
-                alertDialog.setMessage("Wi-Fi is currently disabled, please enable Wi-Fi or disable " +
-                                        "the \"only use Wi-Fi\" option in data sync/settings before " +
-                                        "registering devices");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        });
-                alertDialog.show();
-            }
+        // Gets the user's network preference settings
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String sPref = sharedPrefs.getString("listPref", "Wi-Fi");
+        boolean wifiConnected;
+        boolean mobileConnected;
+
+        ConnectivityManager connMgr =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+        if (activeInfo != null && activeInfo.isConnected()) {
+            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+        } else {
+            wifiConnected = false;
+            mobileConnected = false;
+        }
+
+        String alertText = null;
+        if (sPref.equals(WIFI) && mobileConnected && !wifiConnected) {
+            alertText = "Wi-Fi is currently disabled, please enable Wi-Fi or disable " +
+                    "the \"Network\" option in data sync/Network Preferences before " +
+                    "registering devices";
+        } else if (!mobileConnected && !wifiConnected){
+            alertText = "No network available";
+        }
+        if (alertText != null) {
+            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog.setTitle("Alert");
+            alertDialog.setMessage(alertText);
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+            alertDialog.show();
         }
     }
 
