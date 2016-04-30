@@ -141,7 +141,6 @@ public class DeviceInfoAdapter extends BaseExpandableListAdapter {
         @Override
         public void onClick(View v) {
 
-
             int deviceId = -1;
             Iterator it = Device.devices.entrySet().iterator();
             while (it.hasNext()) {
@@ -151,12 +150,7 @@ public class DeviceInfoAdapter extends BaseExpandableListAdapter {
                     break;
                 }
             }
-//            // if the device does not exist, it is no longer in range of the phone.
-//            // Restart the activity with error indicating so.
-//            if (!it.hasNext()) {
-//                Intent intent = new Intent(context, DevicesAroundActivity.class);
-//                context.startActivity(intent);
-//            }
+
             Context context = v.getContext();
             Intent intent = new Intent(context, DeviceRegisterActivity.class);
             intent.putExtra(DEVICE_TAG, deviceId);
