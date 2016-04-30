@@ -60,7 +60,7 @@ public class ServerCommunicator {
         params.add("custom_id",log.getId() + "");
         params.add("time",convertDate(log.getDate()));
         params.add("value",log.getValue() + "");
-        params.add("time_app",convertDate(log.getTimeRecieved()));
+        params.add("time_app",convertDate(log.getTimeReceived()));
         params.add("device",log.getDevice().getId() + "");
         params.add("sensor_id",log.getSensor().getId() + "");
         try {

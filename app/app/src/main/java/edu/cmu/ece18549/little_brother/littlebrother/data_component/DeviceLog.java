@@ -10,14 +10,14 @@ public class DeviceLog {
     private final int mId;
     private final Date mDate;
     private final double mValue;
-    private final Date mTimeRecieved;
+    private final Date mTimeReceived;
     private final Sensor mSensor;
 
-    public DeviceLog(int id, Date date, double value, Date timeRecieved, Sensor sensor) {
+    public DeviceLog(int id, Date date, double value, Date timeReceived, Sensor sensor) {
         mId = id;
         mDate = date;
         mValue = value;
-        mTimeRecieved = timeRecieved;
+        mTimeReceived = timeReceived;
         mSensor = sensor;
     }
 
@@ -33,8 +33,8 @@ public class DeviceLog {
         return mValue;
     }
 
-    public Date getTimeRecieved() {
-        return mTimeRecieved;
+    public Date getTimeReceived() {
+        return mTimeReceived;
     }
 
     public Sensor getSensor() {
@@ -61,6 +61,6 @@ public class DeviceLog {
 
     @Override
     public String toString() {
-        return "" + mId + mDate + mValue + mTimeRecieved;
+        return "" + mId + mDate + mValue + mTimeReceived;
     }
 }
