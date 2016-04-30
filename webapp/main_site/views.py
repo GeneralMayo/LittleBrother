@@ -45,7 +45,8 @@ def add_device(request):
 
     if not form.is_valid():
         write_log("Device parameters invalid: " + str(form.errors.as_data()))
-        return HttpResponseBadRequest('Device parameters invalid')
+        return HttpResponseBadRequest('Device parameters invalid' + \
+				      str(form.errors.as_data()))
     if form.cleaned_data['admin']:
     	new_device = Device(name=form.cleaned_data['name'],
                         latitude=form.cleaned_data['latitude'],
@@ -151,10 +152,6 @@ def device_data(request, device_id):
     sensors = Sensor.objects.filter(device=device)
     logs = Log.objects.none()
 
-    log = Log.objects.get(id=1)
-    print dir(log.time)
-    print str(log.time.date()) + " " + str(log.time.time())
-
     for sensor in sensors:
         sensor_logs = Log.objects.filter(sensor=sensor)
         sensor.logs = sensor_logs
@@ -169,7 +166,7 @@ def device_data(request, device_id):
     context["logs"] = logs
     return render(request,'device_data.html',context)
 
-def test_visuals(request):
+def test_chart(request):
     context = {}
     context["logs"] = Log.objects.all()
     context["devices"] = Device.objects.all()
@@ -205,20 +202,20 @@ def configure(request):
 
     if request.method == 'GET':
         context['form'] = ConfigurationForm()
-        return render(request, 'configure.html', context)
+        return render(request, 'configuration.html', context)
 
     form = ConfigurationForm(request.POST)
     context['form'] = form
 
     if not form.is_valid():
-        return render(request, 'configure.html', context)
+        return render(request, 'configuration.html', context)
 
     device = Device.objects.get(id=form.cleaned_data['device_id'])
     if not request.user == device.admin:
         context['errors'] = ["You are not an admin for device %d" % (form.cleaned_data['device_id'])]
-        return (request,'configure.html',context)
+        return (request,'configuration.html',context)
 
-    config = Configuration(device=Device.objects.get(id=form.cleaned_data['id']),
+    config = Configuration(device=Device.objects.get(id=form.cleaned_data['device_id']),
                            device_off = form.cleaned_data['device_off'],
                            sensors_off = form.cleaned_data['sensors_off'],
                            device_sleep = form.cleaned_dta['device_sleep'],
@@ -226,11 +223,16 @@ def configure(request):
              
     config.save()
     context['success'] = "Configuration completed successfully"
-    return render(request,'configure.html',context)
+    return render(request,'configuration.html',context)
 
 @transaction.atomic
-def download_config(request,last_config):
+def download_config(request):
     context = {}
+
+    if "id" not in request.POST:
+        return JsonResponse({"error" : "configuration id not found"})
+	
+    last_config = int(request.POST["id"])
     
     if not Configuration.objects.filter(id=last_config).exists():
         return JsonResponse({"error": "Configuration does not exist"})
