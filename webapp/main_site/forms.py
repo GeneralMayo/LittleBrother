@@ -10,14 +10,12 @@ class DeviceForm(forms.ModelForm):
 
     def clean_latitude(self):
         latitude = float(self.cleaned_data.get('latitude'))
-        print latitude
         if (latitude > 90.0 or latitude < -90.0):
             raise forms.ValidationError('Latitude must be between -90 and 90')
         return latitude
 
     def clean_longitude(self):
         longitude = float(self.cleaned_data.get('longitude'))
-        print longitude
         if (longitude > 180.0 or longitude < -180.0):
             raise forms.ValidationError('Longitude must be between -180 and 180')
         return longitude
@@ -75,7 +73,7 @@ class RegistrationForm(forms.Form):
         return username
 
 class ConfigurationForm(forms.ModelForm):
-    id = forms.IntegerField()
+    device_id = forms.IntegerField()
 
     class Meta:
         model = Configuration
@@ -83,12 +81,15 @@ class ConfigurationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ConfigurationForm, self).__init__(*args, **kwargs)
-        ordered_fields = ['id']
+        ordered_fields = ['device_id']
         self.fields.keyOrder = ordered_fields + [k for k in self.fields.keys() if k not in ordered_fields]
 
     def clean(self):
         cleaned_data = super(ConfigurationForm,self).clean()
-        device = Device.objects.get(cleaned_data["id"])
+        device = Device.objects.get(cleaned_data["device_id"])
+        if not Device.objects.filter(id=self.cleaned_data["device_id"]).exists():
+            raise forms.ValidationError('Device does not exist')
+	return self.cleaned_data["device_id"]
         if ("device_off" not in cleaned_data):
             cleaned_data["device_off"] = device.device_off
         if ("sensors_off" not in cleaned_data):
@@ -97,12 +98,9 @@ class ConfigurationForm(forms.ModelForm):
             cleaned_data["device_sleep"] = device.logs_sleep
         return cleaned_data
 
-    def clean_id(self):
-        if not Device.objects.filter(id=self.cleaned_data["id"]).exists():
-            raise forms.ValidationError('Device does not exist')
 
     def clean_sensors_off(self):
-	device = Device.objects.get(id=self.cleaned_data["id"])
+	device = Device.objects.get(id=self.cleaned_data["device_id"])
         sensors_off = self.cleaned_data["sensors_off"]
         if (2**len(device.sensor_set.all()) - 1 < sensors_off):
             raise forms.ValidationError("Device does not have that many sensors")

@@ -128,6 +128,10 @@ public class Device {
         return newLogs;
     }
 
+    public synchronized void clearSensors() {
+        mComponents.clear();
+    }
+
     public synchronized ArrayList<Sensor> getSensors() {
         return new ArrayList<Sensor>(mComponents.keySet());
     }

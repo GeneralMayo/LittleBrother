@@ -100,7 +100,7 @@ public class ServerCommunicator {
         try {
             Log.i(TAG,"Requesting id");
             client.get(url, get_handler);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             if (e.getCause() instanceof ServerCommunicationException) {
                 throw (ServerCommunicationException) e.getCause();
             } else {
@@ -125,6 +125,7 @@ public class ServerCommunicator {
                 throw (ServerCommunicationException) e.getCause();
             } else {
                 Log.e(TAG,e.getMessage());
+                e.getStackTrace();
             }
         }
     }
@@ -146,6 +147,7 @@ public class ServerCommunicator {
                 throw (ServerCommunicationException) e.getCause();
             } else {
                 Log.e(TAG,e.getMessage());
+                e.getStackTrace();
             }
         }
     }

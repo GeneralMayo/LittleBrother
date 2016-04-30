@@ -25,7 +25,7 @@
 #include "nordic_common.h"
 #include "sdk_errors.h"
 #include "nrf_log.h"
-#include "SEGGER_RTT.h"
+//#include "SEGGER_RTT.h"
 
 #ifdef DEBUG
 #include "bsp.h"
@@ -43,9 +43,9 @@
 /*lint -save -e14 */
 void app_error_handler(ret_code_t error_code, uint32_t line_num, const uint8_t * p_file_name)
 {	
-		SEGGER_RTT_printf(0,"Error_Code: %u\n",error_code);
+		printf("Error_Code: %u\n",error_code);
 		if(error_code != 0){
-			SEGGER_RTT_printf(0,"Error_Code: %u\nLine_Num: %u\nFile_Name: %s\n",error_code,line_num,*p_file_name);
+			printf("Error_Code: %u\nLine_Num: %u\nFile_Name: %s\n",error_code,line_num,*p_file_name);
 		}
 		error_info_t error_info =
     {

@@ -20,6 +20,7 @@ import edu.cmu.ece18549.little_brother.littlebrother.adapter.SensorRegisterAdapt
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicationException;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceException;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
 
 public class DeviceRegisterActivity extends AppCompatActivity {
@@ -54,8 +55,6 @@ public class DeviceRegisterActivity extends AppCompatActivity {
     }
 
     public void registerDevice(View v) {
-        //TODO get device data, sensor names, fill error messages
-
 
         new Thread(new RunnableWithContext(this)).start();
         Log.i(TAG, "Registration started");
@@ -86,9 +85,13 @@ public class DeviceRegisterActivity extends AppCompatActivity {
                     sensors.add(sensor);
                     Log.i(TAG, "current device id: " + device.getId());
                     ServerCommunicator.registerSensor(sensor);
+                    Device.devices.get(mDevice_id).addSensor(s);
                 }
-            } catch (ServerCommunicationException e) {
+            } catch (RuntimeException e) {
                 Log.e(TAG, e.getMessage());
+            } catch (DeviceException e) {
+                //undo all sensors added
+                Device.devices.get(mDevice_id).clearSensors();
             }
 
             Intent intent = new Intent(context, DevicesAroundActivity.class);

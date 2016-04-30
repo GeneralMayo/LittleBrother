@@ -27,7 +27,7 @@
       gcc_entry_point="Reset_Handler"
       linker_memory_map_file="$(PackagesDir)/nRF/XML/nRF51422_xxAC_MemoryMap.xml"
       linker_section_placement_file="$(StudioDir)/targets/Cortex_M/flash_placement.xml"
-      linker_section_placement_macros="FLASH_START=0x1B000;RAM_START=0x20002080"
+      linker_section_placement_macros="FLASH_START=0x1b000;RAM_START=0x20002080"
       macros="DeviceHeaderFile=$(PackagesDir)/nRF/CMSIS/Device/Include/nrf.h;DeviceLibraryIdentifier=M0l;DeviceSystemFile=$(PackagesDir)/nRF/CMSIS/Device/Source/system_nrf51.c;DeviceVectorsFile=$(PackagesDir)/nRF/Source/nrf51_Vectors.s;DeviceFamily=nRF"
       package_dependencies="nRF"
       project_directory=""
@@ -77,7 +77,6 @@
         <file file_name="../../../../../../components/libraries/util/nrf_log.c" />
         <file file_name="../../../../../../components/libraries/sensorsim/sensorsim.c" />
       </folder>
-      <folder Name="nRF_Segger_RTT" />
       <folder Name="nRF_SoftDevice">
         <file file_name="../../../../../../components/softdevice/s130/doc/s130_nrf51_2.0.0_licence_agreement.txt" />
         <file file_name="../../../../../../components/softdevice/common/softdevice_handler/softdevice_handler.c" />
@@ -95,7 +94,6 @@
           default_const_section=".init_rodata" />
       </file>
     </folder>
-    <folder Name="RTT Files" />
     <folder Name="Script Files">
       <file file_name="$(PackagesDir)/nRF/Scripts/nRF_Target.js">
         <configuration Name="Common" file_type="Reset Script" />
@@ -119,4 +117,7 @@
     c_preprocessor_definitions="NDEBUG"
     gcc_debugging_level="Level 1"
     gcc_optimization_level="Level 1" />
+  <configuration
+    Name="Common"
+    linker_section_placement_macros="FLASH_START=0x1b000;RAM_START=0x20002080" />
 </solution>

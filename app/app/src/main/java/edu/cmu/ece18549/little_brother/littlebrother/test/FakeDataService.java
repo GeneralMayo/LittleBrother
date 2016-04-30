@@ -67,6 +67,11 @@ public class FakeDataService extends Service implements DeviceFinderServiceInter
         return mDevices;
     }
 
+    @Override
+    public Collection<DeviceLog> getLogs() {
+        return null;
+    }
+
     private void startProducerThread() {
         new Thread(new Runnable() {
 
