@@ -31,8 +31,4 @@ public class DevicesAroundActivity extends AppCompatActivity {
         mDeviceListView.setAdapter(mAdapter);
     }
 
-    public void loadDeviceRegisterActivity(View v) {
-        Intent intent = new Intent(this, DeviceRegisterActivity.class);
-        startActivity(intent);
-    }
 }

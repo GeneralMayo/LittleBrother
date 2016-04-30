@@ -90,6 +90,7 @@
             android:name=".activity.DeviceRegisterActivity"
             android:label="@string/title_activity_device_register"
             android:parentActivityName=".activity.DevicesAroundActivity"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

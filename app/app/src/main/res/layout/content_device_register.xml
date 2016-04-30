@@ -25,7 +25,8 @@
         android:text="@string/register_device"
         android:id="@+id/registerDeviceButton"
         android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/sensor_list" />
+        android:layout_alignEnd="@+id/sensor_list"
+        android:onClick="registerDevice"/>
 
     <EditText
         android:layout_width="match_parent"

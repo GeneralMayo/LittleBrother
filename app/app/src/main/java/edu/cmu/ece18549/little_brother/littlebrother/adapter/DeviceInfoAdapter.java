@@ -1,11 +1,14 @@
 package edu.cmu.ece18549.little_brother.littlebrother.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -13,12 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.cmu.ece18549.little_brother.littlebrother.R;
+import edu.cmu.ece18549.little_brother.littlebrother.activity.DeviceRegisterActivity;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 
 /**
  * Created by alexmaeda on 4/28/16.
  */
 public class DeviceInfoAdapter extends BaseExpandableListAdapter {
+    public static final String DEVICE_TAG = "Device";
 
     private Context mContext;
     //List of Device names
@@ -93,10 +98,15 @@ public class DeviceInfoAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.list_group_unregistered, null);
             TextView listHeaderLabel = (TextView) convertView
                     .findViewById(R.id.unregisteredHeaderLabel);
+            Button registerButton = (Button) convertView
+                    .findViewById(R.id.register_button);
+            registerButton.setOnClickListener(new RegisterButtonListener(d));
+
             listHeaderLabel.setTypeface(null, Typeface.BOLD);
             listHeaderLabel.setText(headerTitle);
             return convertView;
-        } else if (convertView == null) {
+        }
+        if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.mContext
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.list_group, null);
@@ -118,5 +128,21 @@ public class DeviceInfoAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return false;
+    }
+
+    private class RegisterButtonListener implements View.OnClickListener {
+        Device device;
+
+        public RegisterButtonListener(Device d){
+            device = d;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, DeviceRegisterActivity.class);
+            intent.putExtra(DEVICE_TAG, device);
+            context.startActivity(intent);
+        }
     }
 }

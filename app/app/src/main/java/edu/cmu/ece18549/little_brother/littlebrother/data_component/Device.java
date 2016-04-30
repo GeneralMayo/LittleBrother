@@ -1,5 +1,6 @@
 package edu.cmu.ece18549.little_brother.littlebrother.data_component;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.Map;
 /**
  * Created by Ramsey on 3/20/2016.
  */
-public class Device {
+public class Device implements Serializable{
     private boolean registered;
     private int mId;
     private String mName;
