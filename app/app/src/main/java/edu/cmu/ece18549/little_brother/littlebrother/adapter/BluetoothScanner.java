@@ -76,19 +76,20 @@ public class BluetoothScanner {
             String action = intent.getAction();
             if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
                 int newState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.ERROR);
+
                 if (newState == BluetoothAdapter.STATE_ON) {
-                    //Log.i(TAG,"Bluetooth turned on");
+                    Log.i(TAG,"Bluetooth turned on");
                     bluetoothEnabled = true;
                     mBLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
                 } else if (newState == BluetoothAdapter.STATE_OFF) {
-                    //Log.i(TAG,"Bluetooth turned off");
+                    Log.i(TAG,"Bluetooth turned off");
                     bluetoothEnabled = false;
-                    mBluetoothAdapter.enable();
+
+                    //mBluetoothAdapter.enable();
                 }
             }
         }
     };
-
 
 
     public BluetoothScanner(Context context) {
@@ -190,7 +191,7 @@ public class BluetoothScanner {
                         UUID uuid = service.getUuid();
                         //Log.i(TAG,"Service UUID: " + uuid);
                         if (uuid.equals(DEVICE_INFO_SERVICE_UUID)) {
-                            //Log.i(TAG,"Found device info service");
+                            Log.i(TAG,"Found device info service");
                             List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
                             //Log.i(TAG, "Found " + characteristics.size() + " characteristics");
 
@@ -207,7 +208,7 @@ public class BluetoothScanner {
                                 deviceCharacteristics.add(characteristic);
                             }
                         } else if (uuid.equals(LOG_SERVICE_UUID)) {
-                            //Log.i(TAG,"Found log service");
+                            Log.i(TAG,"Found log service");
                             List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
                             //Log.i(TAG, "Found " + characteristics.size() + " characteristics");
                             sortCharacteristics(characteristics);
@@ -251,15 +252,15 @@ public class BluetoothScanner {
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                 super.onConnectionStateChange(gatt, status, newState);
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    //Log.i(TAG, "Connected to GATT server.");
-                    //Log.i(TAG, "Attempting to start service discovery:");
+                    Log.i(TAG, "Connected to GATT server.");
+                    Log.i(TAG, "Attempting to start service discovery:");
                     gatt.discoverServices();
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    //Log.i(TAG, "Disconnected from GATT server.");
+                    Log.i(TAG, "Disconnected from GATT server.");
                     gatt.close();
-                    //Log.i(TAG, "GATT Server Closed");
-                    scanLeDevice(false, null);
-                    mBluetoothAdapter.disable();
+                    Log.i(TAG, "GATT Server Closed");
+                    //scanLeDevice(false, null);
+                    //mBluetoothAdapter.disable();
                     //Log.i(TAG,"Reset BluetoothAdapter");
                     //mBluetoothAdapter.enable();
                     notifyListeners(Notification.DEVICE_DONE,null);
@@ -271,7 +272,7 @@ public class BluetoothScanner {
                 super.onCharacteristicWrite(gatt,characteristic,status);
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     if (characteristic.getUuid().equals(WRITE_CHARACTERISTIC_UUID)) {
-                        //Log.i(TAG, "Write successful");
+                        Log.i(TAG, "Write successful");
                         if (numLogs.getCount() == 0) {
                             logCharacteristics.pop();
                             logCharacteristics.pop();
@@ -379,10 +380,10 @@ public class BluetoothScanner {
                         }
 
                     } else {
-                       // Log.i(TAG,"Received unknown characteristic with UUID " + characteristic.getUuid());
+                        Log.i(TAG,"Received unknown characteristic with UUID " + characteristic.getUuid());
                     }
                 } else {
-                    //Log.i(TAG,"onCharacteristicRead not successful with status " + status);
+                    Log.i(TAG,"onCharacteristicRead not successful with status " + status);
                 }
 
                 if (deviceCharacteristics.size() > 0) {
@@ -409,7 +410,7 @@ public class BluetoothScanner {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
-                scanLeDevice(false,this);
+                //scanLeDevice(false,this);
                 BluetoothDevice device = result.getDevice();
                 Log.i(TAG,"Device Found:\nName="+device.getName());
                 BluetoothGatt gattConnection = device.connectGatt(mContext,false,mGattCallback);
@@ -430,23 +431,23 @@ public class BluetoothScanner {
                     mScanning = false;
                     if (mBluetoothAdapter.isEnabled()) {
                         mBLEScanner.stopScan(callback);
-                        //Log.i(TAG, "Scanning stopped");
+                        Log.i(TAG, "Scanning stopped");
                     } else {
-                        //Log.i(TAG,"Scanning not stopped, adapter is off");
+                        Log.i(TAG,"Scanning not stopped, adapter is off");
                     }
                 }
             }, SCAN_PERIOD);
 
             mScanning = true;
             mBLEScanner.startScan(scanFilters, scanSettings,callback);
-            //Log.i(TAG,"Scanning started");
+            Log.i(TAG,"Scanning started");
         } else {
             mScanning = false;
             if (mBluetoothAdapter.isEnabled()) {
                 mBLEScanner.stopScan(callback);
-                //Log.i(TAG, "Scanning stopped");
+                Log.i(TAG, "Scanning stopped");
             } else {
-                //Log.i(TAG,"Scanning not stopped, adapter turned off");
+                Log.i(TAG,"Scanning not stopped, adapter turned off");
             }
         }
 
