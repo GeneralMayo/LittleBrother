@@ -1,14 +1,17 @@
 package edu.cmu.ece18549.little_brother.littlebrother.activity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -23,16 +26,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.cmu.ece18549.little_brother.littlebrother.R;
-import edu.cmu.ece18549.little_brother.littlebrother.adapter.DeviceInfoAdapter;
+import edu.cmu.ece18549.little_brother.littlebrother.adapter.DevicesAroundAdapter;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.SensorRegisterAdapter;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicationException;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceException;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
+import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderService;
+import edu.cmu.ece18549.little_brother.littlebrother.test.FakeDataService;
 
 public class DeviceRegisterActivity extends AppCompatActivity {
     public static final String SUCCESS_TAG = "SUCCESS";
+    public static final String SENSOR_NAME_EXTRAS = "DeviceRegisterActivity.sensor_name_extras";
+    public static final String DEVICE_NAME_EXTRA = "DeviceRegisterActivity.device_name_extra";
+    public static final String DEVICE_ID_EXTRA = "DeviceRegisterActivity.device_id_extra";
     public static final String WIFI = "Wi-Fi";
     public static final String ANY = "Any";
     public static final String TAG = "DeviceRegister";
@@ -43,7 +51,7 @@ public class DeviceRegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDevice_id = (int) getIntent().getSerializableExtra(DeviceInfoAdapter.DEVICE_TAG);
+        mDevice_id = (int) getIntent().getSerializableExtra(DevicesAroundAdapter.DEVICE_ID_EXTRA);
         setContentView(R.layout.activity_device_register);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -68,93 +76,64 @@ public class DeviceRegisterActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Gets the user's network preference settings
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        String sPref = sharedPrefs.getString("listPref", "Wi-Fi");
-        boolean wifiConnected;
-        boolean mobileConnected;
-
-        ConnectivityManager connMgr =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
-        if (activeInfo != null && activeInfo.isConnected()) {
-            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
-            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
-        } else {
-            wifiConnected = false;
-            mobileConnected = false;
-        }
-
-        String alertText = null;
-        if (sPref.equals(WIFI) && mobileConnected && !wifiConnected) {
-            alertText = "Wi-Fi is currently disabled, please enable Wi-Fi or disable " +
-                    "the \"Network\" option in data sync/Network Preferences before " +
-                    "registering devices";
-        } else if (!mobileConnected && !wifiConnected){
-            alertText = "No network available";
-        }
-        if (alertText != null) {
-            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-            alertDialog.setTitle("Alert");
-            alertDialog.setMessage(alertText);
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-            alertDialog.show();
-        }
+//        // Gets the user's network preference settings
+//        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+//
+//        String sPref = sharedPrefs.getString("listPref", "Wi-Fi");
+//        boolean wifiConnected;
+//        boolean mobileConnected;
+//
+//        ConnectivityManager connMgr =
+//                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+//        if (activeInfo != null && activeInfo.isConnected()) {
+//            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+//            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+//        } else {
+//            wifiConnected = false;
+//            mobileConnected = false;
+//        }
+//
+//        String alertText = null;
+//        if (sPref.equals(WIFI) && mobileConnected && !wifiConnected) {
+//            alertText = "Wi-Fi is currently disabled, please enable Wi-Fi or disable " +
+//                    "the \"Network\" option in data sync/Network Preferences before " +
+//                    "registering devices";
+//        } else if (!mobileConnected && !wifiConnected){
+//            alertText = "No network available";
+//        }
+//        if (alertText != null) {
+//            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+//            alertDialog.setTitle("Alert");
+//            alertDialog.setMessage(alertText);
+//            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                    new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            finish();
+//                        }
+//                    });
+//            alertDialog.show();
+//        }
     }
 
     public void registerDevice(View v) {
+        EditText deviceNameView = (EditText) findViewById(R.id.deviceNameEditText);
+        String deviceName = deviceNameView.getText().toString();
 
-        new Thread(new RunnableWithContext(this)).start();
-        Log.i(TAG, "Registration started");
-    }
-
-    private class RunnableWithContext implements Runnable {
-        Context context;
-
-        public RunnableWithContext(Context context) {
-            this.context = context;
+        ArrayList<String> sensorNames = new ArrayList<>();
+        for (Sensor s : mSensors){
+            Log.i(TAG, s.getName());
+            sensorNames.add(s.getName());
         }
 
-        @Override
-        public void run() {
-            int success;
-            EditText deviceNameView = (EditText) findViewById(R.id.deviceNameEditText);
-            String deviceName = deviceNameView.getText().toString();
-            Device device = Device.devices.get(mDevice_id);
-            try {
-                ServerCommunicator.registerDevice(device, deviceName);
-            } catch (ServerCommunicationException e) {
-                Log.e(TAG, e.getMessage());
-            }
-            try {
-                //configure sensors
-                List<Sensor> sensors = new ArrayList<>();
-                for (Sensor s : mSensors){
-                    Sensor sensor = new Sensor(sensors.size(), s.getName(), Device.devices.get(mDevice_id));
-                    sensors.add(sensor);
-                    Log.i(TAG, "current device id: " + device.getId());
-                    ServerCommunicator.registerSensor(sensor);
-                    Device.devices.get(mDevice_id).addSensor(s);
-                }
-            } catch (RuntimeException e) {
-                Log.e(TAG, e.getMessage());
-                Device.devices.get(mDevice_id).clearSensors();
-            } catch (DeviceException e) {
-                //undo all sensors added
-                Device.devices.get(mDevice_id).clearSensors();
-            }
-            success = Device.devices.get(mDevice_id).getId();
-            Intent intent = new Intent(context, DevicesAroundActivity.class);
-            intent.putExtra(SUCCESS_TAG, success);
-            context.startActivity(intent);
-        }
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(DEVICE_ID_EXTRA, mDevice_id);
+        returnIntent.putExtra(DEVICE_NAME_EXTRA, deviceName);
+        returnIntent.putStringArrayListExtra(SENSOR_NAME_EXTRAS, sensorNames);
+        setResult(this.RESULT_OK,returnIntent);
+        finish();
     }
 
 }

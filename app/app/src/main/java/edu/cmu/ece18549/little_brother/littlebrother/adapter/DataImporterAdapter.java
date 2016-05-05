@@ -88,10 +88,10 @@ public class DataImporterAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.list_group, null);
         }
 
-        TextView listHeaderLabel = (TextView) convertView
-                .findViewById(R.id.listHeaderLabel);
-        listHeaderLabel.setTypeface(null, Typeface.BOLD);
-        listHeaderLabel.setText(headerTitle);
+       // TextView listHeaderLabel = (TextView) convertView
+         //       .findViewById(R.id.listHeaderLabel);
+//        listHeaderLabel.setTypeface(null, Typeface.BOLD);
+//        listHeaderLabel.setText(headerTitle);
 
         return convertView;
     }

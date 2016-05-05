@@ -23,6 +23,8 @@ import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunication
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
+import edu.cmu.ece18549.little_brother.littlebrother.R;
+import edu.cmu.ece18549.little_brother.littlebrother.test.IncrementalFakeDeviceFactory;
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface, Observer{
     private final static int SERVICE_START_MODE = START_STICKY;
@@ -36,9 +38,20 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     private Collection<Device> tempDevices;
     private Thread producerThread;
 
+    public static final String BLE_CHANGE_ACTION =
+            "edu.cmu.ece18549.little_brother.littlebrother.service.ble_change_action";
+    public static final String BLE_CHANGE_EXTRA =
+            "edu.cmu.ece18549.little_brother.littlebrother.service.ble_change_extra";
+    public static final int DEVICE_FOUND = 0;
+    public static final int LOG_FOUND = 1;
+    public static final int DEVICE_DONE = 2;
+
+    public Intent mBLEChangeIntent;
+
     @Override
     public void notifyChange(Notification n, Object o) {
         //Log.i(TAG,"Received notification");
+        mBLEChangeIntent = new Intent(BLE_CHANGE_ACTION);
         switch(n) {
             case DEVICE_ADDED:
                 Device o1 = (Device) o;
@@ -49,21 +62,24 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                 } else {
                     mDevices.add(o1);
                 }
-                notifyListeners(n,o);
+                mBLEChangeIntent.putExtra(BLE_CHANGE_EXTRA, DEVICE_FOUND);
+                sendBroadcast(mBLEChangeIntent);
                 break;
             case LOG_FOUND:
                 DeviceLog o2 = (DeviceLog)o;
                 //Log.i(TAG,"Log notified with id="+String.format("%x",o2.getId()));
                 try {
                     mLogs.put(o2);
-                    notifyListeners(n,o);
+                    mBLEChangeIntent.putExtra(BLE_CHANGE_EXTRA, LOG_FOUND);
+                    sendBroadcast(mBLEChangeIntent);
                 } catch (InterruptedException e) {
                     Log.i(TAG,"NotifyChange interrupted on add");
                 }
                 break;
             case DEVICE_DONE:
                 Log.i(TAG,"Done with device");
-                notifyListeners(n,o);
+                mBLEChangeIntent.putExtra(BLE_CHANGE_EXTRA, DEVICE_DONE);
+                sendBroadcast(mBLEChangeIntent);
                 break;
             case NO_DEVICE:
                 /*synchronized (monitor) {
@@ -98,13 +114,14 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
         mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
         mBluetoothScanner.registerListener(this);
         listeners = new LinkedList<Observer>();
+
         startProducerThread();
         startConsumerThread();
     }
 
     @Override
     public void onDestroy() {
-        mBluetoothScanner.delete();
+        //mBluetoothScanner.delete();
         Log.i(TAG, "Service ending");
     }
 
@@ -119,9 +136,9 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                     //Log.i(TAG, "Producer continuing");
                     try {
                         Thread.sleep(INTERVAL);
-                        } catch (InterruptedException e) {
-                          Thread.currentThread().interrupt();
-                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
         });

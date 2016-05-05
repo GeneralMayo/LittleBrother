@@ -21,6 +21,7 @@
     <string name="sensor_add_text">+</string>
     <string name="device_name_input_title">Device Name:</string>
     <string name="add_sensor_title">Add Sensors:</string>
+    <string name="device_receiver_category">edu.cmu.ece18549.litte_brother.littlebrother.category.device_receiver</string>
 
     <!-- Strings related to Settings -->
 

@@ -62,6 +62,7 @@
             android:name=".activity.DevicesAroundActivity"
             android:label="@string/title_activity_devices_around"
             android:theme="@style/AppTheme.NoActionBar">
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.cmu.ece18549.little_brother.littlebrother.activity.MainActivity" />

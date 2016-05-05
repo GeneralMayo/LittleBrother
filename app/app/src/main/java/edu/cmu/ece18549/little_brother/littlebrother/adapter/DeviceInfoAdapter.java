@@ -114,9 +114,9 @@ public class DeviceInfoAdapter extends BaseExpandableListAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = infalInflater.inflate(R.layout.list_group, null);
 
-        TextView listHeaderLabel = (TextView) convertView.findViewById(R.id.listHeaderLabel);
-        listHeaderLabel.setTypeface(null, Typeface.BOLD);
-        listHeaderLabel.setText(headerTitle);
+//        TextView listHeaderLabel = (TextView) convertView.findViewById(R.id.listHeaderLabel);
+//        listHeaderLabel.setTypeface(null, Typeface.BOLD);
+//        listHeaderLabel.setText(headerTitle);
 
         return convertView;
     }

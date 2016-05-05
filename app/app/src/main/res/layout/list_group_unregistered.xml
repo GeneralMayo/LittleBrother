@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="8dp">
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/unregisteredItem"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/unregisteredHeaderLabel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.3"
+            android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
+            android:textSize="17dp"/>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:text="@string/register"
+            android:textSize="@dimen/register_button_size"
+            android:id="@+id/register_button"
+            android:onClick="loadDeviceRegisterActivity"
+            android:focusable="false"/>
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/unregisteredHeaderLabel"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="0.3"
-        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textSize="17dp"/>
+        android:layout_below="@+id/unregisteredItem"
+        android:id="@+id/unregisteredDetails" />
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="center_vertical"
-        android:text="@string/register"
-        android:textSize="@dimen/register_button_size"
-        android:id="@+id/register_button"
-        android:onClick="loadDeviceRegisterActivity"
-        android:focusable="false"/>
-
-</LinearLayout>
+</RelativeLayout>

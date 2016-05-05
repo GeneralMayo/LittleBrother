@@ -87,8 +87,10 @@ public class SensorRegisterAdapter extends RecyclerView.Adapter<SensorRegisterAd
         if (position == mSensors.size()) {
             Button button = viewHolder.addButton;
             button.setOnClickListener(new SensorAddListener(this, mSensors));
-        }
-        if (position < mSensors.size()) {
+        } else if (position == 0) {
+            EditText editText = viewHolder.editTextView;
+            editText.addTextChangedListener(new SensorTextWatcher(mSensors.get(position)));
+        } else if (position < mSensors.size()) {
             Button button = viewHolder.removeButton;
             EditText editText = viewHolder.editTextView;
             button.setOnClickListener(new SensorDeleteListener(this, mSensors, mSensors.get(position)));
