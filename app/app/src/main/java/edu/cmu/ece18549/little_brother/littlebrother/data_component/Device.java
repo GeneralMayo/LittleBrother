@@ -154,6 +154,10 @@ public class Device {
         mComponents.put(sensor,newLogs);
     }
 
+    public synchronized void clearComponents() {
+        mComponents.clear();
+    }
+
     public synchronized Map<Sensor, List<DeviceLog>> getComponents(){
         return mComponents;
     }

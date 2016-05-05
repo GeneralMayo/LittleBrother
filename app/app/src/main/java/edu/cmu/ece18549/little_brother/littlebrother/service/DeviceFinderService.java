@@ -139,6 +139,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                         Log.i(TAG, "Initiating device scan");
                         Device device = ifdf.getNewDevice();
                         mDevices.add(device);
+                        Log.i(TAG, ""+mLogs.size());
                         mLogs.addAll(device.getLogs());
                         mBLEChangeIntent = new Intent(BLE_CHANGE_ACTION);
                         mBLEChangeIntent.putExtra(BLE_CHANGE_EXTRA, LOG_FOUND);
