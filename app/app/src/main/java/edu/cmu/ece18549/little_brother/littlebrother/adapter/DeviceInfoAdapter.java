@@ -153,7 +153,7 @@ public class DeviceInfoAdapter extends BaseExpandableListAdapter {
 
             Context context = v.getContext();
             Intent intent = new Intent(context, DeviceRegisterActivity.class);
-            intent.putExtra(DEVICE_TAG, deviceId);
+
             context.startActivity(intent);
         }
     }

@@ -23,18 +23,27 @@ import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunication
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
+import edu.cmu.ece18549.little_brother.littlebrother.R;
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface, Observer{
     private final static int SERVICE_START_MODE = START_STICKY;
-    private final static int INTERVAL = 15000;
+    private final static int INTERVAL = 5000;
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
     private BlockingQueue<DeviceLog> mLogs;
     private List<Device> mDevices;
-    private BluetoothScanner mBluetoothScanner;
+   // private BluetoothScanner mBluetoothScanner;
     private Handler handler;
     private List<Observer> listeners;
     private Collection<Device> tempDevices;
+
+    public static final String BLE_CHANGE_ACTION =
+            "edu.cmu.ece18549.little_brother.littlebrother.service.ble_change_action";
+    public static final String BLE_CHANGE_EXTRA =
+            "edu.cmu.ece18549.little_brother.littlebrother.service.ble_change_extra";
+    public static final int DEVICE_FOUND = 0;
+
+    public Intent mBLEChangeIntent;
 
     @Override
     public void notifyChange(Notification n, Object o) {
@@ -89,17 +98,18 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
         Log.i(TAG,"Service starting");
         mLogs = new LinkedBlockingQueue<DeviceLog>();
         mDevices = Collections.synchronizedList(new LinkedList<Device>());
-        mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
-        mBluetoothScanner.registerListener(this);
-        handler = new Handler();
-        listeners = new LinkedList<Observer>();
+//        mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
+//        mBluetoothScanner.registerListener(this);
+//        handler = new Handler();
+//        listeners = new LinkedList<Observer>();
+        mBLEChangeIntent = new Intent(BLE_CHANGE_ACTION);
         startProducerThread();
         //startConsumerThread();
     }
 
     @Override
     public void onDestroy() {
-        mBluetoothScanner.delete();
+        //mBluetoothScanner.delete();
         Log.i(TAG, "Service ending");
     }
 
@@ -110,7 +120,9 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
             public void run() {
                 while (true) {
                     Log.i(TAG, "Initiating device scan");
-                    tempDevices = mBluetoothScanner.getDevices();
+                    mBLEChangeIntent.putExtra(BLE_CHANGE_EXTRA, DEVICE_FOUND);
+                    sendBroadcast(mBLEChangeIntent);
+//                    tempDevices = mBluetoothScanner.getDevices();
                     //Log.i(TAG, "Producer continuing");
                     try {
                         Thread.sleep(INTERVAL);
