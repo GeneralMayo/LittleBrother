@@ -1,4 +1,3 @@
-
 #include <stdint.h>
 #include <string.h>
 #include "nrf_gpio.h"
@@ -11,32 +10,11 @@ uint32_t device_read_idx = 0;
 
 void on_write(temp_log *temp_ram_storage,uint32_t len, ble_tss_t * p_temperature_service){
   //send data
-  termperature_characteristic_update(p_temperature_service,
-                                        temp_ram_storage[device_read_idx]);
+  log_buff = temp_ram_storage[device_read_idx];
+  num_log_buff-=1;
+   
   //update read index
   device_read_idx = (device_read_idx +1)%len;
-
-  //get log_num
-//  uint8_t  cccd_value_buf[2];
-//  ble_gatts_value_t gatts_value;
-//  memset(&gatts_value, 0, sizeof(gatts_value));
-//  gatts_value.len     = 2;
-//  gatts_value.offset  = 0;
-//  gatts_value.p_value = cccd_value_buf;
-//  uint32_t err_code;
-  //err_code=sd_ble_gatts_value_get(p_temperature_service->conn_handle,
-  //  p_temperature_service->log_num_handle.cccd_handle,
-  //  &gatts_value);
-  //APP_ERROR_CHECK(err_code);
-  
-  //update log_num
-  //*(gatts_value.p_value) = (uint16_t)(*(gatts_value.p_value))-1;
-
-  //set log_num
-  //err_code=sd_ble_gatts_value_set(p_temperature_service->conn_handle,
-  //  p_temperature_service->log_num_handle.cccd_handle,
-  //  &gatts_value);
-  //APP_ERROR_CHECK(err_code);
 }
 
 
@@ -45,7 +23,7 @@ void on_write(temp_log *temp_ram_storage,uint32_t len, ble_tss_t * p_temperature
 void ble_temperature_service_on_ble_evt(ble_tss_t * p_temperature_service, ble_evt_t * p_ble_evt,
 temp_log *temp_ram_storage, uint32_t len)
 {  
-	switch (p_ble_evt->header.evt_id)
+    switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
             p_temperature_service->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
@@ -54,7 +32,6 @@ temp_log *temp_ram_storage, uint32_t len)
             p_temperature_service->conn_handle = BLE_CONN_HANDLE_INVALID;
             break;
         case BLE_GATTS_EVT_WRITE:
-            printf("write event\n");
             //on_write(temp_ram_storage,len,p_temperature_service);
             break;
         default:
@@ -94,7 +71,6 @@ static uint32_t data_value_char_add(ble_tss_t * p_our_service)
     char_md.char_props.read = 1;
     char_md.char_props.write = 1;
 
-    
     // Configure Client Characteristic Configuration Descriptor metadata and add to char_md structure
     ble_gatts_attr_md_t cccd_md;
     memset(&cccd_md, 0, sizeof(cccd_md));
@@ -104,28 +80,28 @@ static uint32_t data_value_char_add(ble_tss_t * p_our_service)
     char_md.p_cccd_md           = &cccd_md;
     char_md.char_props.notify   = 1;
    
-    
     // Configure the attribute metadata
     ble_gatts_attr_md_t attr_md;
     memset(&attr_md, 0, sizeof(attr_md)); 
-    attr_md.vloc        = BLE_GATTS_VLOC_STACK;   
+    attr_md.vloc        = BLE_GATTS_VLOC_USER;  
     // Set read/write security levels to our characteristic
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
     
     
     // Configure the sensor data characteristic value attribute
-    ble_gatts_attr_t    attr_char_value;
     memset(&attr_char_value, 0, sizeof(attr_char_value));        
     attr_char_value.p_uuid      = &char_uuid;
     attr_char_value.p_attr_md   = &attr_md;
-    attr_char_value.max_len     = 10;
-    attr_char_value.init_len    = 10;
+    attr_char_value.max_len     = 14;
+    attr_char_value.init_len    = 14;
     temp_log log;
-    log.id = 0;
-    log.value = 0;
-    log.time = 0;
-    attr_char_value.p_value     = (uint8_t *)&log;
+    log.id = 1;
+    log.log_id = 0x44444444;
+    log.value = 0x92222222;
+    log.time = 0x12345678;
+    log_buff = log;
+    attr_char_value.p_value     = (uint8_t *)&log_buff;
     
     // Configure the dummy_write characteristic value attribute
     ble_gatts_attr_t    attr_dummy_write_value;
@@ -134,17 +110,17 @@ static uint32_t data_value_char_add(ble_tss_t * p_our_service)
     attr_dummy_write_value.p_attr_md   = &attr_md;
     attr_dummy_write_value.max_len     = 1;
     attr_dummy_write_value.init_len    = 1;
-    uint8_t dw_value          = 0;
+    uint8_t dw_value          = 1;
     attr_dummy_write_value.p_value     = &dw_value;
 
-    ble_gatts_attr_t    attr_log_num_value;
     memset(&attr_log_num_value, 0, sizeof(attr_log_num_value));        
     attr_log_num_value.p_uuid      = &log_num_uuid;
     attr_log_num_value.p_attr_md   = &attr_md;
     attr_log_num_value.max_len     = 2;
     attr_log_num_value.init_len    = 2;
     uint16_t ln_value          = 0;
-    attr_log_num_value.p_value     = &ln_value;
+    num_log_buff = ln_value;
+    attr_log_num_value.p_value     = &num_log_buff;
 
     // Add sensor data characteristic to the service
     err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
@@ -153,19 +129,19 @@ static uint32_t data_value_char_add(ble_tss_t * p_our_service)
                                        &p_our_service->data_handle);
     APP_ERROR_CHECK(err_code);
 		
-		
-		
-    err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
-                          &char_md,
-                          &attr_dummy_write_value,
-                          &p_our_service->dummy_write_handle);
-    APP_ERROR_CHECK(err_code);
-
-    err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
-                          &char_md,
-                          &attr_log_num_value,
-                          &p_our_service->log_num_handle);
-    APP_ERROR_CHECK(err_code);
+    //Add dummy_write characteristic                     
+//    err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
+//                          &char_md,
+//                          &attr_dummy_write_value,
+//                          &p_our_service->dummy_write_handle);
+//    APP_ERROR_CHECK(err_code);
+    
+    //add log num characteristic
+//    err_code = sd_ble_gatts_characteristic_add(p_our_service->service_handle,
+//                          &char_md,
+//                          &attr_log_num_value,
+//                          &p_our_service->log_num_handle);
+//    APP_ERROR_CHECK(err_code);
     return NRF_SUCCESS;
 }
 
@@ -196,24 +172,25 @@ void temperature_service_init(ble_tss_t * p_our_service)
 }
 
 // Function to be called when updating characteristic value
-void termperature_characteristic_update(ble_tss_t *p_tss_service,
+uint32_t termperature_characteristic_update(ble_tss_t *p_tss_service,
                                         temp_log most_recent_log)
 {
-		
+    uint32_t err_code;
     // Update characteristic value if device still connected to Little Brother
-    if (p_tss_service->conn_handle != BLE_CONN_HANDLE_INVALID)
-    {
-        uint16_t               len = 10;
-        ble_gatts_hvx_params_t hvx_params;
-        memset(&hvx_params, 0, sizeof(hvx_params));
+    uint16_t               len = 14;
+    ble_gatts_hvx_params_t hvx_params;
+    memset(&hvx_params, 0, sizeof(hvx_params));
 
-        hvx_params.handle = p_tss_service->data_handle.value_handle;
-        hvx_params.type   = BLE_GATT_HVX_NOTIFICATION;
-        hvx_params.offset = 0;
-        hvx_params.p_len  = &len;
-        hvx_params.p_data = (uint8_t*)&most_recent_log;
-				
-        sd_ble_gatts_hvx(p_tss_service->conn_handle, &hvx_params);
-       
-    }   
+    hvx_params.handle = p_tss_service->data_handle.value_handle;
+    hvx_params.type   = BLE_GATT_HVX_NOTIFICATION;
+    hvx_params.offset = 0;
+    hvx_params.p_len  = &len;
+    hvx_params.p_data = (uint8_t*)&most_recent_log;
+
+    
+    //if(send_flag){     
+      //send_flag = false;
+      err_code = sd_ble_gatts_hvx(p_tss_service->conn_handle, &hvx_params);
+    //}
+    return err_code;
 }

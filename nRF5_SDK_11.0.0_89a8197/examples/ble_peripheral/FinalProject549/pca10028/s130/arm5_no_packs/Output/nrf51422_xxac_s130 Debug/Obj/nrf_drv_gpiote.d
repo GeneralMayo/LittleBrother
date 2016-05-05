@@ -5,16 +5,16 @@ Output/nrf51422_xxac_s130\ Debug/Obj/nrf_drv_gpiote.o: \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/nrf.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/nrf51.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/CMSIS_4/CMSIS/Include/core_cm0.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdint.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdint.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/CMSIS_4/CMSIS/Include/core_cmInstr.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/CMSIS_4/CMSIS/Include/core_cmFunc.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/system_nrf51.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/nrf51_bitfields.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/nrf51_deprecated.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/compiler_abstraction.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stddef.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/__crossworks.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdbool.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stddef.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/__crossworks.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdbool.h \
  ../../../../../../components/drivers_nrf/hal/nrf_gpio.h \
  ../../../config/ble_app_template_s130_pca10028/nrf_drv_config.h \
  ../../../../../../components/drivers_nrf/config/nrf_drv_config_validation.h \
@@ -30,11 +30,11 @@ Output/nrf51422_xxac_s130\ Debug/Obj/nrf_drv_gpiote.o: \
  ../../../../../../components/softdevice/s130/headers/nrf_nvic.h \
  ../../../../../../components/libraries/util/nrf_assert.h \
  ../../../../../../components/libraries/util/app_error.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdio.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdio.h \
  ../../../../../../components/libraries/util/sdk_errors.h \
  ../../../../../../components/libraries/util/nordic_common.h \
  ../../../../../../components/libraries/util/nrf_log.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdarg.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdarg.h \
  ../../../../../../components/libraries/util/app_util.h \
  ../../../../../../components/libraries/util/app_error_weak.h \
  ../../../../../../components/libraries/util/nrf_assert.h

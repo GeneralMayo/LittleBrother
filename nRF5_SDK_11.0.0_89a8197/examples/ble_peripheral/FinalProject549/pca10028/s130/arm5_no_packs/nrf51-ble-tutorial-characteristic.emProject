@@ -19,7 +19,7 @@
       arm_target_device_name="nRF51422_xxAC"
       arm_target_interface_type="SWD"
       c_preprocessor_definitions="BLE_STACK_SUPPORT_REQD;S130;BOARD_PCA10028;NRF_LOG_USES_UART=1;SOFTDEVICE_PRESENT;NRF51;SWI_DISABLE0;DEBUG;NO_VTOR_CONFIG"
-      c_user_include_directories="$(PackagesDir)/CMSIS_4/CMSIS/Include;../../../config/ble_app_template_s130_pca10028;../../../config;../../../../../../components/ble/ble_advertising;../../../../../../components/ble/common;../../../../../../components/ble/device_manager;../../../../../../components/drivers_nrf/common;../../../../../../components/drivers_nrf/config;../../../../../../components/drivers_nrf/delay;../../../../../../components/drivers_nrf/gpiote;../../../../../../components/drivers_nrf/hal;../../../../../../components/drivers_nrf/pstorage;../../../../../../components/drivers_nrf/uart;../../../../../../components/libraries/button;../../../../../../components/libraries/experimental_section_vars;../../../../../../components/libraries/fstorage;../../../../../../components/libraries/fstorage/config;../../../../../../components/libraries/sensorsim;../../../../../../components/libraries/timer;../../../../../../components/libraries/trace;../../../../../../components/libraries/uart;../../../../../../components/libraries/util;../../../../../../components/softdevice/common/softdevice_handler;../../../../../../components/softdevice/s130/headers;../../../../../../components/softdevice/s130/headers/nrf51;../../../../../../components/toolchain;../../../../../bsp;../../../../../../external/segger_rtt;C:/Keil_v5/ARM/Pack/NordicSemiconductor/Syscalls"
+      c_user_include_directories="$(PackagesDir)/CMSIS_4/CMSIS/Include;../../../config/ble_app_template_s130_pca10028;../../../config;../../../../../../components/ble/ble_advertising;../../../../../../components/ble/common;../../../../../../components/ble/device_manager;../../../../../../components/drivers_nrf/common;../../../../../../components/drivers_nrf/config;../../../../../../components/drivers_nrf/delay;../../../../../../components/drivers_nrf/gpiote;../../../../../../components/drivers_nrf/hal;../../../../../../components/drivers_nrf/pstorage;../../../../../../components/drivers_nrf/uart;../../../../../../components/libraries/button;../../../../../../components/libraries/experimental_section_vars;../../../../../../components/libraries/fstorage;../../../../../../components/libraries/fstorage/config;../../../../../../components/libraries/sensorsim;../../../../../../components/libraries/timer;../../../../../../components/libraries/trace;../../../../../../components/libraries/uart;../../../../../../components/libraries/util;../../../../../../components/softdevice/common/softdevice_handler;../../../../../../components/softdevice/s130/headers;../../../../../../components/softdevice/s130/headers/nrf51;../../../../../../components/toolchain;../../../../../bsp;../../../../../../external/segger_rtt;C:/Keil_v5/ARM/Pack/NordicSemiconductor/Syscalls;../../../../../../components/drivers_nrf/twi_master"
       debug_additional_load_file="/Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/components/softdevice/s130/hex/s130_nrf51_2.0.0_softdevice.hex"
       debug_register_definition_file="$(PackagesDir)/nRF/XML/nrf51_Registers.xml"
       debug_start_from_entry_point_symbol="No"
@@ -76,7 +76,9 @@
         <file file_name="../../../../../../components/libraries/util/nrf_assert.c" />
         <file file_name="../../../../../../components/libraries/util/nrf_log.c" />
         <file file_name="../../../../../../components/libraries/sensorsim/sensorsim.c" />
+        <file file_name="../../../../../../components/libraries/uart/retarget.c" />
       </folder>
+      <folder Name="nRF_Segger_RTT" />
       <folder Name="nRF_SoftDevice">
         <file file_name="../../../../../../components/softdevice/s130/doc/s130_nrf51_2.0.0_licence_agreement.txt" />
         <file file_name="../../../../../../components/softdevice/common/softdevice_handler/softdevice_handler.c" />
@@ -93,6 +95,12 @@
           default_code_section=".init"
           default_const_section=".init_rodata" />
       </file>
+    </folder>
+    <folder Name="RTT Files">
+      <file file_name="$(StudioDir)/samples/SEGGER_RTT.c" />
+      <file file_name="$(StudioDir)/samples/SEGGER_RTT.h" />
+      <file file_name="$(StudioDir)/samples/SEGGER_RTT_Conf.h" />
+      <file file_name="$(StudioDir)/samples/SEGGER_RTT_SES.c" />
     </folder>
     <folder Name="Script Files">
       <file file_name="$(PackagesDir)/nRF/Scripts/nRF_Target.js">
@@ -117,7 +125,4 @@
     c_preprocessor_definitions="NDEBUG"
     gcc_debugging_level="Level 1"
     gcc_optimization_level="Level 1" />
-  <configuration
-    Name="Common"
-    linker_section_placement_macros="FLASH_START=0x1b000;RAM_START=0x20002080" />
 </solution>

@@ -1,8 +1,8 @@
 Output/nrf51422_xxac_s130\ Debug/Obj/main.o: \
  /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../main.c \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdint.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/string.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/__crossworks.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdint.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/string.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/__crossworks.h \
  ../../../../../../components/libraries/util/nordic_common.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/nrf.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/nrf51.h \
@@ -14,13 +14,13 @@ Output/nrf51422_xxac_s130\ Debug/Obj/main.o: \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/nrf51_deprecated.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/compiler_abstraction.h \
  ../../../../../../components/libraries/util/app_error.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdio.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdbool.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdio.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdbool.h \
  ../../../../../../components/libraries/util/sdk_errors.h \
  ../../../../../../components/softdevice/s130/headers/nrf_error.h \
  ../../../../../../components/libraries/util/nordic_common.h \
  ../../../../../../components/libraries/util/nrf_log.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdarg.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdarg.h \
  ../../../../../../components/libraries/util/app_util.h \
  /Users/Admin/Library/SEGGER/SEGGER\ Embedded\ Studio/v2/packages/nRF/CMSIS/Device/Include/compiler_abstraction.h \
  ../../../../../../components/libraries/util/app_error_weak.h \
@@ -49,7 +49,7 @@ Output/nrf51422_xxac_s130\ Debug/Obj/main.o: \
  ../../../../../../components/drivers_nrf/hal/nrf_gpio.h \
  ../../../../../bsp/pca10028.h \
  ../../../../../../components/softdevice/common/softdevice_handler/softdevice_handler.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdlib.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdlib.h \
  ../../../../../../components/softdevice/s130/headers/nrf_sdm.h \
  ../../../../../../components/softdevice/s130/headers/nrf_soc.h \
  ../../../../../../components/softdevice/s130/headers/nrf_error_soc.h \
@@ -69,14 +69,21 @@ Output/nrf51422_xxac_s130\ Debug/Obj/main.o: \
  ../../../../../bsp/bsp.h ../../../../../bsp/boards.h \
  ../../../../../../components/libraries/button/app_button.h \
  ../../../../../bsp/bsp_btn_ble.h ../../../../../bsp/bsp.h \
+ ../../../../../../components/libraries/util/app_util_platform.h \
+ ../../../../../../components/softdevice/s130/headers/nrf_soc.h \
+ ../../../../../../components/softdevice/s130/headers/nrf_nvic.h \
+ ../../../../../../components/libraries/util/nrf_assert.h \
+ ../../../../../../components/libraries/util/app_error.h \
+ ../../../../../../components/drivers_nrf/twi_master/nrf_drv_twi.h \
+ ../../../config/ble_app_template_s130_pca10028/nrf_drv_config.h \
+ ../../../../../../components/drivers_nrf/config/nrf_drv_config_validation.h \
+ ../../../../../../components/drivers_nrf/hal/nrf_twi.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stddef.h \
+ ../../../../../../components/libraries/util/sdk_errors.h \
+ ../../../../../../components/drivers_nrf/delay/nrf_delay.h \
  /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../our_service.h \
  /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../device_info_service.h \
  /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../temperature_service.h \
  /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../flash_operations.h \
  ../../../../../../external/segger_rtt/SEGGER_RTT.h \
- ../../../../../../components/libraries/uart/app_uart.h \
- ../../../../../../components/libraries/util/app_util_platform.h \
- ../../../../../../components/softdevice/s130/headers/nrf_soc.h \
- ../../../../../../components/softdevice/s130/headers/nrf_nvic.h \
- ../../../../../../components/libraries/util/nrf_assert.h \
- ../../../../../../components/libraries/util/app_error.h
+ ../../../../../../components/libraries/uart/app_uart.h

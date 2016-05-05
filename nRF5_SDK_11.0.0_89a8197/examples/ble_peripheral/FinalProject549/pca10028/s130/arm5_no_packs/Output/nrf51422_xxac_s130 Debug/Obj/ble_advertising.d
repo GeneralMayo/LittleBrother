@@ -1,10 +1,10 @@
 Output/nrf51422_xxac_s130\ Debug/Obj/ble_advertising.o: \
  /Users/Admin/Desktop/github/Little-Brother/nRF5_SDK_11.0.0_89a8197/examples/ble_peripheral/FinalProject549/pca10028/s130/arm5_no_packs/../../../../../../components/ble/ble_advertising/ble_advertising.c \
  ../../../../../../components/ble/common/ble_advdata.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdint.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdbool.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/string.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/__crossworks.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdint.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdbool.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/string.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/__crossworks.h \
  ../../../../../../components/softdevice/s130/headers/ble.h \
  ../../../../../../components/softdevice/s130/headers/ble_ranges.h \
  ../../../../../../components/softdevice/s130/headers/ble_types.h \
@@ -33,7 +33,7 @@ Output/nrf51422_xxac_s130\ Debug/Obj/ble_advertising.o: \
  ../../../../../../components/softdevice/s130/headers/nrf_soc.h \
  ../../../../../../components/softdevice/s130/headers/nrf_error_soc.h \
  ../../../../../../components/libraries/util/nrf_log.h \
- /Applications/SEGGER\ Embedded\ Studio\ 2.16a/include/stdarg.h \
+ /Applications/SEGGER\ Embedded\ Studio\ 2.20/include/stdarg.h \
  ../../../../../../components/drivers_nrf/pstorage/pstorage.h \
  ../../../config/pstorage_platform.h \
  ../../../../../../components/libraries/fstorage/fstorage.h \

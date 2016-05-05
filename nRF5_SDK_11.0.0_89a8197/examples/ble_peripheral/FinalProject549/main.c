@@ -27,13 +27,15 @@
 #include "app_trace.h"
 #include "bsp.h"
 #include "bsp_btn_ble.h"
+#include "app_util_platform.h"
+#include "nrf_drv_twi.h"
+#include "nrf_delay.h"
 
 #include "our_service.h"
 #include "device_info_service.h"
 #include "temperature_service.h"
 #include "flash_operations.h"
 #include "SEGGER_RTT.h"
-
 #include "app_uart.h"
 
 /*UART buffer size. */
@@ -68,10 +70,11 @@
 #define SEC_PARAM_OOB                    0                                          /**< Out Of Band data not available. */
 #define SEC_PARAM_MIN_KEY_SIZE           7                                          /**< Minimum encryption key size. */
 #define SEC_PARAM_MAX_KEY_SIZE           16                                         /**< Maximum encryption key size. */
+#define TEST_STORAGE_VAL                 0x12345678
+#define RAM_LOG_STORAGE                  256
 
-#define RAM_LOG_STORAGE                  4
-
-#define DEAD_BEEF                        0xDEADBEEF                                 /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
+#define DEAD_BEEF                        0xDEADBEEF                            /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
+#define ACII_SPACE                       32
 
 static dm_application_instance_t        m_app_handle;                               /**< Application identifier allocated by device manager */
 
@@ -84,12 +87,16 @@ ble_tss_t temperature_service;
 
 //Declare global flash variables
 flash_addresses flash_addr;
-bool storing_in_flash = false;
-bool loading_from_flash = false;
-bool clearing_flash = false;
+bool flash_op = true;
 pstorage_handle_t       base_handle;
-temp_log temp_ram_storage[RAM_LOG_STORAGE];
+
+//log sending globals
 uint32_t ram_store_idx = 0;
+uint32_t log_send_idx = 0;
+bool wrapped = false;
+bool SENDING_LOGS = false;
+temp_log temp_ram_storage[RAM_LOG_STORAGE];
+bool end_log_sent = false;
 
 
 // Declare an app_timer id + define timer interval and define a timer interval
@@ -113,101 +120,63 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 }
 
 static void power_manage(void);
-// Event Notification Handler.
+
+// flash storage event handler
 static void example_cb_handler(pstorage_handle_t  * handle,
                                uint8_t              op_code,
                                uint32_t             result,
                                uint8_t            * p_data,
                                uint32_t             data_len)
 {
-    printf("test\n");
-    APP_ERROR_CHECK(result);
-    switch(op_code)
-    {
-       case PSTORAGE_CLEAR_OP_CODE:
-           clearing_flash = false;
-           break;
-       case PSTORAGE_LOAD_OP_CODE:
-           loading_from_flash = false;
-           break;
-       case PSTORAGE_STORE_OP_CODE:
-           storing_in_flash = false;
-           break;
-    }
+    flash_op = false;
 }
 
 // Timer event handler
 static void timer_timeout_handler(void * p_context)
 {
     uint32_t err_code;
-    // Update temperature and characteristic value.
     int32_t temperature = 0;
     static int32_t previous_temperature = 0;
     static uint32_t time = 0;
-    //static 
+    static uint32_t log_id_count = 1;
     
     // Get temperature from on chip sensor
     sd_temp_get(&temperature);
-    time+=1;
-    
-    temp_log most_recent_log;
-    most_recent_log.id = 1;//TODO enter actual characteristic
-    most_recent_log.time = time*3;
-    most_recent_log.value = temperature;
-    
-    static uint16_t cur_conn_handle = BLE_CONN_HANDLE_INVALID;
-    static uint16_t prev_conn_handle = BLE_CONN_HANDLE_INVALID;
-    
-    //if a device was just connected... just send the log
-    if(cur_conn_handle != prev_conn_handle && prev_conn_handle == BLE_CONN_HANDLE_INVALID){
-      printf("First Connection\n");
-      termperature_characteristic_update(&temperature_service,
-                                        most_recent_log);
-    } else {
-      if(ram_store_idx<RAM_LOG_STORAGE){
-        temp_ram_storage[ram_store_idx] = most_recent_log;
-        ram_store_idx = ram_store_idx+1;
+      
+    //only store new logs if old ones aren't being sent
+    if(!SENDING_LOGS && DEVICE_ID != -1 && SENSORS_ON){
+      for(int i = 0; i<SENSOR_NUM; i++){
+        if(SENSOR_NAMES[i][0] != ' '){
+          temp_ram_storage[ram_store_idx].id = SENSOR_NAMES[i][0];
+          temp_ram_storage[ram_store_idx].log_id = log_id_count;
+          temp_ram_storage[ram_store_idx].time = time*3;
+          temp_ram_storage[ram_store_idx].value = temperature;
+          printf("Log Added\n");
         
-//        uint8_t  cccd_value_buf[2];
-//        ble_gatts_value_t gatts_value;
-//        memset(&gatts_value, 0, sizeof(gatts_value));
-//        gatts_value.len     = 2;
-//        gatts_value.offset  = 0;
-//        gatts_value.p_value = cccd_value_buf;
-//        //err_code=sd_ble_gatts_value_get(temperature_service.conn_handle,
-//        //  temperature_service.log_num_handle.cccd_handle,
-//        //  &gatts_value);
-//        APP_ERROR_CHECK(err_code);
-//
-//        //update log_num
-//        *(gatts_value.p_value) = (uint16_t)(*(gatts_value.p_value))+1;
-//
-//        //set log_num
-//        //err_code=sd_ble_gatts_value_set(temperature_service.conn_handle,
-//        //  temperature_service.log_num_handle.cccd_handle,
-//        //  &gatts_value);
-//        APP_ERROR_CHECK(err_code);
+          log_id_count+=1;
+          //update log storage data
+          ram_store_idx = (ram_store_idx+1)%RAM_LOG_STORAGE;
+          if(ram_store_idx == log_send_idx){
+            wrapped = true;
+          }
+        }
       }
-    }
-    //connection valid
-      //send ram
-      //send next val
-    //connection invalid && ram size < max
-      //store log in ram
-   
-    //store data
-    if(false){
-    if(!storing_in_flash){
-      printf("Storing RAM\n");
-      temp_ram_storage[ram_store_idx] = most_recent_log;
-      ram_store_idx++;
 
-      //termperature_characteristic_update(&temperature_service, &temperature, &time);	
-      // Save current temperature until next measurement
-      previous_temperature = temperature;
-      nrf_gpio_pin_toggle(LED_4);
+      time+=1;
     }
-    }
+    //static bool first_connection = true;
+//    if(first_connection){
+//      first_connection = false;
+//      //store log in characteristic
+//      log_buff = most_recent_log;
+//      //update log_num characteristic
+//      num_log_buff+=1;
+//    } else {
+//      //store logs in ram
+//      temp_ram_storage[ram_store_idx] = most_recent_log;
+//      ram_store_idx = (ram_store_idx+1)%RAM_LOG_STORAGE;
+//      num_log_buff+=1;
+//    }
 }
 
 
@@ -258,7 +227,6 @@ static void gap_params_init(void)
  */
 static void services_init(void)
 {
-    //our_service_init(&m_our_service);
     divice_info_service_init(&device_info_service);
     temperature_service_init(&temperature_service);
 }
@@ -371,6 +339,65 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
     }
 }
 
+void init_log_send_idx(){
+  if(wrapped){
+    log_send_idx = (ram_store_idx+2) % RAM_LOG_STORAGE;
+    wrapped = false;
+  }
+}
+
+void send_logs(){
+  uint32_t err_code;
+  if(log_send_idx == ram_store_idx && !end_log_sent){
+
+    temp_log end_log;
+    end_log.id = 0;
+    end_log.log_id = 0;
+    end_log.value = 0;
+    end_log.time = 0;    
+    err_code = termperature_characteristic_update(&temperature_service,
+                                           end_log);
+    end_log_sent = true;
+    printf("End Log Sent\n");
+    return;
+  } else if(log_send_idx == ram_store_idx){
+    printf("Wait till disconnection. End Log already sent.\n");
+    return;
+  }
+
+  SENDING_LOGS = true;
+  printf("SENDING LOGS\n");
+  while(true){
+    //attempt to send log
+    temperature_service.conn_handle = m_app_handle;
+    
+    err_code = termperature_characteristic_update(&temperature_service,
+                                           temp_ram_storage[log_send_idx]);
+     
+    //check if data transfer went through
+    if (err_code == BLE_ERROR_NO_TX_PACKETS)
+    {  
+        printf("Buffer Full\n");
+        break;
+    }
+    else if (err_code != NRF_SUCCESS) 
+    {
+        APP_ERROR_HANDLER(err_code);
+    }
+    
+    //update send index if data transfer was queued
+    log_send_idx = (log_send_idx+1) % RAM_LOG_STORAGE;
+    
+    printf("Log Sent\n");
+    //check if all logs have been sent
+    if(log_send_idx == ram_store_idx){
+      printf("STOP SENDING LOGS\n");
+      SENDING_LOGS = false;
+      break;
+    }  
+    
+  }
+}
 
 /**@brief Function for handling the Application's BLE Stack events.
  *
@@ -379,23 +406,38 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
 static void on_ble_evt(ble_evt_t * p_ble_evt)
 {
     uint32_t err_code;
+    ble_gatts_evt_write_t * p_evt_write;
 
     switch (p_ble_evt->header.evt_id)
             {
         case BLE_GAP_EVT_CONNECTED:
+            printf("BLE_GAP_EVT_CONNECTED\n");
+            end_log_sent = false;
             err_code = bsp_indication_set(BSP_INDICATE_CONNECTED);
             APP_ERROR_CHECK(err_code);
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-            // When connected; start our timer to start regular temperature measurements
-            app_timer_start(m_our_char_timer_id, OUR_CHAR_TIMER_INTERVAL, NULL);
+            err_code = sd_ble_gatts_sys_attr_set(m_conn_handle, NULL,0,0);
+            APP_ERROR_CHECK(err_code);
             break;
-
         case BLE_GAP_EVT_DISCONNECTED:
+            printf("BLE_GAP_EVT_DISCONNECTED\n");
             m_conn_handle = BLE_CONN_HANDLE_INVALID;
-            // When disconnected; stop our timer to stop temperature measurements
-            app_timer_stop(m_our_char_timer_id);
+            SENDING_LOGS = false;
+            printf("STOP SENDING LOGS\n");
             break;
-
+        //send more logs when queue is complete
+        case BLE_EVT_TX_COMPLETE:
+            printf("Queue Cleared... Send More Logs\n");
+            send_logs();
+            break;
+        case BLE_GATTS_EVT_WRITE:
+            p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
+            if(p_evt_write->handle == temperature_service.data_handle.cccd_handle){
+              printf("Descriptor Write\n");
+              init_log_send_idx();
+              send_logs();
+            }
+            break;
         default:
             // No implementation needed.
             break;
@@ -417,8 +459,8 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     bsp_btn_ble_on_ble_evt(p_ble_evt);
     on_ble_evt(p_ble_evt);
     ble_advertising_on_ble_evt(p_ble_evt);
-    //ble_our_service_on_ble_evt(&m_our_service, p_ble_evt);
     ble_temperature_service_on_ble_evt(&temperature_service, p_ble_evt,temp_ram_storage,RAM_LOG_STORAGE);
+    ble_device_info_on_ble_evt(&device_info_service, p_ble_evt);
 }
 
 
@@ -486,10 +528,12 @@ void bsp_event_handler(bsp_event_t event)
     switch (event)
     {
         case BSP_EVENT_SLEEP:
+            //printf("BSP_EVENT_SLEEP\n");
             sleep_mode_enter();
             break;
 
         case BSP_EVENT_DISCONNECT:
+            //printf("BSP_EVENT_DISCONNECT\n");
             err_code = sd_ble_gap_disconnect(m_conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
             if (err_code != NRF_ERROR_INVALID_STATE)
             {
@@ -498,6 +542,7 @@ void bsp_event_handler(bsp_event_t event)
             break;
 
         case BSP_EVENT_WHITELIST_OFF:
+            //printf("BSP_EVENT_WHITELIST_OFF");
             err_code = ble_advertising_restart_without_whitelist();
             if (err_code != NRF_ERROR_INVALID_STATE)
             {
@@ -678,9 +723,8 @@ void flash_init(){
     uint32_t err_code;
     err_code = pstorage_init();
     APP_ERROR_CHECK(err_code);
-
+    
     pstorage_module_param_t param;
-    //register blocks
     param.block_size  = 1024;
     param.block_count = 1;
     param.cb          = example_cb_handler;
@@ -688,24 +732,130 @@ void flash_init(){
     APP_ERROR_CHECK(err_code);
 }
 
+void device_name_id_store(uint32_t name, uint32_t id){
+  //name must be less than 4 bytes
+  uint32_t err_code;
+  uint32_t dataTest;
+  
+  //check if data was already written to location
+  err_code = pstorage_load(&base_handle, &dataTest, 4, 0);
+  while(flash_op){
+            
+  }
+  flash_op = true;
+  
+  //if data not written to
+  if(dataTest != TEST_STORAGE_VAL){
+    uint32_t data[3];
+    data[0] = TEST_STORAGE_VAL;
+    data[1] = name;
+    data[2] = id;
+    err_code = pstorage_store(&base_handle, data, 12, 0);
+    while(flash_op){
+          
+    }
+    flash_op = true;
+  }
+}
+
+//void device_name_id_load(uint32_t name, uint32_t id){
+//  //name must be less than 4 bytes
+//  uint32_t err_code;
+//  uint32_t dataTest;
+//  
+//  //check if data was already written to location
+//  err_code = pstorage_load(&base_handle, &dataTest, 4, 0);
+//  while(flash_op){
+//            
+//  }
+//  flash_op = true;
+//  
+//  //if data not written to
+//  if(dataTest != TEST_STORAGE_VAL){
+//    data[0] = TEST_STORAGE_VAL;
+//    data[1] = name;
+//    data[2] = id;
+//    err_code = pstorage_store(&base_handle, data, 12, 0);
+//    while(flash_op){
+//          
+//    }
+//    flash_op = true;
+//  }
+//}
+
+/*Pins to connect shield. */
+//#define ARDUINO_I2C_SCL_PIN 7
+//#define ARDUINO_I2C_SDA_PIN 30
+
+/**
+ * @brief UART initialization.
+ */
+//void twi_init (void)
+//{
+//    ret_code_t err_code;
+//    
+//    const nrf_drv_twi_config_t twi_mma_7660_config = {
+//       .scl                = ARDUINO_SCL_PIN,
+//       .sda                = ARDUINO_SDA_PIN,
+//       .frequency          = NRF_TWI_FREQ_100K,
+//       .interrupt_priority = APP_IRQ_PRIORITY_HIGH
+//    };
+//    
+//    err_code = nrf_drv_twi_init(&m_twi_mma_7660, &twi_mma_7660_config, twi_handler, NULL);
+//    APP_ERROR_CHECK(err_code);
+//    
+//    nrf_drv_twi_enable(&m_twi_mma_7660);
+//}
+//#define MMA7660_REG_MODE    0x07U
+//#define ACTIVE_MODE 1u
+
+
+//nrf_drv_twi_t twi; //= NRF_DRV_TWI_INSTANCE(0);
 
 int main(void)
 {   
     uint32_t err_code;
     bool erase_bonds;
-    
+//    twi.drv_inst_idx = 0;
+//    twi.use_easy_dma = false;
+//    twi.reg.p_twi = NULL;
     //initialize app components
     uart_config();
+    //uint16_t tx_data = 9;
+    
+//    err_code = nrf_drv_twi_init(&twi, NULL, NULL,NULL);
+//    APP_ERROR_CHECK(err_code);
+//    nrf_drv_twi_enable(&twi);
+
+    /* Writing to MMA7660_REG_MODE "1" enables the accelerometer. */
+    //uint8_t reg[2] = {MMA7660_REG_MODE, ACTIVE_MODE};
+
+//    err_code = nrf_drv_twi_tx(&twi, (0x98U >> 1), reg, sizeof(reg), false);  
+//    APP_ERROR_CHECK(err_code);
+     
+//    while(true){
+//      err_code = nrf_drv_twi_rx(&twi, (0x98U >> 1), &tx_data, sizeof(tx_data));
+//      APP_ERROR_CHECK(err_code);
+//      printf("%u\n",tx_data);
+//      nrf_delay_ms(1000);
+//    }
+    
+    
+    
+    
     timers_init();
     buttons_leds_init(&erase_bonds);
     ble_stack_init();
-    flash_init();
+    //flash_init();
     device_manager_init(erase_bonds);
     gap_params_init();
     services_init();
     advertising_init();
     conn_params_init();
+    app_timer_start(m_our_char_timer_id, OUR_CHAR_TIMER_INTERVAL, NULL);
     
+
+
     // Start execution.
     application_timers_start();
     err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
@@ -717,11 +867,14 @@ int main(void)
     // Enter main loop.
     for (;;)
     {
+      
        
+
+
       if(false){
         //check if flash storage necessary
         if(ram_store_idx == RAM_LOG_STORAGE){
-          printf("Storing Flash\n");
+          //printf("Storing Flash\n");
           //turn off timer
           //err_code = app_timer_stop(m_our_char_timer_id);
           //APP_ERROR_CHECK(err_code);
@@ -729,12 +882,12 @@ int main(void)
           //err_code = sd_ble_gap_adv_stop();
           //APP_ERROR_CHECK(err_code);
           // Request to write RAM_LOG_STORAGE*bytes/elem bytes to block at an offset of 0 bytes.
-          storing_in_flash = true;
+          flash_op = true;
           err_code = pstorage_store(&base_handle, temp_ram_storage, 16, 0);
           APP_ERROR_CHECK(err_code);
           logs_in_flash = true;
           ram_store_idx = 0;
-          while(storing_in_flash){
+          while(flash_op){
             //power_manage();
           }
         }
@@ -742,15 +895,15 @@ int main(void)
         
         //check if stored logs need to be uploaded
         if(logs_in_flash && m_conn_handle != BLE_CONN_HANDLE_INVALID){
-          printf("Loading Flash\n");
+          //printf("Loading Flash\n");
           // Request to read 4 bytes from block at an offset of 12 bytes.
-          loading_from_flash = true;
+          flash_op = true;
           err_code = pstorage_load(old_logs, &base_handle, 16, 0);
           APP_ERROR_CHECK(err_code);
-          while(loading_from_flash){
+          while(flash_op){
             power_manage();
           }
-          printf("Loading...\n");
+          //printf("Loading...\n");
           for(int i = 0; i<RAM_LOG_STORAGE; i++){
             printf("%u ",old_logs[i]);
           }
@@ -758,10 +911,10 @@ int main(void)
           logs_in_flash = false;
 
           //clear flash page
-          clearing_flash = true;
+          flash_op = true;
           err_code = pstorage_clear(&base_handle, 16);
           APP_ERROR_CHECK(err_code);
-          while(clearing_flash){
+          while(flash_op){
             power_manage();
           }
         }

@@ -8,7 +8,6 @@
 #include "ble.h"
 #include "ble_srv_common.h"
 
-
 // Defining 16-bit service and 128-bit base UUIDs
 #define BLE_UUID_TEMPERATURE_BASE_UUID              {{0x7b,0x50,0x91,0x75,0x00,0xbc,0x46,0x37,0x97,0xfe,0xe1,0xa2,0xb3,0xff,0x59,0xbd}}
 #define BLE_UUID_TEMPERATURE_SERVICE_UUID           0x2222 
@@ -18,6 +17,12 @@
 #define BLE_UUID_LOG_NUM_CHARACTERISTC_UUID             0x0002
 #define BLE_UUID_SENSOR_VALUE_CHARACTERISTC_UUID	0x0003
 
+#define CENTRAL_WANTS_LOGS 1
+#define SENSOR_NAMES_UPDATE 2
+//bool send_flag = true;
+
+ble_gatts_attr_t    attr_char_value;
+ble_gatts_attr_t    attr_log_num_value; 
 
 // status information for temperature_service
 typedef struct
@@ -33,10 +38,14 @@ typedef struct
 }ble_tss_t;
 
 typedef struct  __attribute__((__packed__)){
-	uint32_t time;
-	uint32_t value;
-	uint16_t id;
+	uint32_t time;      //time it was recorded
+	uint32_t value;     //sensor value
+	uint32_t log_id;    //id of actual log
+        uint16_t id;        //sensor id
 }temp_log;
+
+temp_log log_buff;
+uint32_t num_log_buff;
 
 
 /**@brief Function for initializing our new service.
@@ -60,7 +69,7 @@ void ble_temperature_service_on_ble_evt(ble_tss_t * p_temperature_service, ble_e
  * @param[in]   p_tss_service            Temperature Service structure.
  * @param[in]   temperature_value     	 New temperature value.
  */
-void termperature_characteristic_update(ble_tss_t *p_tss_service,    
+uint32_t termperature_characteristic_update(ble_tss_t *p_tss_service,    
                                         temp_log most_recent_log);
 
 #endif  /* _ TEMPERATURE_SERVICE_H__ */
