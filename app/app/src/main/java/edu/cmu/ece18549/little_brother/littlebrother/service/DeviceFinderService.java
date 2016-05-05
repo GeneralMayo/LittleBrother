@@ -26,15 +26,15 @@ import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface, Observer{
     private final static int SERVICE_START_MODE = START_STICKY;
-    private final static int INTERVAL = 15000;
+    private final static int INTERVAL = 20000;
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
     private BlockingQueue<DeviceLog> mLogs;
     private List<Device> mDevices;
     private BluetoothScanner mBluetoothScanner;
-    private Handler handler;
     private List<Observer> listeners;
     private Collection<Device> tempDevices;
+    private Thread producerThread;
 
     @Override
     public void notifyChange(Notification n, Object o) {
@@ -62,7 +62,13 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                 }
                 break;
             case DEVICE_DONE:
+                Log.i(TAG,"Done with device");
                 notifyListeners(n,o);
+                break;
+            case NO_DEVICE:
+                /*synchronized (monitor) {
+                    monitor.notifyAll();
+                }*/
                 break;
         }
     }
@@ -91,10 +97,9 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
         mDevices = Collections.synchronizedList(new LinkedList<Device>());
         mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
         mBluetoothScanner.registerListener(this);
-        handler = new Handler();
         listeners = new LinkedList<Observer>();
         startProducerThread();
-        //startConsumerThread();
+        startConsumerThread();
     }
 
     @Override
@@ -104,7 +109,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     }
 
     private void startProducerThread() {
-        new Thread(new Runnable() {
+        this.producerThread = new Thread(new Runnable() {
 
             @Override
             public void run() {
@@ -119,7 +124,8 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                         }
                 }
             }
-        }).start();
+        });
+        producerThread.start();
     }
 
     private void startConsumerThread() {
@@ -127,12 +133,13 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
             @Override
             public void run() {
+                Log.i(TAG,"Consumer thread starting");
                 HashSet<DeviceLog> sentLogs = new HashSet<DeviceLog>();
                 while (true) {
                     try {
                         DeviceLog log = mLogs.take();
-                        Log.i(TAG,"Consumer thread found log " + log);
-                        if (!sentLogs.contains(log)) {
+                        Log.i(TAG,"Consumer thread found log id="+log.getId());
+                        /*if (!sentLogs.contains(log)) {
                             try {
                                 Log.i(TAG,"Consumer initiating upload log");
                                 ServerCommunicator.uploadLog(log);
@@ -140,7 +147,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                             } catch (ServerCommunicationException e) {
                                 Log.e(TAG, "Server Error: " + e.getMessage());
                             }
-                        }
+                        }*/
                     } catch (InterruptedException e) {
                         Log.i(TAG,"Consumer thread interrupted on take");
                     }
