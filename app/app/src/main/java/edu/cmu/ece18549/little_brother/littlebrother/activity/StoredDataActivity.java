@@ -16,17 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.ExpandableListView;
 import android.util.Log;
 
-import edu.cmu.ece18549.little_brother.littlebrother.adapter.DataImporter;
-import edu.cmu.ece18549.little_brother.littlebrother.adapter.DataImporterAdapter;
-import edu.cmu.ece18549.little_brother.littlebrother.adapter.DataOnDeviceImporter;
 import edu.cmu.ece18549.little_brother.littlebrother.R;
-import edu.cmu.ece18549.little_brother.littlebrother.adapter.DevicesAroundAdapter;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.StoredDataAdapter;
-import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderService;
 
@@ -86,7 +79,7 @@ public class StoredDataActivity extends AppCompatActivity {
                 if (s == null) {
                     Log.i(TAG, "intent was not from the DeviceFinderService. Ignore.");
                 }
-                else if (s == DeviceFinderService.LOG_FOUND) {
+                else {
                     int id = (int) s;
                     Log.i(TAG, "Received ID:" +id);
                     updateLogs();

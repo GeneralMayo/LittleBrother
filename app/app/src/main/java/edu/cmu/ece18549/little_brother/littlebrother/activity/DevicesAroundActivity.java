@@ -50,7 +50,7 @@ public class DevicesAroundActivity extends AppCompatActivity {
             if (s == null) {
                 Log.i(TAG, "intent was not from the DeviceFinderService. Ignore.");
             }
-            else if (s == DeviceFinderService.DEVICE_FOUND){
+            else {
                 int id = (int) s;
                 Log.i(TAG, "Received ID:" +id);
                 updateDevices();

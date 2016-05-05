@@ -26,7 +26,7 @@ public class StoredDataAdapter extends RecyclerView.Adapter<StoredDataAdapter.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
-        public TextView logHeaders;
+        public TextView logHeader;
         public TextView logDetails;
 
         // We also create a constructor that accepts the entire item row
@@ -35,7 +35,7 @@ public class StoredDataAdapter extends RecyclerView.Adapter<StoredDataAdapter.Vi
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
-            logHeaders = (TextView) itemView.findViewById(R.id.logHeader);
+            logHeader = (TextView) itemView.findViewById(R.id.logHeader);
             logDetails = (TextView) itemView.findViewById(R.id.logDetails);
         }
     }
@@ -60,9 +60,8 @@ public class StoredDataAdapter extends RecyclerView.Adapter<StoredDataAdapter.Vi
     @Override
     public void onBindViewHolder(StoredDataAdapter.ViewHolder viewHolder, int position) {
         DeviceLog log = mLogs.get(position);
-        viewHolder.logHeaders.setText(log.getId());
-        viewHolder.logDetails.setText(""+log.getValue());
-
+        viewHolder.logHeader.setText(""+log.getId());
+        viewHolder.logDetails.setText(String.format("Value: %.2f", log.getValue()));
     }
 
     // Return the total count of items
