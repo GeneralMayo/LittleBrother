@@ -37,8 +37,6 @@ public class DevicesAroundActivity extends AppCompatActivity {
 
     private class DevicesAroundBroadcastReceiver extends BroadcastReceiver{
         DevicesAroundActivity activity;
-        DevicesAroundAdapter mAdapter;
-        List<Device> mDevices;
 
         public DevicesAroundBroadcastReceiver(DevicesAroundActivity activity){
             this.activity = activity;
@@ -52,7 +50,7 @@ public class DevicesAroundActivity extends AppCompatActivity {
             if (s == null) {
                 Log.i(TAG, "intent was not from the DeviceFinderService. Ignore.");
             }
-            else {
+            else if (s == DeviceFinderService.DEVICE_FOUND){
                 int id = (int) s;
                 Log.i(TAG, "Received ID:" +id);
                 updateDevices();

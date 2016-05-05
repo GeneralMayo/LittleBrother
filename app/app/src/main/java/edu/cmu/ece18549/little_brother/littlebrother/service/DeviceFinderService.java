@@ -103,7 +103,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mBinder ;
+        return mBinder;
     }
 
     @Override
