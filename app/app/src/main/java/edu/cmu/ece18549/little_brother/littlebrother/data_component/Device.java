@@ -15,8 +15,6 @@ import java.util.Map;
  * Created by Ramsey on 3/20/2016.
  */
 public class Device {
-    public static HashMap<Integer, Device> devices = new HashMap<>();
-    private static int deviceCount = 0;
 
     private boolean registered;
     private int mId;
@@ -181,10 +179,5 @@ public class Device {
 
     public boolean is_registered() {
         return registered;
-    }
-
-    public static void addDevice(Device d){
-        devices.put(deviceCount, d);
-        deviceCount += 1;
     }
 }

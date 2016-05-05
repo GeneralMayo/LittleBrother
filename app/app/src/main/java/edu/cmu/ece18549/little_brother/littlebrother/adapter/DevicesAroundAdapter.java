@@ -22,6 +22,7 @@ import edu.cmu.ece18549.little_brother.littlebrother.R;
 import edu.cmu.ece18549.little_brother.littlebrother.activity.DeviceRegisterActivity;
 import edu.cmu.ece18549.little_brother.littlebrother.activity.DevicesAroundActivity;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
+import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
 import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderService;
 
 /**
@@ -106,7 +107,13 @@ public class DevicesAroundAdapter extends RecyclerView.Adapter<DevicesAroundAdap
             position += "W";
         }
 
-        return "id: " + d.getId() + " | Position: " + position;
+        String sensor_names = "sensors -";
+        for (Sensor s : d.getSensors()){
+            sensor_names += "- ";
+            sensor_names += s.getName() + " ";
+        }
+
+        return "id: " + d.getId() + " | Position: " + position + "\n" + sensor_names;
     }
 
     @Override

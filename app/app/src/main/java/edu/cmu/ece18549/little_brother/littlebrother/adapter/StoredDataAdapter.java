@@ -60,8 +60,8 @@ public class StoredDataAdapter extends RecyclerView.Adapter<StoredDataAdapter.Vi
     @Override
     public void onBindViewHolder(StoredDataAdapter.ViewHolder viewHolder, int position) {
         DeviceLog log = mLogs.get(position);
-        viewHolder.logHeader.setText(""+log.getId());
-        viewHolder.logDetails.setText(String.format("Value: %.2f", log.getValue()));
+        viewHolder.logHeader.setText(log.getDevice().toString() + ":\n" + log.getDate().toString() + "\n");
+        viewHolder.logDetails.setText(log.getSensor().toString() + String.format(": %.2f", log.getValue()));
     }
 
     // Return the total count of items

@@ -28,7 +28,7 @@ import edu.cmu.ece18549.little_brother.littlebrother.test.IncrementalFakeDeviceF
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface, Observer{
     private final static int SERVICE_START_MODE = START_STICKY;
-    private final static int INTERVAL = 20000;
+    private final static int INTERVAL = 5000;
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
     private BlockingQueue<DeviceLog> mLogs;
@@ -106,17 +106,20 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
         return mBinder;
     }
 
+    private IncrementalFakeDeviceFactory ifdf;
+
     @Override
     public void onCreate() {
         Log.i(TAG,"Service starting");
         mLogs = new LinkedBlockingQueue<DeviceLog>();
         mDevices = Collections.synchronizedList(new LinkedList<Device>());
-        mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
-        mBluetoothScanner.registerListener(this);
-        listeners = new LinkedList<Observer>();
+//        mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
+//        mBluetoothScanner.registerListener(this);
+//        listeners = new LinkedList<Observer>();
+        ifdf = new IncrementalFakeDeviceFactory();
 
         startProducerThread();
-        startConsumerThread();
+        //startConsumerThread();
     }
 
     @Override
@@ -130,9 +133,18 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
             @Override
             public void run() {
+                int i = 0;
                 while (true) {
-                    Log.i(TAG, "Initiating device scan");
-                    tempDevices = mBluetoothScanner.getDevices();
+                    if (i < 5) {
+                        Log.i(TAG, "Initiating device scan");
+                        Device device = ifdf.getNewDevice();
+                        mDevices.add(device);
+                        mLogs.addAll(device.getLogs());
+                        mBLEChangeIntent = new Intent(BLE_CHANGE_ACTION);
+                        mBLEChangeIntent.putExtra(BLE_CHANGE_EXTRA, LOG_FOUND);
+                        sendBroadcast(mBLEChangeIntent);
+                    }
+//                    tempDevices = mBluetoothScanner.getDevices();
                     //Log.i(TAG, "Producer continuing");
                     try {
                         Thread.sleep(INTERVAL);
