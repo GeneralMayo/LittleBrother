@@ -24,10 +24,11 @@ import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 import edu.cmu.ece18549.little_brother.littlebrother.R;
+import edu.cmu.ece18549.little_brother.littlebrother.test.IncrementalFakeDeviceFactory;
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface, Observer{
     private final static int SERVICE_START_MODE = START_STICKY;
-    private final static int INTERVAL = 5000;
+    private final static int INTERVAL = 1000;
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
     private BlockingQueue<DeviceLog> mLogs;
@@ -36,6 +37,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     private Handler handler;
     private List<Observer> listeners;
     private Collection<Device> tempDevices;
+    private IncrementalFakeDeviceFactory ifdf;
 
     public static final String BLE_CHANGE_ACTION =
             "edu.cmu.ece18549.little_brother.littlebrother.service.ble_change_action";
@@ -98,6 +100,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
         Log.i(TAG,"Service starting");
         mLogs = new LinkedBlockingQueue<DeviceLog>();
         mDevices = Collections.synchronizedList(new LinkedList<Device>());
+        ifdf = new IncrementalFakeDeviceFactory();
 //        mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
 //        mBluetoothScanner.registerListener(this);
 //        handler = new Handler();
@@ -118,17 +121,22 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
             @Override
             public void run() {
+                int deviceNum = 0;
                 while (true) {
-                    Log.i(TAG, "Initiating device scan");
-                    mBLEChangeIntent.putExtra(BLE_CHANGE_EXTRA, DEVICE_FOUND);
-                    sendBroadcast(mBLEChangeIntent);
+                    if (deviceNum < 5) {
+                        Log.i(TAG, "Initiating device scan");
+                        deviceNum += 1;
+                        mDevices.add(ifdf.getNewDevice());
+                        mBLEChangeIntent.putExtra(BLE_CHANGE_EXTRA, DEVICE_FOUND);
+                        sendBroadcast(mBLEChangeIntent);
 //                    tempDevices = mBluetoothScanner.getDevices();
-                    //Log.i(TAG, "Producer continuing");
-                    try {
-                        Thread.sleep(INTERVAL);
+                        //Log.i(TAG, "Producer continuing");
+                        try {
+                            Thread.sleep(INTERVAL);
                         } catch (InterruptedException e) {
-                          Thread.currentThread().interrupt();
+                            Thread.currentThread().interrupt();
                         }
+                    }
                 }
             }
         }).start();
