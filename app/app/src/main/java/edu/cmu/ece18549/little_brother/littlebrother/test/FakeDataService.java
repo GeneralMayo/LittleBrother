@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import edu.cmu.ece18549.little_brother.littlebrother.adapter.BluetoothScanner;
 import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderServiceInterface;
 import edu.cmu.ece18549.little_brother.littlebrother.service.Observer;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicationException;
@@ -69,6 +70,11 @@ public class FakeDataService extends Service implements DeviceFinderServiceInter
 
     @Override
     public Collection<DeviceLog> getLogs() {
+        return null;
+    }
+
+    @Override
+    public BluetoothScanner getScanner() {
         return null;
     }
 

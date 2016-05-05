@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.cmu.ece18549.little_brother.littlebrother.R;
+import edu.cmu.ece18549.little_brother.littlebrother.adapter.BluetoothScanner;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.DevicesAroundAdapter;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicationException;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
@@ -185,6 +186,8 @@ public class DevicesAroundActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.deviceAroundList),
                         "Success! Device registered as id: " + mDevice.getId(), Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                BluetoothScanner scanner = mService.getScanner();
+                scanner.registerDevice(mDevice);
             }
         }
     }

@@ -152,6 +152,7 @@ public class Device {
             throw new DeviceException("Sensor " + sensor + " already on device");
         }
 
+        if (sensor.getId() < 0) return;
         List<DeviceLog> newLogs = new LinkedList<DeviceLog>();
         mComponents.put(sensor,newLogs);
     }

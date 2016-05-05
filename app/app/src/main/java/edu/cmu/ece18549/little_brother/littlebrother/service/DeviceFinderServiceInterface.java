@@ -2,6 +2,7 @@ package edu.cmu.ece18549.little_brother.littlebrother.service;
 
 import java.util.Collection;
 
+import edu.cmu.ece18549.little_brother.littlebrother.adapter.BluetoothScanner;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 
@@ -11,5 +12,6 @@ import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceLog;
 public interface DeviceFinderServiceInterface {
     Collection<Device> getDevices();
     Collection<DeviceLog> getLogs();
+    BluetoothScanner getScanner();
     void registerListener(Observer o);
 }

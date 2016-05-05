@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -43,7 +45,7 @@ import edu.cmu.ece18549.little_brother.littlebrother.service.Observer;
 public class BluetoothScanner {
 
     private static final boolean DEVICE_DEBUG = false;
-    private static final boolean SCAN_DEBUG = false;
+    private static final boolean SCAN_DEBUG = true;
 
     private static final long SCAN_PERIOD = 3000;
     private static final UUID DEVICE_INFO_SERVICE_UUID = new UUID(0x4f701111290bac89L,0x5444795490294698L);
@@ -67,7 +69,9 @@ public class BluetoothScanner {
     private final static String TAG = "BLUETOOTH_SCANNER";
     private final Context mContext;
 
-    private final List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
+    //private final List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
+    private BluetoothDevice bleDevice = null;
+    private Device device;
 
     private volatile boolean bluetoothEnabled;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -144,11 +148,11 @@ public class BluetoothScanner {
         }
     }
 
-    public Collection<Device> getDevices() {
+    public void getDevice() {
 
         if (!bluetoothEnabled) {
             Log.i(TAG,"Bluetooth disabled, returning");
-            return devices;
+            return;
         }
 
         final LinkedList<BluetoothGattCharacteristic> deviceCharacteristics = new LinkedList<>();
@@ -220,6 +224,7 @@ public class BluetoothScanner {
                     Log.i(TAG, "Disconnected from GATT server.");
                     gatt.close();
                     Log.i(TAG, "GATT Server Closed");
+                    refreshDeviceCache(gatt);
                     notifyListeners(Notification.DEVICE_DONE,null);
                 }
             }
@@ -243,7 +248,7 @@ public class BluetoothScanner {
                 if (charUUID.equals(LOG_CHARACTERISTIC_UUID)) {
                     Log.i(TAG,"Log characteristic changed");
                     DeviceLog d = parseLog(characteristic,newDevice.getDevice());
-                    if (d.getId() == 0) {
+                    if (d.getId() <= 0) {
                         Log.i(TAG,"Stop Log received");
                         gatt.disconnect();
                     } else {
@@ -276,23 +281,9 @@ public class BluetoothScanner {
                         //Log.i(TAG,"Id Characteristic Read");
                         int id = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT8, 0);
                         Log.i(TAG, "Id=" + id);
-
-                        boolean found = false;
-                        for (Device d : devices) {
-                            if (d.getId() == id) {
-                                Log.i(TAG, "Found already existing device");
-                                newDevice.setDevice(d);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found) {
-                            Log.i(TAG, "Did not find device");
-                            Device d = new Device();
-                            d.setId(id);
-                            newDevice.setDevice(d);
-                        }
-                        newDevice.setFound(found);
+                        Device d = new Device();
+                        d.setId(id);
+                        newDevice.setDevice(d);
 
                     } else if (characteristicUUID.equals(SENSOR_CHARACTERISTIC_UUID)) {
                         //Log.i(TAG,"Sensor Characteristic Read");
@@ -301,11 +292,15 @@ public class BluetoothScanner {
                         String sensorName = sensorInfo.substring(2);
                         Log.i(TAG,"Name=" + sensorName + " Id="+id);
                         Device device = newDevice.getDevice();
-                        Sensor newSensor = new Sensor(id, sensorName, device);
-                        try {
-                            device.addSensor(newSensor);
-                        } catch (DeviceException e) {
-                            Log.i(TAG, e.getMessage());
+                        if (id >= 0) {
+                            Sensor newSensor = new Sensor(id, sensorName, device);
+                            try {
+                                device.addSensor(newSensor);
+                            } catch (DeviceException e) {
+                                Log.i(TAG, e.getMessage());
+                            }
+                        } else {
+                            Log.i(TAG,"Invalid sensor id");
                         }
                     } else if (characteristicUUID.equals(LOG_CHARACTERISTIC_UUID)) {
                         if (DEVICE_DEBUG) Log.i(TAG, "Log Characteristic Read");
@@ -330,9 +325,13 @@ public class BluetoothScanner {
                     if (!newDevice.getFound()) {
                         Log.i(TAG,"Device not in list, adding...");
                         Device d = newDevice.getDevice();
-                        devices.add(d);
+                        device = d;
                         newDevice.setFound(true);
                         notifyListeners(Notification.DEVICE_ADDED,d);
+                        if (d.getId() < 0) {
+                            Log.i(TAG,"Found unregistered device");
+                            gatt.disconnect();
+                        }
                     }
 
                     if (logCharacteristics.size() == 1) {
@@ -347,6 +346,7 @@ public class BluetoothScanner {
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
                 BluetoothDevice device = result.getDevice();
+                bleDevice = device;
                 Log.i(TAG,"Device Found:\nName="+device.getName());
                 BluetoothGatt gattConnection = device.connectGatt(mContext,false,mGattCallback);
                 refreshDeviceCache(gattConnection);
@@ -354,8 +354,16 @@ public class BluetoothScanner {
 
             }
         };
-        scanLeDevice(true, callback);
-        return devices;
+
+        if (bleDevice == null) {
+            scanLeDevice(true,callback);
+        } else {
+            BluetoothGatt gatt = bleDevice.connectGatt(mContext,false,mGattCallback);
+            refreshDeviceCache(gatt);
+        }
+
+        //scanLeDevice(true, callback);
+        return;
     }
 
     private DeviceLog parseLog(BluetoothGattCharacteristic characteristic,Device device) {
@@ -365,7 +373,7 @@ public class BluetoothScanner {
         Log.i(TAG,"value="+String.format("%x",value));
         int logId = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32,8);
         Log.i(TAG,"logId="+String.format("%x",logId));
-        int sensorId = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16,12);
+        int sensorId = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16,12) - 0x30;
         Log.i(TAG, "sensorId=" + String.format("%x", sensorId));
         return new DeviceLog(logId, new Date(time), (double) value, new Date(), device.getSensor(sensorId));
     }
@@ -417,6 +425,127 @@ public class BluetoothScanner {
 
     public BluetoothAdapter getAdapter() {
         return mBluetoothAdapter;
+    }
+
+    public void registerDevice(Device device) {
+        Log.i(TAG,"Attempting to register device");
+        final LinkedList<BluetoothGattCharacteristic> deviceCharacteristics = new LinkedList<>();
+        final NewDevice newDevice = new NewDevice();
+        final LinkedList<Sensor> sensors = new LinkedList<>(device.getSensors());
+        for (Sensor s : sensors) {
+            Log.i("TAG","Found sensor " + s.getName());
+        }
+
+        newDevice.setDevice(device);
+
+        BluetoothGattCallback callback = new BluetoothGattCallback() {
+            @Override
+            public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+                super.onConnectionStateChange(gatt, status, newState);
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    Log.i(TAG, "R:Connected to GATT server.");
+                    Log.i(TAG, "R:Attempting to start service discovery:");
+                    gatt.discoverServices();
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    Log.i(TAG, "R:Disconnected from GATT server.");
+                    gatt.close();
+                    Log.i(TAG, "R:GATT Server Closed");
+                    //refreshDeviceCache(gatt);
+                    notifyListeners(Notification.DEVICE_DONE,null);
+                }
+            }
+
+            @Override
+            public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+                super.onServicesDiscovered(gatt, status);
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    if (DEVICE_DEBUG) Log.i(TAG, "Gatt services discovered");
+                    List<BluetoothGattService> services = gatt.getServices();
+                    for (BluetoothGattService service : services) {
+                        UUID uuid = service.getUuid();
+                        if (DEVICE_DEBUG) Log.i(TAG, "Service UUID: " + uuid);
+                        if (uuid.equals(DEVICE_INFO_SERVICE_UUID)) {
+                            if (DEVICE_DEBUG) Log.i(TAG, "Found device info service");
+                            List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
+                            //Log.i(TAG, "Found " + characteristics.size() + " characteristics");
+
+                            for (BluetoothGattCharacteristic characteristic : characteristics) {
+                                if (DEVICE_DEBUG)
+                                    Log.i(TAG, "Device characteristic:UUID=" + characteristic.getUuid());
+                                deviceCharacteristics.add(characteristic);
+                            }
+                        }
+                    }
+                    Log.i(TAG,"Attempting write to first characteristic");
+                    BluetoothGattCharacteristic bleCharacteristic = deviceCharacteristics.pop();
+                    setValue(bleCharacteristic,newDevice.getDevice());
+                    gatt.writeCharacteristic(bleCharacteristic);
+                }
+            }
+
+            @Override
+            public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+                super.onCharacteristicWrite(gatt, characteristic, status);
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    Log.i(TAG, "Write successful");
+                    if (deviceCharacteristics.size() > 0) {
+                        Log.i(TAG, "Writing to next characteristic");
+                        BluetoothGattCharacteristic newCharacteristic = deviceCharacteristics.pop();
+                        if (setValue(newCharacteristic, newDevice.getDevice())) {
+                            gatt.writeCharacteristic(newCharacteristic);
+                        } else {
+                            Log.i(TAG, "Set value unsuccessful");
+                        }
+                    } else {
+                        Log.i(TAG, "Wrote to all characteristics");
+                        gatt.disconnect();
+                    }
+                } else {
+                    Log.i(TAG,"R:write returned status="+status);
+                }
+
+
+            }
+
+            private boolean setValue(BluetoothGattCharacteristic characteristic, Device device) {
+                UUID uuid = characteristic.getUuid();
+                if (uuid.equals(ID_CHARACTERISTIC_UUID)) {
+                    Log.i(TAG,"Setting id value");
+                    byte[] value = new byte[1];
+                    value[0] = (byte)device.getId();
+                    characteristic.setValue(value);
+                } else if (uuid.equals(NAME_CHARACTERISTIC_UUID)) {
+                    Log.i(TAG,"Setting name value");
+                    byte[] value = device.getName().getBytes();
+                    characteristic.setValue(value);
+                } else if (uuid.equals(SENSOR_CHARACTERISTIC_UUID)) {
+                    Log.i(TAG,"Setting sensor value");
+                    if (sensors.size() > 0) {
+                        Sensor sensor = sensors.pop();
+                        String sensorName = sensor.getName();
+                        byte[] sensorNameBytes = sensorName.getBytes();
+                        byte[] value = new byte[2 + sensorNameBytes.length];
+                        value[0] = (byte)Character.forDigit(sensor.getId(), 10);;
+                        Log.i(TAG,"SensorId="+sensor.getId());
+                        value[1] = '_';
+                        for(int i = 0; i < sensorNameBytes.length; i++) {
+                            value[2 + i] = sensorNameBytes[i];
+                            Log.i(TAG,"i " + (char)value[2+i]);
+                        }
+                        characteristic.setValue(value);
+                    } else {
+                        Log.i(TAG,"No sensors to add, skipping");
+                    }
+                } else {
+                    Log.i(TAG,"Unknown characteristic to set value uuid="+uuid);
+                    return false;
+                }
+                return true;
+            }
+        };
+        BluetoothGatt connection = bleDevice.connectGatt(mContext,false,callback);
+        refreshDeviceCache(connection);
+        return;
     }
 
     private boolean refreshDeviceCache(BluetoothGatt gatt){

@@ -28,14 +28,14 @@ import edu.cmu.ece18549.little_brother.littlebrother.test.IncrementalFakeDeviceF
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface, Observer{
     private final static int SERVICE_START_MODE = START_STICKY;
-    private final static int INTERVAL = 20000;
+    private final static int INTERVAL = 10000;
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
     private BlockingQueue<DeviceLog> mLogs;
     private List<Device> mDevices;
     private BluetoothScanner mBluetoothScanner;
     private List<Observer> listeners;
-    private Collection<Device> tempDevices;
+    //private Collection<Device> tempDevices;
     private Thread producerThread;
 
     public static final String BLE_CHANGE_ACTION =
@@ -78,6 +78,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                 break;
             case DEVICE_DONE:
                 Log.i(TAG,"Done with device");
+                //mDevices.remove(o);
                 mBLEChangeIntent.putExtra(BLE_CHANGE_EXTRA, DEVICE_DONE);
                 sendBroadcast(mBLEChangeIntent);
                 break;
@@ -132,7 +133,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
             public void run() {
                 while (true) {
                     Log.i(TAG, "Initiating device scan");
-                    tempDevices = mBluetoothScanner.getDevices();
+                    mBluetoothScanner.getDevice();
                     //Log.i(TAG, "Producer continuing");
                     try {
                         Thread.sleep(INTERVAL);
@@ -182,6 +183,11 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     @Override
     public Collection<DeviceLog> getLogs() {
         return mLogs;
+    }
+
+    @Override
+    public BluetoothScanner getScanner() {
+        return mBluetoothScanner;
     }
 
     @Override
