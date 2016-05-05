@@ -42,10 +42,21 @@ public class IncrementalFakeDeviceFactory extends FakeDeviceFactory {
     @Override
     public Device getNewDevice() {
         Device device = new Device(-1, "Device " + mDeviceCount,
-                                   INIT_LAT + 0.1*mDeviceCount, INIT_LONG + 0.1*mDeviceCount);
+                INIT_LAT + 0.1*mDeviceCount, INIT_LONG + 0.1*mDeviceCount);
+        int numSensors = getRandomInt(3);
+        for (int i = 0; i < numSensors; i++) {
+            try {
+                Sensor sensor = new Sensor(mSensorCount, "Sensor " + mSensorCount, device);
+                device.addSensor(sensor);
+                device.addLog(new DeviceLog(mLogCount, new Date(), mLogCount, new Date(), sensor));
+                mLogCount += 1;
+                mSensorCount += 1;
+            } catch (DeviceException e) {
+                Log.e(TAG, "Device exception, add sensor or add log failed");
+            }
+        }
 
         mDeviceCount += 1;
-        Device.addDevice(device);
         return device;
     }
 

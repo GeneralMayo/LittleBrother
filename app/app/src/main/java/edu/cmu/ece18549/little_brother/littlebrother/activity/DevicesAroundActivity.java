@@ -38,8 +38,6 @@ public class DevicesAroundActivity extends AppCompatActivity {
 
     private class DevicesAroundBroadcastReceiver extends BroadcastReceiver{
         DevicesAroundActivity activity;
-        DevicesAroundAdapter mAdapter;
-        List<Device> mDevices;
 
         public DevicesAroundBroadcastReceiver(DevicesAroundActivity activity){
             this.activity = activity;

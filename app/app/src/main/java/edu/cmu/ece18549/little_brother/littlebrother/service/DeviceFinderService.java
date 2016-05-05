@@ -28,6 +28,7 @@ import edu.cmu.ece18549.little_brother.littlebrother.test.IncrementalFakeDeviceF
 
 public class DeviceFinderService extends Service implements DeviceFinderServiceInterface, Observer{
     private final static int SERVICE_START_MODE = START_STICKY;
+
     private final static int INTERVAL = 10000;
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
@@ -104,20 +105,23 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mBinder ;
+        return mBinder;
     }
+
+    private IncrementalFakeDeviceFactory ifdf;
 
     @Override
     public void onCreate() {
         Log.i(TAG,"Service starting");
         mLogs = new LinkedBlockingQueue<DeviceLog>();
         mDevices = Collections.synchronizedList(new LinkedList<Device>());
-        mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
-        mBluetoothScanner.registerListener(this);
-        listeners = new LinkedList<Observer>();
+//        mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
+//        mBluetoothScanner.registerListener(this);
+//        listeners = new LinkedList<Observer>();
+        ifdf = new IncrementalFakeDeviceFactory();
 
         startProducerThread();
-        startConsumerThread();
+        //startConsumerThread();
     }
 
     @Override
@@ -131,6 +135,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
             @Override
             public void run() {
+                int i = 0;
                 while (true) {
                     Log.i(TAG, "Initiating device scan");
                     mBluetoothScanner.getDevice();

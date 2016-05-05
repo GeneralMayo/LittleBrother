@@ -1,19 +1,7 @@
 package edu.cmu.ece18549.little_brother.littlebrother.activity;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,18 +11,11 @@ import android.view.View;
 import android.widget.EditText;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import edu.cmu.ece18549.little_brother.littlebrother.R;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.DevicesAroundAdapter;
 import edu.cmu.ece18549.little_brother.littlebrother.adapter.SensorRegisterAdapter;
-import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicationException;
-import edu.cmu.ece18549.little_brother.littlebrother.adapter.ServerCommunicator;
-import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
-import edu.cmu.ece18549.little_brother.littlebrother.data_component.DeviceException;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Sensor;
-import edu.cmu.ece18549.little_brother.littlebrother.service.DeviceFinderService;
-import edu.cmu.ece18549.little_brother.littlebrother.test.FakeDataService;
 
 public class DeviceRegisterActivity extends AppCompatActivity {
     public static final String SUCCESS_TAG = "SUCCESS";
@@ -125,7 +106,9 @@ public class DeviceRegisterActivity extends AppCompatActivity {
         ArrayList<String> sensorNames = new ArrayList<>();
         for (Sensor s : mSensors){
             Log.i(TAG, s.getName());
-            sensorNames.add(s.getName());
+            if (!(s.getName() == "")) {
+                sensorNames.add(s.getName());
+            }
         }
 
         Intent returnIntent = new Intent();

@@ -25,6 +25,8 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:maxLines="1"
+        android:maxLength="8"
+        android:singleLine="true"
         android:ellipsize="end"
         android:hint="@string/sensor_text_hint"
         android:textAppearance="?android:attr/textAppearanceMedium" />

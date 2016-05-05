@@ -31,6 +31,7 @@ public class SensorRegisterAdapter extends RecyclerView.Adapter<SensorRegisterAd
         public EditText editTextView;
         public Button removeButton;
         public Button addButton;
+        private View view;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -41,6 +42,11 @@ public class SensorRegisterAdapter extends RecyclerView.Adapter<SensorRegisterAd
             editTextView = (EditText) itemView.findViewById(R.id.sensor_name_edit);
             removeButton = (Button) itemView.findViewById(R.id.delete_sensor_button);
             addButton = (Button) itemView.findViewById(R.id.plus_one_button);
+            view = itemView;
+        }
+
+        public View getItemView() {
+            return view;
         }
     }
 
@@ -88,6 +94,8 @@ public class SensorRegisterAdapter extends RecyclerView.Adapter<SensorRegisterAd
             Button button = viewHolder.addButton;
             button.setOnClickListener(new SensorAddListener(this, mSensors));
         } else if (position == 0) {
+            Button button = viewHolder.removeButton;
+            viewHolder.getItemView().findViewById(R.id.delete_sensor_button).setVisibility(View.GONE);
             EditText editText = viewHolder.editTextView;
             editText.addTextChangedListener(new SensorTextWatcher(mSensors.get(position)));
         } else if (position < mSensors.size()) {
@@ -95,7 +103,6 @@ public class SensorRegisterAdapter extends RecyclerView.Adapter<SensorRegisterAd
             EditText editText = viewHolder.editTextView;
             button.setOnClickListener(new SensorDeleteListener(this, mSensors, mSensors.get(position)));
             editText.addTextChangedListener(new SensorTextWatcher(mSensors.get(position)));
-
         }
     }
 
