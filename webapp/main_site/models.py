@@ -6,11 +6,13 @@ from django.contrib.auth.models import User
 
 #Little Brother Devices
 class Device(models.Model):
-	name = models.CharField(max_length=30)
+	name = models.CharField(max_length=8)
 	latitude = models.FloatField()
 	longitude = models.FloatField()
 	time_server = models.DateTimeField()
         admin = models.ForeignKey(settings.AUTH_USER_MODEL,blank=True,null=True)
+	config_revision = models.IntegerField(default=0)
+	generating_logs = models.BooleanField(blank=True)
 
 	def __unicode__(self):
 		return "Device: %d %s %s %s" % (self.id, self.name,
@@ -28,7 +30,7 @@ class Device(models.Model):
 #models.
 class Sensor(models.Model):
 	custom_id = models.IntegerField(default=0)
-	name = models.CharField(max_length=30)
+	name = models.CharField(max_length=8)
 	device = models.ForeignKey(Device)
 	time_server = models.DateTimeField()
 
@@ -62,12 +64,3 @@ class Log(models.Model):
 
 class MyUser(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-
-class Configuration(models.Model):
-        device = models.ForeignKey(Device)
-        device_off = models.BooleanField(blank=True,default=False)
-        sensors_off = models.IntegerField(blank=True,default=0) #put in binary
-	device_sleep = models.BooleanField(blank=True,default=False)
-        time = models.DateTimeField()
-        
-        

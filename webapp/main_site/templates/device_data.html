@@ -17,7 +17,12 @@
 <div id="small-map"></div>
 
 <h1>{{device.name}}</h1>
-<p> <a href="{% url 'configure' %}">Configure</a></p>
+<p> <a href="{% url 'configure' device.id %}">Configure</a></p>
+<form action="{% url 'download_config' device.id%}" method="post">
+Id: <input type="text" name="id"><br>
+<input type="submit" value="Download Config">
+</form>
+
 {% for sensor in sensors %}
   <h3>{{sensor.name}}</h3>
 

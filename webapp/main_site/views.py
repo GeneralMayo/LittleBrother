@@ -101,13 +101,17 @@ def add_device(request):
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'],
                         time_server=datetime.now(),
-			admin=User.objects.get(username=form.cleaned_data['admin']))
+			admin=User.objects.get(username=form.cleaned_data['admin']),
+                        config_revision=0,
+                        generating_logs=True)
     else:
         new_device = Device(name=form.cleaned_data['name'],
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'],
                         time_server=datetime.now(),
-                        admin=User.objects.get(username="all_users"))
+                        admin=User.objects.get(username="all_users"),
+                        config_revision=0,
+                        generating_logs=True)
     new_device.save()
     write_log("New device saved")
     return JsonResponse({'id' : new_device.id,
@@ -243,9 +247,15 @@ def register(request):
 
 @transaction.atomic
 @login_required
-def configure(request):
+def configure(request,id):
     context = {}
 
+    try:
+        device = Device.objects.get(id=id)
+    except Device.DoesNotExist:
+        return JsonResponse({"error" : "Device with id %s not found" % (id)})
+
+    context["device"] = device
     if request.method == 'GET':
         context['form'] = ConfigurationForm()
         return render(request, 'configuration.html', context)
@@ -253,42 +263,55 @@ def configure(request):
     form = ConfigurationForm(request.POST)
     context['form'] = form
 
+    if not request.user == device.admin:
+        context['errors'] = ["You are not an admin for device %s" % (id)]
+        return render(request,'configuration.html',context)
+
     if not form.is_valid():
         return render(request, 'configuration.html', context)
 
-    device = Device.objects.get(id=form.cleaned_data['device_id'])
-    if not request.user == device.admin:
-        context['errors'] = ["You are not an admin for device %d" % (form.cleaned_data['device_id'])]
-        return (request,'configuration.html',context)
+    if (form.cleaned_data['name']):
+        device.name = form.cleaned_data['name']
 
-    config = Configuration(device=Device.objects.get(id=form.cleaned_data['device_id']),
-                           device_off = form.cleaned_data['device_off'],
-                           sensors_off = form.cleaned_data['sensors_off'],
-                           device_sleep = form.cleaned_dta['device_sleep'],
-                           time = datetime.now())
-             
-    config.save()
+    if (form.cleaned_data['longitude']):
+        device.longitude = form.cleaned_data['longitude']
+
+    if (form.cleaned_data['latitude']):
+        device.latitude = form.cleaned_data['latitude']
+
+    if (form.cleaned_data['generating_logs']):
+        value = form.cleaned_data['generating_logs'].lower()
+        if (value == "true"):
+            device.generating_logs = True
+        elif (value == "false"):
+            device.generating_logs = False 
+
+    device.config_revision = device.config_revision + 1
+    device.save()         
     context['success'] = "Configuration completed successfully"
     return render(request,'configuration.html',context)
 
 @transaction.atomic
-def download_config(request):
+@csrf_exempt
+def download_config(request,id):
     context = {}
 
     if "id" not in request.POST:
         return JsonResponse({"error" : "configuration id not found"})
 	
-    last_config = int(request.POST["id"])
+    current_config = int(request.POST["id"])
     
-    if not Configuration.objects.filter(id=last_config).exists():
-        return JsonResponse({"error": "Configuration does not exist"})
-    
-    latest_config = Configuration.objects.get(id=last_config).device.configuration_set.all().order_by("-id")[0]
-    if (latest_config.id > last_config):
-        response = django.core.serializers.serialize('json',[latest_config])
+    try:
+        device = Device.objects.get(id=id)
+        latest_config = device.config_revision
+    except Device.DoesNotExist:
+        return JsonResponse({"error": "Device with id %d not found" % (id)})
+
+    if (latest_config > current_config):
+        response = django.core.serializers.serialize('json',[device])
         response.strip('[]')
-        return JsonResponse(response)
-    elif latest_config.id == last_config:
+        return JsonResponse(response,safe=False)
+    elif latest_config == current_config:
         return JsonResponse({"success" : "You already have the latest config"})
     else:
         return JsonResponse({"error" : "Supplied config is newer than latest config"})
@@ -297,5 +320,4 @@ def download_config(request):
 def your_devices(request):
     context = {}
     context["devices"] = Device.objects.filter(admin=request.user)
-
     return render(request,"device_info.html",context)

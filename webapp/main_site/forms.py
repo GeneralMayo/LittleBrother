@@ -2,11 +2,12 @@ from django import forms
 
 from models import *
 from django.core.validators import validate_email
+
 class DeviceForm(forms.ModelForm):
 
     class Meta:
         model = Device
-        exclude = ('time_server',)
+        exclude = ('time_server',"config_revision","generating_logs")
 
     def clean_latitude(self):
         latitude = float(self.cleaned_data.get('latitude'))
@@ -72,38 +73,35 @@ class RegistrationForm(forms.Form):
             raise forms.ValidationError("Username already exists")
         return username
 
-class ConfigurationForm(forms.ModelForm):
-    device_id = forms.IntegerField()
+class ConfigurationForm(forms.Form):
 
-    class Meta:
-        model = Configuration
-        exclude = ("time","device")
+    latitude = forms.FloatField(required=False,label="Latitude")
+    longitude = forms.FloatField(required=False,label="Longitude")
+    name = forms.CharField(max_length=8,required=False,label="Name")
+    generating_logs = forms.CharField(max_length=5,required=False,label="Generate Logs")
 
-    def __init__(self, *args, **kwargs):
-        super(ConfigurationForm, self).__init__(*args, **kwargs)
-        ordered_fields = ['device_id']
-        self.fields.keyOrder = ordered_fields + [k for k in self.fields.keys() if k not in ordered_fields]
+    def clean_latitude(self):
+        try:
+            latitude = float(self.cleaned_data.get('latitude'))
+        except:
+            return self.cleaned_data.get('latitude')
 
-    def clean(self):
-        cleaned_data = super(ConfigurationForm,self).clean()
-        device = Device.objects.get(cleaned_data["device_id"])
-        if not Device.objects.filter(id=self.cleaned_data["device_id"]).exists():
-            raise forms.ValidationError('Device does not exist')
-	return self.cleaned_data["device_id"]
-        if ("device_off" not in cleaned_data):
-            cleaned_data["device_off"] = device.device_off
-        if ("sensors_off" not in cleaned_data):
-            cleaned_data["sensors_off"] = device.sensors_off
-        if ("device_sleep" not in cleaned_data):
-            cleaned_data["device_sleep"] = device.logs_sleep
-        return cleaned_data
+        if (latitude > 90.0 or latitude < -90.0):
+            raise forms.ValidationError('Latitude must be between -90 and 90')
+        return latitude
 
+    def clean_longitude(self):
+        try:
+            longitude = float(self.cleaned_data.get('longitude'))
+        except:
+            return self.cleaned_data.get('longitude')
 
-    def clean_sensors_off(self):
-	device = Device.objects.get(id=self.cleaned_data["device_id"])
-        sensors_off = self.cleaned_data["sensors_off"]
-        if (2**len(device.sensor_set.all()) - 1 < sensors_off):
-            raise forms.ValidationError("Device does not have that many sensors")
-        return sensors_off
+        if (longitude > 180.0 or longitude < -180.0):
+            raise forms.ValidationError('Longitude must be between -180 and 180')
+        return longitude
 
-        
+    def clean_generating_logs(self):
+        value = self.cleaned_data.get('generating_logs')
+        if (value.lower() != "true" and value.lower() != "false"):
+            raise forms.ValidationError("Generating logs must be true or false, was "+value.lower())
+        return value

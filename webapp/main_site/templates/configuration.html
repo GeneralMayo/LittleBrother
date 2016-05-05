@@ -6,7 +6,7 @@
     <p style="color: red"> {{ error }} </p>
   {% endfor %}
 
-	<form role="form" method="post" action="{% url 'configure' %}">
+	<form role="form" method="post" action="{% url 'configure' device.id %}">
     <table>
       {% for field in form.visible_fields %}
         <tr>
