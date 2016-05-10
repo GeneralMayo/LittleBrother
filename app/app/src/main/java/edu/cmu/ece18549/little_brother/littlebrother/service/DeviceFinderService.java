@@ -33,6 +33,8 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
     private final static String TAG = "DeviceFinder";
     private final LocalBinder mBinder = new LocalBinder();
     private BlockingQueue<DeviceLog> mLogs;
+    private LinkedList<DeviceLog> recentLogs = new LinkedList<>();
+
     private List<Device> mDevices;
     private BluetoothScanner mBluetoothScanner;
     private List<Observer> listeners;
@@ -115,13 +117,12 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
         Log.i(TAG,"Service starting");
         mLogs = new LinkedBlockingQueue<DeviceLog>();
         mDevices = Collections.synchronizedList(new LinkedList<Device>());
-//        mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
-//        mBluetoothScanner.registerListener(this);
-//        listeners = new LinkedList<Observer>();
-        ifdf = new IncrementalFakeDeviceFactory();
+        mBluetoothScanner = new BluetoothScanner(this.getApplicationContext());
+        mBluetoothScanner.registerListener(this);
+        listeners = new LinkedList<Observer>();
 
         startProducerThread();
-        //startConsumerThread();
+        startConsumerThread();
     }
 
     @Override
@@ -162,15 +163,19 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
                     try {
                         DeviceLog log = mLogs.take();
                         Log.i(TAG,"Consumer thread found log id="+log.getId());
-                        /*if (!sentLogs.contains(log)) {
+                        if (recentLogs.size() < 10) {
+                            recentLogs.add(log);
+                        } else {
+                            recentLogs.remove(0);
+                            recentLogs.add(log);
+                        }
                             try {
                                 Log.i(TAG,"Consumer initiating upload log");
                                 ServerCommunicator.uploadLog(log);
-                                sentLogs.add(log);
+                                //sentLogs.add(log);
                             } catch (ServerCommunicationException e) {
                                 Log.e(TAG, "Server Error: " + e.getMessage());
                             }
-                        }*/
                     } catch (InterruptedException e) {
                         Log.i(TAG,"Consumer thread interrupted on take");
                     }
@@ -187,7 +192,7 @@ public class DeviceFinderService extends Service implements DeviceFinderServiceI
 
     @Override
     public Collection<DeviceLog> getLogs() {
-        return mLogs;
+        return recentLogs;
     }
 
     @Override

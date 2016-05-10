@@ -281,9 +281,9 @@ public class BluetoothScanner {
                         //Log.i(TAG,"Id Characteristic Read");
                         int id = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT8, 0);
                         Log.i(TAG, "Id=" + id);
-                        Device d = new Device();
-                        d.setId(id);
-                        newDevice.setDevice(d);
+                        Device d = newDevice.getDevice();
+                        if (d != null) d.setId(id);
+                        //newDevice.setDevice(d);
 
                     } else if (characteristicUUID.equals(SENSOR_CHARACTERISTIC_UUID)) {
                         //Log.i(TAG,"Sensor Characteristic Read");
@@ -347,6 +347,7 @@ public class BluetoothScanner {
                 super.onScanResult(callbackType, result);
                 BluetoothDevice device = result.getDevice();
                 bleDevice = device;
+                newDevice.setDevice(new Device());
                 Log.i(TAG,"Device Found:\nName="+device.getName());
                 BluetoothGatt gattConnection = device.connectGatt(mContext,false,mGattCallback);
                 refreshDeviceCache(gattConnection);
@@ -358,6 +359,7 @@ public class BluetoothScanner {
         if (bleDevice == null) {
             scanLeDevice(true,callback);
         } else {
+            newDevice.setDevice(device);
             BluetoothGatt gatt = bleDevice.connectGatt(mContext,false,mGattCallback);
             refreshDeviceCache(gatt);
         }

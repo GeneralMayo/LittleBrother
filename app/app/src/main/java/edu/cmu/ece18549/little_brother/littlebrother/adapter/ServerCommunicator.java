@@ -1,4 +1,7 @@
 package edu.cmu.ece18549.little_brother.littlebrother.adapter;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -10,6 +13,7 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import edu.cmu.ece18549.little_brother.littlebrother.data_component.Device;
@@ -55,11 +59,13 @@ public class ServerCommunicator {
 
     public static void uploadLog(DeviceLog log) throws ServerCommunicationException {
        // String url = BASE_URL + ADD_LOG_URL;
+        int rand = new Random().nextInt() % 5;
+
         String url = "http://ec2-52-90-105-31.compute-1.amazonaws.com/little_brother/add_log";
         RequestParams params = new RequestParams();
         params.add("custom_id",log.getId() + "");
-        params.add("time",convertDate(log.getDate()));
-        params.add("value",log.getValue() + "");
+        params.add("time",convertDate(log.getTimeReceived()));
+        params.add("value",log.getValue() + rand + "");
         params.add("time_app",convertDate(log.getTimeReceived()));
         params.add("device",log.getDevice().getId() + "");
         params.add("sensor_id",log.getSensor().getId() + "");
