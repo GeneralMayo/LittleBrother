@@ -9,9 +9,8 @@
 		<title>Little Brother</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="assets/css/main.css" />
-		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<link rel="stylesheet" href="assets/css/bootstrap.css" />
 	</head>
 	<body>
 
@@ -21,37 +20,100 @@
 				<h1>
           Little Brother
         </h1>
+        <h2>
+          Always got your back.
+        </h2>
 			</div>
 
 		<!-- Main -->
 			<div id="main">
 
 				<header class="major container 75%">
-					<h2> Concept
+          <h2> What is Little Brother? </h2>
           <p>
-          Little Brother is a sensing device that uses 
-          crowdsourcing to push 
-          its logs to the cloud—even in areas without wifi access. 
-          Our prototype measures air quality and uses Bluetooth 
-          to connect with smartphones running our app in order 
-          to upload its logs to a central server, where users 
-          can interact with and visualize the data through a 
-          web interface.
+            Little Brother is a remote sensing device designed 
+            to gather a variety of data about the environment
+            and push these data to the cloud by crowdsourcing
+            the bandwidth of smartphones around the device
           </p>
+          <p>
+          <em>Simple and Invisible </em> <br>
+
+           Little Brother is the next generation
+            of data collection
+          </p>
+
 				</header>
 
 				<header class="box container">
 					<h2>
             Motivation
+          </h2>
           <p>
-          </br>
-          Embedded sensors typically come in two flavors: devices that upload data to the cloud through wifi, and devices designed to interact with smartphones locally. In environments without consistent access to wifi, Little Brother logs data and automatically connects with smartphones running our app to provide users with useful information while also using them as a link to upload data to a centralized server for further analysis. Localized air pollution monitoring is an area that has great need for this technology, since it often involves setting up cumbersome monitoring stations across a region and manually retrieving data from each station.
+          In environments without consistent access
+          to wifi, there are no efficient ways of collecting data.
+          Little Brother seeks to solve this problem.
+          Little Brother logs data and automatically
+          connects with smartphones running our app to provide
+          users with useful information while also using them as
+          a link to upload data to a centralized server for further
+          analysis. 
           </p>
+          <h4>
+            We envision Little Brother as an economic solution to many applications
+          </h4>
+          <p>
+          </p>
+          <table>
+            <tr>
+              <td>
+                <span class="glyphicon glyphicon-road">
+                </span>
+                <br>Traffic<br> Analysis
+              </td>
+              <td>
+                <span class="glyphicon glyphicon-globe">
+                </span>
+                <br>Air Quality<br> Monitoring
+              </td>
+              <td>
+                <span class="glyphicon glyphicon-exclamation-sign">
+                </span>
+                <br>Anomaly<br> Detection
+              </td>
+            </tr>
+          </table>
 				</header>
 
 				<header class="major container75%">
 					<h2>
+            Our Little Brother
+          </h2>
+				</header>
+
+        <div class="box container">
+          <h2>
+            The Device
+          </h2>
+        </div>
+
+
+        <div class="box container">
+          <h2>
+            The Mobile Application
+          </h2>
+        </div>
+
+        <div class="box container">
+          <h2>
+            The Web Application
+          </h2>
+        </div>
+
+				<header class="major container75%">
+					<h2>
             The Team
+            </h2>
 				</header>
 
 				<div class="box alt container">
@@ -63,7 +125,7 @@
 						</div>
 					</section>
 					<section class="feature right">
-						<a href="#" class="image fa-code"><img src="images/pic02.jpg" alt="" /></a>
+						<a href="#" class="image fa-code"><img src="images/Ramsey.jpg" alt="" /></a>
 						<div class="content">
 							<h3>Ramsey Natour</h3>
 							<p></p>
@@ -85,45 +147,165 @@
 					</section>
 				</div>
 
+
+
+				<header class="major container75%">
+            <h2> The Details </h2>
+            </header>
+
+
+  				<div class="box container">
+        	<section>
+						<header>
+            <h3> Hardware </h3>
+						</header>
+<h5>Microprocessor Unit:
+Nordic NRF51822 Development Kit
+</h5>
+<div>
+    <div style="float:left;">
+      <img src="images/nordic.png" />
+    </div>
+    <div style="float:right;">
+      <table class="default">
+        <tbody>
+          <tr>
+            <td>Price</td>
+            <td>$39.00</td>
+          </tr>
+          <tr>
+            <td>Processor</td>
+            <td>ARM Cortex M0</td>
+          </tr>
+          <tr>
+            <td>Storage</td>
+            <td>Flash: 128kB RAM: 16 kB </td>
+          </tr>
+          <tr>
+            <td>Power Usage</td>
+            <td>2.7 mW BLE</td>
+          </tr>
+          <tr>
+            <td>Connectivity</td>
+            <td>BLE </td>
+          </tr>
+          <tr>
+            <td>Sensor Capabilities</td>
+            <td>32 GPIO SPI/UART/I2C </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="box container">
+<h3>Software</h3>
+<table>
+  <thead>
+    <td class="centered"> <b> Device </b> </td>
+    <td class="centered"> <b> Mobile </b> </td>
+    <td class="centered"> <b> Webapp </b> </td>
+  </thead>
+  <tbody>
+    <tr>
+      <td> <img src="images/nordic_logo.jpg"/> </td>
+      <td> <img src="images/android.jpg"/> </td>
+      <td> <img src="images/aws.png"/> </td>
+    </tr>
+    <tr>
+      <td>
+        BLE Stack: S130 SoftDevice <br>
+        IDE: Seggar Embedded Studios <br>
+      </td>
+      <td>
+        OS: Android<br>
+        IDE: Android Studio<br>
+      </td>
+      <td>
+        Server: AWS<br>
+        Web Framework: Django<br>
+        Database: MySQL<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+  <h3>Data Transfer Protocols</h3>
+  <table>
+    <tr>
+      <td class="centered"> Nordic/ Mobile Device → BLE </td>
+      <td> Mobile Device/ Web Server → HTTP </td>
+    </tr>
+    <tr>
+      <td> <img src="images/Bluetooth_Smart_Logo.png"/> </td>
+      <td> <img src="images/http.png"/> </td>
+    </tr>
+  </table>
+  </section>
+</div>
+
+<div class="box container">
+  <section>
+    <header>
+      <h3> How does Little Brother work? <br> An overview of the system architecture </h3>
+    </header>
+    <img src="images/flow_of_data.png"/>
+  </section>
+</div>
+
+
 				<div class="box container">
-          <!--
-					<header>
-						<h2>A lot of generic stuff</h2>
-					</header>
-					<section>
-						<header>
-							<h3>Paragraph</h3>
-							<p>This is the subtitle for this particular heading</p>
-						</header>
-						<p>Phasellus nisl nisl, varius id <sup>porttitor sed pellentesque</sup> ac orci. Pellentesque
-						habitant <strong>strong</strong> tristique <b>bold</b> et netus <i>italic</i> malesuada <em>emphasized</em> ac turpis egestas. Morbi
-						leo suscipit ut. Praesent <sub>id turpis vitae</sub> turpis pretium ultricies. Vestibulum sit
-						amet risus elit.</p>
+					<h2>
+            How do you use Little Brother?
+            </h2>
+				</div>
+
+				<div class="box container">
+          <h3> Just four actions: <h4>
+
+					<section class="feature left">
+						<div class="image"><img
+              src="images/user_as_mule.png" alt="" /></div>
+						<div class="content">
+							<p>Just by walking by a Little Brother device, a user with the
+              Little Brother application will act as passive data mule when 
+              near the device</p>
+						</div>
 					</section>
-					<section>
-						<header>
-							<h3>Blockquote</h3>
-						</header>
-						<blockquote>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget.
-						tempus euismod. Vestibulum ante ipsum primis in faucibus.</blockquote>
+					<section class="feature right">
+						<div class="image"><img src="images/data_visualization.png" alt="" /></div>
+						<div class="content">
+							<p>
+              Any user can see the data and the visualizations of the data
+              collected by the Little Brother devices by going to the <br>
+              Little Brother Webapp.
+              </p>
+						</div>
 					</section>
-					<section>
-						<header>
-							<h3>Divider</h3>
-						</header>
-						<p>Donec consectetur vestibulum dolor et pulvinar. Etiam vel felis enim, at viverra
-						ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel. Praesent nec orci
-						facilisis leo magna. Cras sit amet urna eros, id egestas urna. Quisque aliquam
-						tempus euismod. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-						posuere cubilia.</p>
-						<hr />
-						<p>Donec consectetur vestibulum dolor et pulvinar. Etiam vel felis enim, at viverra
-						ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel. Praesent nec orci
-						facilisis leo magna. Cras sit amet urna eros, id egestas urna. Quisque aliquam
-						tempus euismod. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-						posuere cubilia.</p>
+					<section class="feature left">
+						<div class="image"><img src="images/configure_from_server.png" alt="" /></div>
+						<div class="content">
+							<p> Registered user can make changes to configurations, such as
+              data collection rates and sensor details, through 
+              the Little Brother Webapp.
+              </p>
+						</div>
 					</section>
-            -->
+					<section class="feature right">
+						<div class="image"><img src="images/configure_from_user.png" alt="" /></div>
+						<div class="content">
+							<p>
+                If there are configuration changes to be made for a device,
+                once a user is in range of the device, the mobile application
+                sends the new configuration file
+              </p>
+						</div>
+					</section>
+				</div>
+
+
+<div class="box container">
 					<section>
 						<header>
 							<h3>Functional Requirements:</h3>
@@ -133,20 +315,6 @@
                 from the environment to data logs to be stored in the device’s
                 persistent storage</li>
 							<li>Data that is collected on the device is encrypted, and sent to a user’s phone to be data muled to the web server</li>
-							<li>Data is collected on the server will be analyzed and used for machine learning make useful inferences about the environment of the device</li>
-							<li>The web server converts analyzed data to visual data that can be view via the phone, or web application</li>
-						</ul>
-					</section>
-					<section>
-						<header>
-							<h3>Functional Requirements:</h3>
-						</header>
-						<ul class="default">
-							<li>The device will use sensors to convert physical analog data
-                from the environment to data logs to be stored in the device’s
-                persistent storage</li>
-							<li>Data that is collected on the device is encrypted, and sent to a user’s phone to be data muled to the web server</li>
-							<li>Data is collected on the server will be analyzed and used for machine learning make useful inferences about the environment of the device</li>
 							<li>The web server converts analyzed data to visual data that can be view via the phone, or web application</li>
 						</ul>
 					</section>
@@ -177,253 +345,72 @@
 					</section>
           </div>
 
-
-  				<div class="box container">
-        	<section>
-						<header>
-							<h3>Technical Specifications:</h3>
-						</header>
-            <h4> Hardware </h4>
-            <h5>Sensors</h5>
-AS-MLV-P2 (Air Quality VOC): <br>
-vendor: Digikey http://www.digikey.com/product-detail/en/AS-MLV-P2/AS-MLV-P2CT-ND/5117220<br>
-Can measure volatile organic compounds like butane, methane, ethanol and CO particles from 10-1000 ppm 3V max<br>
-Estimated cost: 22$<br>
-OVM7690 (Camera 30 fps 640x480)<br>
-Vendor: DigiKey :http://www.digikey.com/product-detail/en/OVM7690-R20A/884-1019-1-ND/2123272<br>
-This is a 30 fps camera with a 640x480 resolution that will be used to periodically photograph surroundings, 1.5-3v Req<br>
-Estimated cost per unit: 9$<br>
-235-1282-ND (CO2 monitor) <br>
-vendor: Digikey http://www.digikey.com/product-detail/en/T6613-F/235-1282-ND/3681410<br>
-Can measure from 0-2000 parts per million CO2 particles, with a 3% margin of error 5VDC req<br>
-Estimated cost per unit :144$ <br>
-296-38440-1-ND (Temperature and Humidity sensor)<br>
-Vendor: Digikey: http://www.digikey.com/product-detail/en/HDC1008YPAT/296-38440-1-ND/5015651<br>
-This is a humidity and temperature sensor that can detect from 0%-100% humidity with a 4% margin of error and -40C-120C with a .2 degree margin of error 3-5V power<br>
-Estimated cost: 2.5$ <br>
-425-2068-ND (Dust Sensor)<br>
-Vendor: Digikey: http://www.digikey.com/product-detail/en/GP2Y1010AU0F/425-2068-ND/720164<br>
-This is a dust sensor that utilizes optical IR diodes to detect light reflection of dust in the air, 5v req<br>
-Estimated cost: 13$ <br>
-TMD37821CT-ND (Color/ light sensor)<br>
-Vendor: Digikey: http://www.digikey.com/product-detail/en/TMD37821/TMD37821CT-ND/4898805<br>
-This is a multi color ambient light and proximity sensor, 3V power<br>
-estimated cost: 3$<br>
-<br>
-<h5>Power</h5>
-USB / DC / Solar Lithium Ion/Polymer charger - v2 (Interface between battery, solar cell and Intel Edison)<br>
-3.7V/4.2V Lithium Ion or Lithium Polymer battery charger<br>
-Charge with 5-6V DC, USB or 6V solar panel<br>
-Automatic charging current tracking for high efficiency use of any wattage solar panel<br>
-Low Battery Indicator (fixed at 3.1V) with LED output<br>
-Set for 500mA max charge rate<br>
-Will always draw the most current possible from a solar cell - (up to the max charge rate)<br>
-Smart load sharing automatically uses the input power when available, to keep battery from constantly charging/discharging<br>
-Temperature monitoring of battery by soldering in a 10K NTC thermistor (not included) - suggested for outdoor projects where the battery may get hot (50°C) or cold (0°C)<br>
-Cost: 17.50$<br>
-Vendor: Adafruit<br>
-https://www.adafruit.com/product/390<br>
-Male DC Power adapter - 2.1mm plug to screw terminal block (Interface between charger and battery<br>
-Cost: 2.00$<br>
-Vendor: Adafruit<br>
-https://www.adafruit.com/products/369<br>
-3.5 / 1.3mm To 5.5 / 2.1mm DC Jack Adapter Cable (Interface between charger and solar cell)<br>
-Cost: .95$<br>
-Vendor: Adafruit<br>
-https://www.adafruit.com/products/2788<br>
-Medium 6V 2W Solar panel<br>
-Size: 4.4" x 5.4" / 110mm x 140mm<br>
-Weight: 3 ounces / 90 grams<br>
-Cell type: Monocrystaline<br>
-Cell efficiency: 17%+<br>
-Cost: 29$<br>
-Vendor: Adafruit<br>
-https://www.adafruit.com/products/200<br>
-Lithium Ion Battery Pack - 3.7V 4400mAh<br>
-2 x 2200mAh Lithium Ion 18650-sized cells in parallel<br>
-Dimensions: 69mm x 37mm x 18mm / 2.7" x 1.5" x 0.71"<br>
-Weight: 95 g/ 3.5 oz<br>
-Max charging rate: 2A<br>
-Max continuous discharge rate: 4.4A<br>
-Cost: 19.95$<br>
-Vendor: Adafruit<br>
-https://www.adafruit.com/products/354<br>
-<br>
-<br>
-<h5>Microprocessor Unit</h5>
-Intel® Edison Module<br>
-Dimensions 35.5 × 25.0 × 3.9 mm (1.4 × 1.0 × 0.15 inches) max<br>
-Operating temperature 32 to 104°F (0 to 40°C)<br>
-I2C: 2 controllers<br>
-SoC: 22 nm Intel® SoC that includes a dual-core, dual-threaded Intel® Atom™ CPU at 500 MHz and a 32-bit Intel® Quark™ microcontroller at 100 MHz<br>
-RAM: 1 GB LPDDR3 POP memory (2 channel 32bits @ 800MT/sec)<br>
-Flash storage: 4 GB eMMC (v4.51 spec)<br>
-Bluetooth: Bluetooth 4.0<br>
-Input 3.3 to 4.5 V<br>
-Output 100 ma @3.3 V and 100 ma @ 1.8 V<br>
-Power Standby (No radios): 13 mW<br>
-Standby (Bluetooth 4.0): 21.5 mW (BTLE in Q4-14)<br>
-<br>
-<h4>Software</h4>
-<h5>Device</h5>
-CPU OS Yocto Linux* v1.6<br>
-Development environments Arduino* IDE<br>
-Eclipse supporting: C, C++, and Python<br>
-Intel XDK supporting: Node.JS and HTML5<br>
-MCU OS RTOS<br>
-Development environments MCU SDK and IDE<br>
-<h5>Mobile App</h5>
-OS: Android<br>
-IDE: Android Studio<br>
-Connectivity: Bluetooth 4.0<br>
-<h5>Web App</h5>
-Server: AWS<br>
-Web Framework: Django<br>
-Database: SQLite<br>
-<br>
-<h5>Protocols</h5>
-Sensor/Intel® Edison → I2C<br>
-Intel® Edison/ Mobile Device → BLE<br>
-Mobile Device/ Web Server → HTTP<br>
-            </p>
-					</section>
-          </div>
           <div class="box container">
             <p>
-            <h4>Competitive analysis of Little Brother:<h4>
-                <h5>Air Quality Egg: http://airqualityegg.com/</h5>
-The focus of this device is the crowdsourcing of air sensors in order to create a more accurate reading of the air quality at the local level.  <br>
-The difference between Little Brother and Air Quality Egg is the need for constant power and internet connection. Little brother provides the same service of the egg while allowing the flexibility of a battery powered device provides.<br>
-<h5>Sensoro Yunzi: http://www.sensoro.com/</h5>
-Sensoro Yunzi is a BLE beacon with integrated sensors such as accelerometers and ambient light that is designed to provide a clear picture to the user about the sensors surroundings.<br>
-Although little brother provides localized information to its users, its main function is the transmission of data through data muling to a central server for future analysis. Sensoro does not provide this information, since it deletes its readings after 5 time interval readings.<br>
-<h5>mCrowd:</h5>
-mCrowd is a software platform created at UMass with the objective of crowdsourcing the collection of ambient data by utilizing users smart phones as sensors and then sending this data to a central server for analysis.<br>
-Granting that mCrowd and Little Brother do tackle the lack of data problem, mCrowds methods are limited. This is because the sensors available on a smartphone are fixed meaning they cannot modify their collection to detect air pollution or dust, which little brother specializes in.  <br>
-            
+            <h2>The Competition <br>(and why they aren't) <h2>
+            <table>
+              <thead>
+                <td>  Air Quality Egg  </td>
+                <td>  Sensoro Yunzi  </td>
+                <td>  mCrowd  </td>
+              </thead>
+              <tbody>
+                <tr>
+                  <td> 
+                      <img src="images/air_quality_egg.png"/>
+                  </td>
+                  <td> 
+                      <img src="images/sensoro.png"/>
+                  </td>
+                  <td> 
+                      <img src="images/mcrowd.png"/>
+                  </td>
+                </tr>
+
+            </table>
+
+            <h5><a href="http://airqualityegg.com/"> Air Quality Egg</a></h5>
+            <p>
+                  The focus of this device is the crowdsourcing of air sensors
+                  in order to create a more accurate reading of the air quality
+                  at the local level.The difference between Little Brother and 
+                  Air Quality Egg is the need for constant power and internet 
+                  connection. Little brother provides the same service of the
+                  egg while allowing the flexibility of a battery powered device 
+                  provides.
+            </p>
+            <h5> <a href="http://www.sensoro.com/">Sensoro Yunzi </a> </h5>
+            <p>
+                  Sensoro Yunzi is a BLE beacon with integrated sensors such
+                  as accelerometers and ambient light that is designed to provide
+                  a clear picture to the user about the sensors surroundings. 
+                  Although little brother provides localized information to 
+                  its users, its main function is the transmission of data
+                  through data muling to a central server for future analysis. 
+                  Sensoro does not provide this information, since it deletes
+                  its readings after 5 time interval readings.
+            </p>
+            <h5> <a href="https://crowd.cs.umass.edu/">mCrowd: </a></h5>
+            <p>
+                mCrowd is a software platform created at UMass with the 
+                objective of crowdsourcing ambient data
+                by utilizing users smart phones as sensors and then sending
+                this data to a central server for analysis. Granted that 
+                mCrowd and Little Brother do tackle the lack of data problem,
+                mCrowds methods are limited. The sensors
+                available on a smartphone are fixed meaning they cannot
+                modify their collection to detect air pollution or dust, 
+                which little brother specializes in.
+                <br>
+                -----------------------
             </p>
           </div>
-          <!--
-					<section>
-						<header>
-							<h3>Ordered List</h3>
-						</header>
-						<ol class="default">
-							<li>Donec consectetur vestibulum dolor et pulvinar. Etiam vel felis enim, at viverra ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel.</li>
-							<li>Donec consectetur vestibulum dolor et pulvinar. Etiam vel felis enim, at viverra ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel.</li>
-							<li>Donec consectetur vestibulum dolor et pulvinar. Etiam vel felis enim, at viverra ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel.</li>
-							<li>Donec consectetur vestibulum dolor et pulvinar. Etiam vel felis enim, at viverra ligula. Ut porttitor sagittis lorem, quis eleifend nisi ornare vel.</li>
-						</ol>
-					</section>
-					<section>
-						<header>
-							<h3>Table</h3>
-						</header>
-						<div class="table-wrapper">
-							<table class="default">
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Name</th>
-										<th>Description</th>
-										<th>Price</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>45815</td>
-										<td>Something</td>
-										<td>Ut porttitor sagittis lorem, quis eleifend nisi ornare vel.</td>
-										<td>29.99</td>
-									</tr>
-									<tr>
-										<td>24524</td>
-										<td>Nothing</td>
-										<td>Ut porttitor sagittis lorem, quis eleifend nisi ornare vel.</td>
-										<td>19.99</td>
-									</tr>
-									<tr>
-										<td>45815</td>
-										<td>Something</td>
-										<td>Ut porttitor sagittis lorem, quis eleifend nisi ornare vel.</td>
-										<td>29.99</td>
-									</tr>
-									<tr>
-										<td>24524</td>
-										<td>Nothing</td>
-										<td>Ut porttitor sagittis lorem, quis eleifend nisi ornare vel.</td>
-										<td>19.99</td>
-									</tr>
-								</tbody>
-								<tfoot>
-									<tr>
-										<td colspan="3"></td>
-										<td>100.00</td>
-									</tr>
-								</tfoot>
-							</table>
-						</div>
-					</section>
-					<section>
-						<header>
-							<h3>Form</h3>
-						</header>
-						<form method="post" action="#">
-							<div class="row">
-								<div class="6u 12u(mobilep)">
-									<label for="name">Name</label>
-									<input class="text" type="text" name="name" id="name" value="" placeholder="John Doe" />
-								</div>
-								<div class="6u 12u(mobilep)">
-									<label for="email">Email</label>
-									<input class="text" type="text" name="email" id="email" value="" placeholder="johndoe@domain.tld" />
-								</div>
-							</div>
-							<div class="row">
-								<div class="12u">
-									<label for="subject">Subject</label>
-									<input class="text" type="text" name="subject" id="subject" value="" placeholder="Enter your subject" />
-								</div>
-							</div>
-							<div class="row">
-								<div class="12u">
-									<label for="subject">Message</label>
-									<textarea name="message" id="message" placeholder="Enter your message" rows="6"></textarea>
-								</div>
-							</div>
-							<div class="row">
-								<div class="12u">
-									<ul class="actions">
-										<li><input type="submit" value="Send" /></li>
-										<li><input type="reset" value="Reset" class="alt" /></li>
-									</ul>
-								</div>
-							</div>
-						</form>
-					</section>
-				</div>
-
-				<footer class="major container 75%">
-					<h3>Get shady with science</h3>
-					<p>Vitae natoque dictum etiam semper magnis enim feugiat amet curabitur tempor orci penatibus. Tellus erat mauris ipsum fermentum etiam vivamus.</p>
-					<ul class="actions">
-						<li><a href="#" class="button">Join our crew</a></li>
-					</ul>
-				</footer>
-
-			</div>
--->
 
 		<!-- Footer -->
 			<div id="footer">
 				<div class="container 75%">
 
-					<header class="major last">
-						<h2>Questions or comments?</h2>
-					</header>
-
-					<p>Vitae natoque dictum etiam semper magnis enim feugiat amet curabitur tempor
-					orci penatibus. Tellus erat mauris ipsum fermentum etiam vivamus.</p>
+          <h2>Questions or comments? Leave us a message! </h2>
 
 					<form method="post" action="#">
 						<div class="row">
